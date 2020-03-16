@@ -15,6 +15,8 @@ import MultiChart from '../components/Dashboard/MultiChart';
 import { Chip } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import createPersistedState from '../utils/memoryState';
+import useDataStore from '../data/dataStore';
+import { observer } from 'mobx-react-lite';
 
 const drawerWidth = 240;
 
@@ -117,53 +119,19 @@ const CustomClip = ({ handleDelete, label }) => (
 
 const useMemoryState = createPersistedState();
 
-const ComparisonPage = () => {
+const ComparisonPage = observer(() => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState<string>();
-  const [possibleCountries, setPossibleCountries] = useState<string[]>([]);
+  const [data, setData] = useMemoryState<{ [key: string]: IRowData }>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const [rowData, setRowData] = useMemoryState<{ [key: string]: IRowData }>({});
-
-  // useEffect(() => {
-  //   if (possibleCountries.length) {
-  //     setSelectedCountry(possibleCountries[0]);
-  //   }
-  // }, [possibleCountries, setSelectedCountry]);
-  if (!possibleCountries.length) {
-    csv(confirmedCsvUrl, (err, data: Row[]) => {
-      setPossibleCountries([...new Set(data.map((row: Row) => row['Country/Region']))].sort());
-    });
-  }
+  const dataStore = useDataStore();
+  const possibleCountries = dataStore.possibleCountries;
 
   const addCountry = useCallback((country) => {
-    csv(confirmedCsvUrl, (err, data: Row[]) => {
-      data.forEach((row: Row) => {
-        if (row['Country/Region'] === country) {
-          setRowData((prevRowData) => {
-            const newRowData = { ...prevRowData };
-            if (!newRowData[country]) {
-              newRowData[country] = { confirmed: undefined, dead: undefined };
-            }
-            newRowData[country].confirmed = row;
-            return newRowData;
-          });
-        }
-      });
-    });
-
-    csv(deathsCsvUrl, (err, data: Row[]) => {
-      data.forEach((row: Row) => {
-        if (row['Country/Region'] === country) {
-          setRowData((prevRowData) => {
-            const newRowData = { ...prevRowData };
-            if (!newRowData[country]) {
-              newRowData[country] = { confirmed: undefined, dead: undefined };
-            }
-            newRowData[country].dead = row;
-            return newRowData;
-          });
-        }
-      });
+    setData((oldData) => {
+      const newData = { ...oldData };
+      newData[country] = dataStore.getCountryData(country);
+      return newData;
     });
   }, []);
 
@@ -183,24 +151,25 @@ const ComparisonPage = () => {
             width={'auto'}
           />
           <div className={classes.clipWrapper}>
-            {Object.keys(rowData).map((country) => (
-              <CustomClip
-                handleDelete={() => {
-                  setRowData((prevRowData) => {
-                    const newRowData = { ...prevRowData };
-                    delete newRowData[country];
-                    return newRowData;
-                  });
-                }}
-                label={country}
-              />
-            ))}
+            {data &&
+              Object.keys(data).map((country) => (
+                <CustomClip
+                  handleDelete={() => {
+                    setData((prevRowData) => {
+                      const newRowData = { ...prevRowData };
+                      delete newRowData[country];
+                      return newRowData;
+                    });
+                  }}
+                  label={country}
+                />
+              ))}
           </div>
         </Paper>
       </Grid>
       <Grid item xs={12}>
         <Paper className={fixedHeightPaper}>
-          {rowData && <MultiChart countries={Object.keys(rowData)} dataByCountry={rowData} />}
+          <MultiChart countries={data ? Object.keys(data) : []} dataByCountry={data} />
         </Paper>
       </Grid>
       {/* <Grid item xs={12} md={4} lg={3}>
@@ -232,6 +201,6 @@ const ComparisonPage = () => {
   </Grid> */}
     </Dashboard>
   );
-};
+});
 
 export default ComparisonPage;

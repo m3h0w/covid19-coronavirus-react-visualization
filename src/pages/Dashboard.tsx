@@ -13,6 +13,7 @@ import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
 import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
+import { observer } from 'mobx-react-lite';
 
 const drawerWidth = 240;
 
@@ -98,9 +99,9 @@ const useStyles = makeStyles((theme) => ({
 
 const useMemoryState = createPersistedState();
 
-const DashboardPage = () => {
+const DashboardPage = observer(() => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useMemoryState();
+  const [selectedCountry, setSelectedCountry] = useMemoryState('Poland');
   const dataStore = useDataStore();
   const rowData = dataStore.getCountryData(selectedCountry);
   const possibleCountries = dataStore.possibleCountries;
@@ -127,7 +128,7 @@ const DashboardPage = () => {
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
         <Paper className={fixedHeightPaper}>
-          {rowData.confirmed && rowData.dead && (
+          {rowData && rowData.confirmed && rowData.dead && (
             <CurrentCount
               confirmedCases={
                 Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1]
@@ -145,6 +146,6 @@ const DashboardPage = () => {
   </Grid> */}
     </Dashboard>
   );
-};
+});
 
 export default DashboardPage;

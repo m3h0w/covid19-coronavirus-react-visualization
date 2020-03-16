@@ -61,7 +61,7 @@ const Chart: FC<IProps> = ({ rowData }) => {
     if (rowData && rowData.confirmed && rowData.dead) {
       console.log({ rowData });
       const dates = momentFunc(rowData.confirmed);
-      let lastZeroDay: Moment | undefined;
+      let lastZeroDay: Moment | undefined = firstDate;
       const d = dates
         .map((date) => {
           const confirmedCases = Number(rowData.confirmed[momentToFormat(date)]);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FC, useRef } from 'react';
+import React, { useEffect, useState, FC, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import {
   LineChart,
@@ -17,6 +17,7 @@ import moment, { Moment } from 'moment';
 import { FaBrush } from 'react-icons/fa';
 import getBrush from './Brush';
 import Colors from '../../utils/colors';
+import { Button } from '@material-ui/core';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -87,13 +88,19 @@ const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
     }
   }, [countries, dataByCountry]);
 
+  const newColors = useCallback(
+    () =>
+      setColors(
+        countries.map(() => {
+          return colorsHelper.getRandomColor();
+        })
+      ),
+    [setColors, countries]
+  );
+
   useEffect(() => {
-    setColors(
-      countries.map(() => {
-        return colorsHelper.getRandomColor();
-      })
-    );
-  }, [countries]);
+    newColors();
+  }, [countries, newColors]);
 
   const getFormattedLine = (dot: boolean = false) => {
     if (!confirmedCasesData) {
@@ -130,7 +137,28 @@ const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
 
   return (
     <>
-      <Title>Today</Title>
+      <div
+        style={{
+          display: 'flex',
+          alignItem: 'end',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: '10px',
+        }}
+      >
+        <Title>Today</Title>
+        <Button
+          style={{ marginLeft: 15 }}
+          variant='outlined'
+          color='primary'
+          size={'small'}
+          onClick={() => {
+            newColors();
+          }}
+        >
+          New colors
+        </Button>
+      </div>
       <ResponsiveContainer width={'100%'}>
         <LineChart
           data={confirmedCasesData}
