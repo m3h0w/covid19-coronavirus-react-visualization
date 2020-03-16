@@ -10,29 +10,59 @@ import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
+import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
 
-export const mainListItems = (
-  <div>
-    <ListItem button component={RouterLink} to='dashboard'>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary='Dashboard' />
-    </ListItem>
-    <ListItem button component={RouterLink} to='comparison'>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary='Comparison' />
-    </ListItem>
-    <ListItem button component={RouterLink} to='map'>
-      <ListItemIcon>
-        <MapIcon />
-      </ListItemIcon>
-      <ListItemText primary='Map' />
-    </ListItem>
-    {/* <ListItem button>
+export const MainListItems = () => {
+  const location = useLocation();
+  console.log();
+
+  return (
+    <div>
+      <ListItem
+        selected={location.pathname.split('/')[1] === 'dashboard'}
+        button
+        component={RouterLink}
+        to='dashboard'
+      >
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary='Dashboard' />
+      </ListItem>
+      <ListItem
+        selected={location.pathname.split('/')[1] === 'comparison'}
+        button
+        component={RouterLink}
+        to='comparison'
+      >
+        <ListItemIcon>
+          <BarChartIcon />
+        </ListItemIcon>
+        <ListItemText primary='Comparison' />
+      </ListItem>
+      <ListItem
+        selected={location.pathname.split('/')[1] === 'map'}
+        button
+        component={RouterLink}
+        to='map'
+      >
+        <ListItemIcon>
+          <MapIcon />
+        </ListItemIcon>
+        <ListItemText primary='Map' />
+      </ListItem>
+      <ListItem
+        selected={location.pathname.split('/')[1] === 'todo'}
+        button
+        component={RouterLink}
+        to='todo'
+      >
+        <ListItemIcon>
+          <ShoppingCartIcon />
+        </ListItemIcon>
+        <ListItemText primary='Todo' />
+      </ListItem>
+      {/* <ListItem button>
       <ListItemIcon>
         <ShoppingCartIcon />
       </ListItemIcon>
@@ -56,8 +86,9 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Integrations" />
     </ListItem> */}
-  </div>
-);
+    </div>
+  );
+};
 
 export const secondaryListItems = (
   <div>

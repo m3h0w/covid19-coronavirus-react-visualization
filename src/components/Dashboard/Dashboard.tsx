@@ -18,7 +18,7 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './ListItems';
+import { mainListItems, secondaryListItems, MainListItems } from './ListItems';
 import Chart from './Chart';
 import CurrentCount from './CurrentCount';
 import Orders from './Orders';
@@ -123,9 +123,10 @@ const useStyles = makeStyles((theme) => ({
 
 interface IProps {
   title: string;
+  grid?: boolean;
 }
 
-const Dashboard: FC<IProps> = ({ title, children }) => {
+const Dashboard: FC<IProps> = ({ title, children, grid = true }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
 
@@ -174,20 +175,31 @@ const Dashboard: FC<IProps> = ({ title, children }) => {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List>
+          <MainListItems />
+        </List>
         {/*<Divider />
         <List>{secondaryListItems}</List> */}
       </Drawer>
       <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth='lg' className={classes.container}>
-          <Grid container spacing={3}>
-            {children}
-          </Grid>
-          {/* <Box pt={4}>
+        {grid ? (
+          <>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth='lg' className={classes.container}>
+              <Grid container spacing={3}>
+                {children}
+              </Grid>
+              {/* <Box pt={4}>
             <Copyright />
           </Box> */}
-        </Container>
+            </Container>
+          </>
+        ) : (
+          <>
+            <div className={classes.appBarSpacer} />
+            {children}
+          </>
+        )}
       </main>
     </div>
   );
