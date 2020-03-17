@@ -3,8 +3,8 @@ import Dashboard from 'components/Dashboard/Dashboard';
 
 const todos = [
   'Option to align graphs in Comparison',
-  'Display data on the map',
-  'Time travel on the map',
+  'Display data on the map ✔',
+  'Time travel on the map ✔',
   'Gapminder-like plot with time travel',
   'Radar chart (Uber react-vis) per country',
 ];

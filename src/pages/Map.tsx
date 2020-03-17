@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MapChart from 'components/MapChart';
 import Dashboard from 'components/Dashboard/Dashboard';
 import useDataStore from '../data/dataStore';
@@ -11,23 +11,41 @@ const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[val
 const MapPage = observer(() => {
   const dataStore = useDataStore();
   const [sliderValue, setSliderValue] = useState<number>();
-  const [didSetSliderValue, setDidSetSliderValue] = useState(false);
   const [date, setDate] = useState<string>();
-  const handleChange = (event: any, newValue: number | number[]) => {
-    setSliderValue(newValue as number);
-  };
   const [tooltipContent, setTooltipContent] = useState();
+  const [maxSliderValue, setMaxSliderValue] = useState();
 
-  if (!didSetSliderValue && dataStore.dates?.length) {
-    setSliderValue(dataStore.dates.length - 1);
-    setDidSetSliderValue(true);
-  }
+  useEffect(() => {
+    const checkKey = (e) => {
+      e = e || window.event;
+      if (e.keyCode === '37') {
+        setSliderValue((prev) => Math.max(prev - 1, 0));
+      } else if (e.keyCode === '39') {
+        setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
+      }
+    };
+    document.addEventListener('onkeydown', checkKey);
+
+    return () => document.removeEventListener('onkeydown', checkKey);
+  }, [maxSliderValue]);
+
+  useEffect(() => {
+    if (dataStore && dataStore.datesConverted) {
+      setMaxSliderValue(dataStore.datesConverted.length - 1);
+    }
+  }, [dataStore, dataStore.datesConverted]);
 
   useEffect(() => {
     if (sliderValue && dataStore && dataStore.datesConverted) {
       setDate(dataStore.datesConverted[sliderValue]);
     }
-  }, [sliderValue, dataStore.datesConverted]);
+  }, [sliderValue, dataStore, dataStore.datesConverted]);
+
+  useEffect(() => {
+    if (maxSliderValue && sliderValue !== undefined) {
+      setSliderValue(maxSliderValue);
+    }
+  }, [maxSliderValue, sliderValue]);
 
   return (
     <Dashboard title='Map' grid={false}>
@@ -50,18 +68,20 @@ const MapPage = observer(() => {
         )}
       </div>
       <div style={{ width: '80%', margin: '0 auto' }}>
-        {didSetSliderValue && dataStore?.datesConverted?.length && (
+        {sliderValue !== undefined && dataStore?.datesConverted?.length && date && (
           <IOSSlider
-            valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-            getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+            valueLabelFormat={() => date}
+            getAriaValueText={() => date}
             aria-labelledby='dates-map-slider'
             valueLabelDisplay='auto'
-            onChange={handleChange}
+            onChange={(event: any, newValue: number | number[]) => {
+              setSliderValue(newValue as number);
+            }}
             value={sliderValue}
             step={1}
             marks
             min={0}
-            max={dataStore.datesConverted.length - 1}
+            max={maxSliderValue}
           />
         )}
       </div>

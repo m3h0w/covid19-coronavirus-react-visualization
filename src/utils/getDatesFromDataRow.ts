@@ -3,7 +3,7 @@ import { Row } from '../components/Dashboard/MultiChart';
 
 export const FIRST_DATE = '1/22/20';
 
-export const momentToFormat = (m: Moment): string => m.format('M/DD/YY');
+export const momentToFormat = (m: Moment): string => m.format('M/D/YY');
 
 export const getDatesFromDataRow = (data: Row | undefined) => {
   if (!data) {

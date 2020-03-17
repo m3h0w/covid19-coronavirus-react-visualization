@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react';
-import { decorate, observable, computed, intercept, observe } from 'mobx';
-import { Moment } from 'moment';
+import { observable, computed } from 'mobx';
 import { Row } from '../components/Dashboard/MultiChart';
 import { csv } from 'd3-request';
 import confirmedCsvUrl from '../data/confirmed.csv';
@@ -8,7 +7,7 @@ import deathsCsvUrl from '../data/deaths.csv';
 import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 
-const USE_LOCAL_DATA = true;
+const USE_LOCAL_DATA = false;
 
 interface ICountryData {
   confirmed: Row | undefined;

@@ -49,7 +49,7 @@ export const MainListItems = () => {
       <CustomListItem to='dashboard' text='Dashboard' Icon={DashboardIcon} />
       <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
-      <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} />
+      {/* <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} /> */}
 
       {/* <ListItem button>
       <ListItemIcon>

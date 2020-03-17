@@ -11,7 +11,8 @@ const IOSSlider = withStyles((theme) => ({
   },
   thumb: {
     height: 28,
-    width: 28,
+    width: 16,
+    borderRadius: 3,
     backgroundColor: '#fff',
     boxShadow: iOSBoxShadow,
     marginTop: -14,
