@@ -6,6 +6,9 @@ import { csv } from 'd3-request';
 import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import fetchCsv from 'utils/downloadCsv';
+import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
+
+const USE_LOCAL_DATA = true;
 
 interface ICountryData {
   confirmed: Row | undefined;
@@ -23,11 +26,6 @@ function groupBy(arr, key) {
       grouped[group_value] = {};
     }
 
-    if (group_value === 'France') {
-      console.log('item', item);
-      console.log(grouped['France']);
-    }
-
     Object.keys(item).forEach((rowKey) => {
       if (!grouped[group_value][rowKey]) {
         grouped[group_value][rowKey] = 0;
@@ -35,9 +33,6 @@ function groupBy(arr, key) {
       if (item[rowKey] && isNumber(item[rowKey])) {
         grouped[group_value][rowKey] += parseFloat(item[rowKey]);
       } else {
-        if (group_value === 'France') {
-          console.log(item[rowKey]);
-        }
         grouped[group_value][rowKey] = item[rowKey];
       }
     });
@@ -47,28 +42,32 @@ function groupBy(arr, key) {
   return arr.reduce(reducer, {});
 }
 
+type GroupedData = { [countryName: string]: Row };
+
+export const COUNTRY_KEY = 'Country/Region';
+
 export class DataStore {
-  @observable public dates: Moment[] = [];
-  @observable public confirmedCsv: Row[] | undefined = undefined;
-  @observable public deadCsv: Row[] | undefined = undefined;
+  @observable public confirmedCsv: GroupedData | undefined = undefined;
+  @observable public deadCsv: GroupedData | undefined = undefined;
 
   constructor() {
-    csv(confirmedCsvUrl, (err, data: Row[]) => {
-      this.confirmedCsv = groupBy(data, 'Country/Region');
-    });
+    if (USE_LOCAL_DATA) {
+      csv(confirmedCsvUrl, (err, data: any) => {
+        this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+      });
 
-    csv(deathsCsvUrl, (err, data: Row[]) => {
-      this.deadCsv = groupBy(data, 'Country/Region');
-    });
+      csv(deathsCsvUrl, (err, data: any) => {
+        this.deadCsv = groupBy(data, COUNTRY_KEY);
+      });
+    } else {
+      fetchCsv('confirmed', (data: Row[]) => {
+        this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+      });
 
-    // fetchCsv('confirmed', (data: Row[]) => {
-    //   console.log(groupBy(data, 'Country/Region'));
-    //   this.confirmedCsv = data;
-    // });
-
-    // fetchCsv('dead', (data: Row[]) => {
-    //   this.deadCsv = data;
-    // });
+      fetchCsv('dead', (data: Row[]) => {
+        this.deadCsv = groupBy(data, COUNTRY_KEY);
+      });
+    }
   }
 
   public getCountryData = (country: string) => {
@@ -107,6 +106,28 @@ export class DataStore {
       return Object.keys(this.confirmedCsv);
     }
     return [];
+  }
+
+  @computed get dates() {
+    if (this.confirmedCsv) {
+      for (const countryName of Object.keys(this.confirmedCsv)) {
+        const row = this.confirmedCsv[countryName];
+        console.log({ row });
+        const dates = getDatesFromDataRow(row);
+        if (dates) {
+          return dates;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  @computed get datesConverted() {
+    if (this.dates) {
+      return this.dates.map(momentToFormat);
+    }
+
+    return undefined;
   }
 }
 

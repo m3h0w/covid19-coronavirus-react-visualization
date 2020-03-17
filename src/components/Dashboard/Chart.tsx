@@ -16,6 +16,7 @@ import Title from './Title';
 import moment, { Moment } from 'moment';
 import { FaBrush } from 'react-icons/fa';
 import getBrush from './Brush';
+import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -25,34 +26,14 @@ export type Row = {
   [key in Column]: string;
 };
 
-const firstDate = '1/22/20';
-
 type Column = 'Province/State' | 'Country/Region' | 'Lat' | 'Long' | string;
-
-const momentToFormat = (m: Moment): string => m.format('M/DD/YY');
-
-const momentFunc = (data: Row | undefined) => {
-  if (!data) {
-    return;
-  }
-  const firstDateM = moment(firstDate);
-  const nowM = moment();
-  const days = nowM.diff(firstDateM, 'days');
-  const dates: Moment[] = [];
-  for (let i = 0; i < days + 1; i = i + 1) {
-    const newDate = moment(firstDate).add(i, 'days');
-    if (momentToFormat(newDate) in data) {
-      dates.push(newDate);
-    }
-  }
-  return dates;
-};
 
 interface IProps {
   rowData: { confirmed: Row; dead: Row };
+  dates: Moment[];
 }
 
-const Chart: FC<IProps> = ({ rowData }) => {
+const Chart: FC<IProps> = ({ rowData, dates }) => {
   const theme = useTheme();
   const [firstCaseDate, setFirstCaseDate] = useState();
   const [data, setData] = useState();
@@ -60,8 +41,7 @@ const Chart: FC<IProps> = ({ rowData }) => {
   useEffect(() => {
     if (rowData && rowData.confirmed && rowData.dead) {
       console.log({ rowData });
-      const dates = momentFunc(rowData.confirmed);
-      let lastZeroDay: Moment | undefined = firstDate;
+      let lastZeroDay: Moment | undefined = moment(FIRST_DATE);
       const d = dates
         .map((date) => {
           const confirmedCases = Number(rowData.confirmed[momentToFormat(date)]);
@@ -147,7 +127,7 @@ const Chart: FC<IProps> = ({ rowData }) => {
             dot={true}
           />
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
-          {brush}
+          {/* {brush} */}
           <Tooltip labelFormatter={formatXAxis} allowEscapeViewBox={{ x: true, y: true }} />
         </LineChart>
       </ResponsiveContainer>

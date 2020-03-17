@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -11,57 +11,46 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
+import { useTheme } from '@material-ui/core/styles';
+import { SvgIconProps } from '@material-ui/core';
 
-export const MainListItems = () => {
+interface ICustomListItemProps {
+  to: string;
+  text: string;
+  Icon: (SvgIconProps) => JSX.Element;
+}
+
+const CustomListItem: FC<ICustomListItemProps> = ({ to, text, Icon }) => {
   const location = useLocation();
-  console.log();
+  const theme = useTheme();
 
   return (
+    <ListItem
+      style={{
+        textDecoration: location.pathname.split('/')[1] === to ? 'underline' : 'initial',
+        textDecorationColor: theme.palette.secondary.main,
+      }}
+      selected={location.pathname.split('/')[1] === to}
+      button
+      component={RouterLink}
+      to={to}
+    >
+      <ListItemIcon>
+        <Icon />
+      </ListItemIcon>
+      <ListItemText primary={text} />
+    </ListItem>
+  );
+};
+
+export const MainListItems = () => {
+  return (
     <div>
-      <ListItem
-        selected={location.pathname.split('/')[1] === 'dashboard'}
-        button
-        component={RouterLink}
-        to='dashboard'
-      >
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary='Dashboard' />
-      </ListItem>
-      <ListItem
-        selected={location.pathname.split('/')[1] === 'comparison'}
-        button
-        component={RouterLink}
-        to='comparison'
-      >
-        <ListItemIcon>
-          <BarChartIcon />
-        </ListItemIcon>
-        <ListItemText primary='Comparison' />
-      </ListItem>
-      <ListItem
-        selected={location.pathname.split('/')[1] === 'map'}
-        button
-        component={RouterLink}
-        to='map'
-      >
-        <ListItemIcon>
-          <MapIcon />
-        </ListItemIcon>
-        <ListItemText primary='Map' />
-      </ListItem>
-      <ListItem
-        selected={location.pathname.split('/')[1] === 'todo'}
-        button
-        component={RouterLink}
-        to='todo'
-      >
-        <ListItemIcon>
-          <ShoppingCartIcon />
-        </ListItemIcon>
-        <ListItemText primary='Todo' />
-      </ListItem>
+      <CustomListItem to='dashboard' text='Dashboard' Icon={DashboardIcon} />
+      <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
+      <CustomListItem to='map' text='Map' Icon={MapIcon} />
+      <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} />
+
       {/* <ListItem button>
       <ListItemIcon>
         <ShoppingCartIcon />

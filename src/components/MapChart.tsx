@@ -1,58 +1,120 @@
 import React, { useEffect, useState } from 'react';
 import { csv } from 'd3-request';
-import { scaleLinear } from 'd3-scale';
-import { ComposableMap, Geographies, Geography, Sphere, Graticule } from 'react-simple-maps';
+import { scaleLog } from 'd3-scale';
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Sphere,
+  Graticule,
+  ZoomableGroup,
+} from 'react-simple-maps';
 import dataCsvUrl from '../data/vulnerability.csv';
 import { useTheme } from '@material-ui/core/styles';
+import useDataStore from '../data/dataStore';
+import { observer } from 'mobx-react-lite';
+import { Moment } from 'moment';
+import geoUrl from '../data/worldMap.json';
 
-const geoUrl =
-  'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
-
-const MapChart = () => {
-  const [data, setData] = useState([]);
-  const theme = useTheme();
-
-  const colorScale = scaleLinear()
-    .domain([0.29, 0.68])
-    .range([theme.palette.primary.dark, theme.palette.primary.light]);
-
-  useEffect(() => {
-    csv(dataCsvUrl, (err, data) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log({ data });
-      setData(data);
-    });
-  }, []);
-
-  return (
-    <ComposableMap
-      projectionConfig={{
-        rotate: [-10, 0, 0],
-        scale: 147,
-      }}
-    >
-      <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
-      <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
-      {data.length > 0 && (
-        <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              const d = data.find((s) => s.ISO3 === geo.properties.ISO_A3);
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill={d ? colorScale(d['2017']) : '#F5F4F6'}
-                />
-              );
-            })
-          }
-        </Geographies>
-      )}
-    </ComposableMap>
-  );
+const rounded = (num) => {
+  if (num > 1000000000) {
+    return Math.round(num / 100000000) / 10 + 'Bn';
+  } else if (num > 1000000) {
+    return Math.round(num / 100000) / 10 + 'M';
+  } else {
+    return Math.round(num / 100) / 10 + 'K';
+  }
 };
+
+const getMatchingCountryKey = (dataStore, geo) => {
+  for (const key of Object.keys(geo.properties)) {
+    const countryName = geo.properties[key];
+    if (dataStore.possibleCountries.includes(countryName)) {
+      return countryName;
+    }
+  }
+  return undefined;
+};
+
+const MapChart = observer(
+  ({ date, setTooltipContent }: { date: string; setTooltipContent: (content: string) => void }) => {
+    const theme = useTheme();
+    const dataStore = useDataStore();
+    console.log({ date });
+
+    const colorScale = scaleLog()
+      .domain([5, 2000])
+      .range([theme.palette.primary.light, theme.palette.primary.dark]);
+
+    return (
+      <ComposableMap
+        width={window.innerWidth}
+        height={window.innerHeight}
+        style={{ width: '100%', height: '100%' }}
+        projectionConfig={{
+          rotate: [-11, 0, 0],
+          scale: 200,
+        }}
+        data-tip=''
+      >
+        <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
+        <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
+        <ZoomableGroup zoom={1}>
+          {dataStore.possibleCountries.length > 0 && (
+            <Geographies geography={geoUrl}>
+              {({ geographies }) =>
+                geographies.map((geo) => {
+                  const countryKey = getMatchingCountryKey(dataStore, geo);
+                  const d = dataStore.getCountryData(countryKey);
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      onMouseEnter={() => {
+                        const { NAME, POP_EST } = geo.properties;
+                        if (d?.confirmed && d.confirmed[date]) {
+                          setTooltipContent(`${NAME} — ${d.confirmed[date]}`);
+                        } else {
+                          setTooltipContent(`${NAME} — 0`);
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        setTooltipContent('');
+                      }}
+                      onClick={() => {
+                        const { NAME, POP_EST } = geo.properties;
+                        if (d?.confirmed && d.confirmed[date]) {
+                          setTooltipContent(`${NAME} — ${d.confirmed[date]}`);
+                        }
+                      }}
+                      style={{
+                        default: {
+                          fill:
+                            d?.confirmed && d.confirmed[date]
+                              ? colorScale(d.confirmed[date])
+                              : '#F5F4F6',
+
+                          outline: 'none',
+                        },
+                        hover: {
+                          fill: '#F53',
+                          outline: 'none',
+                        },
+                        pressed: {
+                          fill: '#E42',
+                          outline: 'none',
+                        },
+                      }}
+                    />
+                  );
+                })
+              }
+            </Geographies>
+          )}
+        </ZoomableGroup>
+      </ComposableMap>
+    );
+  }
+);
 
 export default MapChart;

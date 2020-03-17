@@ -18,6 +18,9 @@ import { FaBrush } from 'react-icons/fa';
 import getBrush from './Brush';
 import Colors from '../../utils/colors';
 import { Button } from '@material-ui/core';
+import useDataStore from '../../data/dataStore';
+import { observer } from 'mobx-react-lite';
+import { momentToFormat } from '../../utils/getDatesFromDataRow';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -27,46 +30,26 @@ export type Row = {
   [key in Column]: string;
 };
 
-const firstDate = '1/22/20';
-
 type Column = 'Province/State' | 'Country/Region' | 'Lat' | 'Long' | string;
-
-const momentToFormat = (m: Moment): string => m.format('M/DD/YY');
-
-const momentFunc = (data: Row | undefined) => {
-  if (!data) {
-    return;
-  }
-  const firstDateM = moment(firstDate);
-  const nowM = moment();
-  const days = nowM.diff(firstDateM, 'days');
-  const dates: Moment[] = [];
-  for (let i = 0; i < days + 1; i = i + 1) {
-    const newDate = moment(firstDate).add(i, 'days');
-    if (momentToFormat(newDate) in data) {
-      dates.push(newDate);
-    }
-  }
-  return dates;
-};
 
 interface IProps {
   countries: string[];
   dataByCountry: { [key: string]: { confirmed: Row; dead: Row } };
+  dates: Moment[];
 }
 
-const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
+const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) => {
   const theme = useTheme();
   const [firstCaseDate, setFirstCaseDate] = useState();
   const [confirmedCasesData, setConfirmedCasesData] = useState();
-  const colorsHelper = new Colors();
+  let colorsHelper = new Colors();
   const [colors, setColors] = useState();
 
   useEffect(() => {
     console.log({ dataByCountry });
     console.log({ countries });
-    if (dataByCountry && countries && countries.length) {
-      const dates = momentFunc(dataByCountry[countries[0]].confirmed);
+    console.log({ dates });
+    if (dataByCountry && countries && countries.length && dates) {
       let lastZeroDay: Moment | undefined;
       const d = dates.map((date) => {
         let toReturn: { [key: string]: number } = {
@@ -86,17 +69,16 @@ const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
       setConfirmedCasesData(d);
       setFirstCaseDate(lastZeroDay);
     }
-  }, [countries, dataByCountry]);
+  }, [countries, dataByCountry, dates]);
 
-  const newColors = useCallback(
-    () =>
-      setColors(
-        countries.map(() => {
-          return colorsHelper.getRandomColor();
-        })
-      ),
-    [setColors, countries]
-  );
+  const newColors = useCallback(() => {
+    colorsHelper = new Colors();
+    setColors(
+      countries.map(() => {
+        return colorsHelper.getRandomColor();
+      })
+    );
+  }, [setColors, countries]);
 
   useEffect(() => {
     newColors();
@@ -187,7 +169,7 @@ const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
           </YAxis>
           {getFormattedLine(true)}
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
-          {brush}
+          {/* {brush} */}
           <Tooltip
             offset={-120}
             labelFormatter={formatXAxis}
@@ -197,7 +179,7 @@ const MultiChart: FC<IProps> = ({ countries, dataByCountry }) => {
       </ResponsiveContainer>
     </>
   );
-};
+});
 
 const TIME_FORMAT = 'MMM Do';
 const formatXAxis: TickFormatterFunction = (tickItem: number) =>

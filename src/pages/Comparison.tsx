@@ -169,7 +169,11 @@ const ComparisonPage = observer(() => {
       </Grid>
       <Grid item xs={12}>
         <Paper className={fixedHeightPaper}>
-          <MultiChart countries={data ? Object.keys(data) : []} dataByCountry={data} />
+          <MultiChart
+            countries={data ? Object.keys(data) : []}
+            dataByCountry={data}
+            dates={dataStore.dates}
+          />
         </Paper>
       </Grid>
       {/* <Grid item xs={12} md={4} lg={3}>
