@@ -38,136 +38,134 @@ interface IProps {
   countries: string[];
   dataByCountry: { [key: string]: { confirmed: Row; dead: Row } };
   dates: Moment[];
+  colors: { [country: string]: string };
+  generateNewColors: () => void;
 }
 
-const MultiChart: FC<IProps> = observer(({ title, yLabel, countries, dataByCountry, dates }) => {
-  const theme = useTheme();
-  const [confirmedCasesData, setConfirmedCasesData] = useState();
-  let colorsHelper = new Colors();
-  const [colors, setColors] = useState();
+const MultiChart: FC<IProps> = observer(
+  ({ title, yLabel, countries, dataByCountry, dates, colors, generateNewColors }) => {
+    const theme = useTheme();
+    const [confirmedCasesData, setConfirmedCasesData] = useState();
 
-  useEffect(() => {
-    if (dataByCountry && countries && countries.length && dates) {
-      const d = dates.map((date) => {
-        let toReturn: { [key: string]: number } = {
-          time: date.unix(),
-        };
-        countries.forEach((country: string) => {
-          if (dataByCountry[country] && dataByCountry[country].confirmed) {
-            const confirmedCases = Number(dataByCountry[country].confirmed[momentToFormat(date)]);
-            toReturn[`confirmedCases${country}`] = confirmedCases;
-          }
+    useEffect(() => {
+      if (dataByCountry && countries && countries.length && dates) {
+        const d = dates.map((date) => {
+          let toReturn: { [key: string]: number } = {
+            time: date.unix(),
+          };
+          countries.forEach((country: string) => {
+            if (dataByCountry[country] && dataByCountry[country].confirmed) {
+              const confirmedCases = Number(dataByCountry[country].confirmed[momentToFormat(date)]);
+              toReturn[`confirmedCases${country}`] = confirmedCases;
+            }
+          });
+          return toReturn;
         });
-        return toReturn;
+        // .filter((el) => {
+        //   return moment(el.time * 1000).isAfter(lastZeroDay);
+        // });
+        setConfirmedCasesData(d);
+      }
+    }, [countries, dataByCountry, dates]);
+
+    // useEffect(() => {
+    //   newColors();
+    // }, [countries, newColors]);
+
+    const getFormattedLine = (dot: boolean = false) => {
+      if (!confirmedCasesData) {
+        return null;
+      }
+
+      return countries.map((country: string, i: number) => {
+        return (
+          <Line
+            key={i}
+            type='monotone'
+            dataKey={`confirmedCases${country}`}
+            name={country}
+            stroke={colors[country]}
+            dot={false}
+            strokeWidth={2}
+          />
+        );
       });
-      // .filter((el) => {
-      //   return moment(el.time * 1000).isAfter(lastZeroDay);
-      // });
-      setConfirmedCasesData(d);
-    }
-  }, [countries, dataByCountry, dates]);
+    };
 
-  const newColors = useCallback(() => {
-    colorsHelper = new Colors();
-    setColors(
-      countries.map(() => {
-        return colorsHelper.getRandomColor();
-      })
-    );
-  }, [setColors, countries]);
-
-  useEffect(() => {
-    newColors();
-  }, [countries, newColors]);
-
-  const getFormattedLine = (dot: boolean = false) => {
-    if (!confirmedCasesData) {
-      return null;
-    }
-
-    return countries.map((country: string, i: number) => {
-      return (
-        <Line
-          key={i}
-          type='monotone'
-          dataKey={`confirmedCases${country}`}
-          name={country}
-          stroke={colors[i]}
-          dot={false}
-          strokeWidth={2}
-        />
-      );
-    });
-  };
-
-  const brush = getBrush({
-    data: confirmedCasesData,
-    color: theme.palette.text.secondary,
-    tickFormatter: formatXAxis,
-    dataKey: 'time',
-    children: (
-      <LineChart>
-        <YAxis hide domain={[0, 'auto']} />
-        {getFormattedLine()}
-      </LineChart>
-    ),
-  });
-
-  return (
-    <>
-      <div
-        style={{
-          display: 'flex',
-          alignItem: 'end',
-          justifyContent: 'space-between',
-          width: '100%',
-          marginBottom: '10px',
-        }}
-      >
-        <Title>{title}</Title>
-        <Button
-          style={{ marginLeft: 15 }}
-          variant='outlined'
-          color='primary'
-          size={'small'}
-          onClick={() => {
-            newColors();
-          }}
-        >
-          New colors
-        </Button>
-      </div>
-      <ResponsiveContainer width={'100%'}>
-        <LineChart
-          data={confirmedCasesData}
-          margin={{
-            top: 16,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          }}
-        >
-          <CartesianGrid strokeDasharray='1 3' />
-          <XAxis
-            angle={-15}
-            dataKey='time'
-            stroke={theme.palette.text.secondary}
-            tickFormatter={formatXAxis}
-          />
-          {getYAxis(yLabel)}
-          {getFormattedLine(true)}
-          <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
-          {brush}
-          <Tooltip
-            offset={-120}
-            labelFormatter={formatXAxis}
-            allowEscapeViewBox={{ x: true, y: true }}
-          />
+    const brush = getBrush({
+      data: confirmedCasesData,
+      color: theme.palette.text.secondary,
+      tickFormatter: formatXAxis,
+      dataKey: 'time',
+      children: (
+        <LineChart>
+          <YAxis hide domain={[0, 'auto']} />
+          {getFormattedLine()}
         </LineChart>
-      </ResponsiveContainer>
-    </>
-  );
-});
+      ),
+    });
+
+    return (
+      <>
+        <div
+          style={{
+            display: 'flex',
+            alignItem: 'end',
+            justifyContent: 'space-between',
+            width: '100%',
+            marginBottom: '10px',
+          }}
+        >
+          <Title>{title}</Title>
+          <Button
+            style={{ marginLeft: 15 }}
+            variant='outlined'
+            color='primary'
+            size={'small'}
+            onClick={() => {
+              generateNewColors();
+            }}
+          >
+            New colors
+          </Button>
+        </div>
+        <ResponsiveContainer width={'100%'}>
+          <LineChart
+            data={confirmedCasesData}
+            margin={{
+              top: 16,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+          >
+            <CartesianGrid strokeDasharray='1 3' />
+            <XAxis
+              angle={-15}
+              dataKey='time'
+              stroke={theme.palette.text.secondary}
+              tickFormatter={formatXAxis}
+            />
+            {getYAxis(yLabel)}
+            {getFormattedLine(true)}
+            <Line
+              type='monotone'
+              dataKey='deaths'
+              stroke={theme.palette.secondary.main}
+              dot={true}
+            />
+            {brush}
+            <Tooltip
+              offset={-120}
+              labelFormatter={formatXAxis}
+              allowEscapeViewBox={{ x: true, y: true }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </>
+    );
+  }
+);
 
 const TIME_FORMAT = 'MMM Do';
 const formatXAxis: TickFormatterFunction = (tickItem: number) =>

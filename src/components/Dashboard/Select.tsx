@@ -55,7 +55,7 @@ export const CustomAutocomplete: FC<IProps> = ({
   width = '100%',
 }) => {
   return (
-    <FormControl style={{ width, maxWidth: '300px' }}>
+    <FormControl style={{ width, maxWidth: '300px', marginBottom: '13px' }}>
       <Autocomplete
         value={selectedValue}
         onChange={(event: any, newValue: string) => {

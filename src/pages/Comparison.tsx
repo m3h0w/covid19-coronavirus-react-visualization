@@ -14,9 +14,15 @@ import { Row } from '../components/Dashboard/Chart';
 import MultiChart from '../components/Dashboard/MultiChart';
 import { Chip } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import createPersistedState from '../utils/memoryState';
+import {
+  useStateAndLocalStorage,
+  useStateAndCookie,
+  useStateAndSessionStorage,
+} from 'persistence-hooks';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
+import Colors from '../utils/colors';
+import createPersistedState from '../utils/memoryState';
 
 const drawerWidth = 240;
 
@@ -108,41 +114,67 @@ interface IRowData {
   dead: Row | undefined;
 }
 
-const CustomClip = ({ handleDelete, label }) => (
+function getContrastYIQ(hexcolor) {
+  hexcolor = hexcolor.replace('#', '');
+  var r = parseInt(hexcolor.substr(0, 2), 16);
+  var g = parseInt(hexcolor.substr(2, 2), 16);
+  var b = parseInt(hexcolor.substr(4, 2), 16);
+  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? 'black' : 'white';
+}
+
+const CustomChip = ({ handleDelete, label, backgroundColor }) => (
   <Chip
-    style={{ margin: 5 }}
+    style={{ margin: 5, backgroundColor, color: getContrastYIQ(backgroundColor) }}
     // avatar={<Avatar alt='Natacha' src='/static/images/avatar/1.jpg' />}
     label={label}
     onDelete={handleDelete}
   />
 );
 
-const useMemoryState = createPersistedState();
+let colorsHelper = new Colors();
+const useMemoryStateA = createPersistedState();
+const useMemoryStateB = createPersistedState();
 
 const ComparisonPage = observer(() => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState<string>();
-  const [data, setData] = useMemoryState<{ [key: string]: IRowData }>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
+  const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
+  const [data, setData] = useMemoryStateB<{ [key: string]: IRowData }>({});
+
+  const generateNewColors = useCallback(() => {
+    if (data && Object.keys(data).length) {
+      colorsHelper = new Colors();
+      const newColors = {};
+      Object.keys(data).forEach((key) => {
+        newColors[key] = colorsHelper.getRandomColor();
+      });
+      setColors(newColors);
+    }
+  }, [setColors, data]);
 
   const addCountry = useCallback(
     (country) => {
-      setData((oldData) => {
-        const newData = { ...oldData };
-        newData[country] = dataStore.getCountryData(country);
-        return newData;
-      });
+      if (dataStore.ready) {
+        setData((oldData) => {
+          return { ...oldData, [country]: dataStore.getCountryData(country) };
+        });
+        setColors((oldColors) => {
+          return { ...oldColors, [country]: colorsHelper.getRandomColor() };
+        });
+      }
     },
-    [dataStore, setData]
+    [dataStore, setData, setColors]
   );
 
   useEffect(() => {
-    if (dataStore.ready) {
+    if (dataStore.ready && !Object.keys(data).length) {
       addCountry('Italy');
     }
-  }, [addCountry, dataStore, dataStore.ready]);
+  }, [addCountry, dataStore.ready]);
 
   return (
     <Dashboard title='Comparison'>
@@ -162,7 +194,7 @@ const ComparisonPage = observer(() => {
           <div className={classes.clipWrapper}>
             {data &&
               Object.keys(data).map((country: string, i: number) => (
-                <CustomClip
+                <CustomChip
                   key={i}
                   handleDelete={() => {
                     setData((prevRowData) => {
@@ -172,6 +204,7 @@ const ComparisonPage = observer(() => {
                     });
                   }}
                   label={country}
+                  backgroundColor={colors[country]}
                 />
               ))}
           </div>
@@ -185,6 +218,8 @@ const ComparisonPage = observer(() => {
             countries={data ? Object.keys(data) : []}
             dataByCountry={data}
             dates={dataStore.dates}
+            colors={colors}
+            generateNewColors={generateNewColors}
           />
         </Paper>
       </Grid>
