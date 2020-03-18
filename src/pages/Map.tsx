@@ -110,7 +110,11 @@ const MapPage = observer(() => {
             <Typography style={{ marginTop: '-1px' }}>Play</Typography>
             <IconButton
               onClick={() => {
-                setSliderValue(0);
+                if (playing) {
+                  setSliderValue(maxSliderValue);
+                } else {
+                  setSliderValue(0);
+                }
                 setPlaying(!playing);
               }}
             >
