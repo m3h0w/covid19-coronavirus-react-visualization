@@ -55,7 +55,7 @@ export const CustomAutocomplete: FC<IProps> = ({
   width = '100%',
 }) => {
   return (
-    <FormControl style={{ width }}>
+    <FormControl style={{ width, maxWidth: '300px' }}>
       <Autocomplete
         value={selectedValue}
         onChange={(event: any, newValue: string) => {
@@ -68,7 +68,7 @@ export const CustomAutocomplete: FC<IProps> = ({
         id='combo-box-demo'
         options={possibleValues}
         getOptionLabel={(option: string) => option}
-        style={{ width: 300 }}
+        style={{ width }}
         renderInput={(params) => <TextField {...params} label={label} variant='outlined' />}
         autoHighlight={true}
         // autoSelect={true}

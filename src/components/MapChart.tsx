@@ -56,9 +56,9 @@ const MapChart = observer(
         }}
         data-tip=''
       >
-        <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
-        <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
         <ZoomableGroup zoom={1}>
+          <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
+          <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
           {dataStore.possibleCountries.length > 0 && (
             <Geographies geography={geoUrl}>
               {({ geographies }) =>

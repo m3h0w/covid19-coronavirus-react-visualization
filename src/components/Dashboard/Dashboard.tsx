@@ -96,9 +96,9 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
-    },
+    // [theme.breakpoints.up('sm')]: {
+    //   width: theme.spacing(7),
+    // },
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
@@ -126,9 +126,9 @@ interface IProps {
   grid?: boolean;
 }
 
-const Dashboard: FC<IProps> = ({ title, children, grid = true }) => {
+const Dashboard: FC<IProps> = ({ title, children, grid = true, startOpen = false }) => {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(startOpen);
 
   const handleDrawerOpen = () => {
     setOpen(true);

@@ -127,20 +127,27 @@ const ComparisonPage = observer(() => {
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
 
-  const addCountry = useCallback((country) => {
-    setData((oldData) => {
-      const newData = { ...oldData };
-      newData[country] = dataStore.getCountryData(country);
-      return newData;
-    });
-  }, []);
+  const addCountry = useCallback(
+    (country) => {
+      setData((oldData) => {
+        const newData = { ...oldData };
+        newData[country] = dataStore.getCountryData(country);
+        return newData;
+      });
+    },
+    [dataStore, setData]
+  );
+
+  useEffect(() => {
+    addCountry('Italy');
+  }, [addCountry]);
 
   return (
     <Dashboard title='Comparison'>
       <Grid item xs={12}>
         <Paper className={classes.paper}>
           <CustomAutocomplete
-            label={'Select country'}
+            label={'Add country'}
             handleChange={(country) => {
               addCountry(country);
               setSelectedCountry(null);
