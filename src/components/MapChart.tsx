@@ -40,7 +40,6 @@ const MapChart = observer(
   ({ date, setTooltipContent }: { date: string; setTooltipContent: (content: string) => void }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
-    console.log({ date });
 
     const colorScale = scaleLog()
       .domain([5, 2000])

@@ -26,6 +26,7 @@
     "react": "^16.10.2",
     "react-cloudimage-responsive": "^1.6.5",
     "react-dom": "^16.10.2",
+    "react-ga": "^2.7.0",
     "react-icons": "^3.7.0",
     "react-image-appear": "^1.1.22",
     "react-router": "^5.1.2",
