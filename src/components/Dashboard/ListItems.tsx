@@ -15,15 +15,17 @@ import { useTheme } from '@material-ui/core/styles';
 import { SvgIconProps } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
+import CallMadeIcon from '@material-ui/icons/CallMade';
 
 interface ICustomListItemProps {
   to?: string;
   href?: string;
   text: string;
   Icon: (SvgIconProps) => JSX.Element;
+  AfterIcon?: (SvgIconProps) => JSX.Element;
 }
 
-const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon }) => {
+const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterIcon }) => {
   const location = useLocation();
   const theme = useTheme();
   let LinkElement = RouterLink;
@@ -43,12 +45,13 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon }) => {
       component={LinkElement}
       to={to}
       href={href}
-      target='_blank'
+      target={href ? '_blank' : '_self'}
     >
       <ListItemIcon>
         <Icon />
       </ListItemIcon>
       <ListItemText primary={text} />
+      {AfterIcon && <AfterIcon fontSize={'small'} />}
     </ListItem>
   );
 };
@@ -56,13 +59,14 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon }) => {
 export const MainListItems = () => {
   return (
     <div>
-      <CustomListItem to='dashboard' text='Dashboard' Icon={DashboardIcon} />
-      <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
+      <CustomListItem to='dashboard' text='Country dashboard' Icon={DashboardIcon} />
+      <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
       <CustomListItem
         href='https://github.com/m3h0w/covid19-coronavirus-react-visualization'
-        text='GitHub repository'
+        text={`GitHub repository`}
         Icon={GitHubIcon}
+        AfterIcon={CallMadeIcon}
       />
       {/* <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} /> */}
 

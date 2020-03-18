@@ -108,7 +108,7 @@ const DashboardPage = observer(() => {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <Dashboard title='Dashboard'>
+    <Dashboard title='Country dashboard'>
       <Grid item xs={12}>
         <Paper className={classes.paper}>
           <CustomAutocomplete

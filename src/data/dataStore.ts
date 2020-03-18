@@ -7,7 +7,7 @@ import deathsCsvUrl from '../data/deaths.csv';
 import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 
-const USE_LOCAL_DATA = false;
+const USE_LOCAL_DATA = true;
 
 interface ICountryData {
   confirmed: Row | undefined;
@@ -52,19 +52,27 @@ export class DataStore {
   constructor() {
     if (USE_LOCAL_DATA) {
       csv(confirmedCsvUrl, (err, data: any) => {
-        this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        if (data) {
+          this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        }
       });
 
       csv(deathsCsvUrl, (err, data: any) => {
-        this.deadCsv = groupBy(data, COUNTRY_KEY);
+        if (data) {
+          this.deadCsv = groupBy(data, COUNTRY_KEY);
+        }
       });
     } else {
       fetchCsv('confirmed', (data: Row[]) => {
-        this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        if (data) {
+          this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        }
       });
 
       fetchCsv('dead', (data: Row[]) => {
-        this.deadCsv = groupBy(data, COUNTRY_KEY);
+        if (data) {
+          this.deadCsv = groupBy(data, COUNTRY_KEY);
+        }
       });
     }
   }

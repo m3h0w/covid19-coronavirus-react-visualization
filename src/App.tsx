@@ -11,12 +11,11 @@ const App = (): JSX.Element => {
     // <AuthProvider>
     <BrowserRouter>
       <Switch>
+        <Route exact path='/map' component={MapPage} />
         <Route exact path='/dashboard' component={DashboardPage} />
         <Route exact path='/comparison' component={ComparisonPage} />
-        <Route exact path='/map' component={MapPage} />
         <Route exact path='/todo' component={Todo} />
-
-        <Redirect from='/' to='/dashboard' />
+        <Redirect from='/' to='/map' />
         {/* <Route exact path='/login' component={Login} />
         <Route exact path='/signup' component={SignUp} /> */}
       </Switch>
