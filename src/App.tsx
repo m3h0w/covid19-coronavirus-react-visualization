@@ -22,7 +22,7 @@ const Routes = () => {
   }, [history]);
 
   return (
-    <>
+    <Switch>
       <Route exact path='/map' component={MapPage} />
       <Route exact path='/dashboard' component={DashboardPage} />
       <Route exact path='/comparison' component={ComparisonPage} />
@@ -30,7 +30,7 @@ const Routes = () => {
       <Redirect from='/' to='/map' />
       {/* <Route exact path='/login' component={Login} />
   <Route exact path='/signup' component={SignUp} /> */}
-    </>
+    </Switch>
   );
 };
 
@@ -38,9 +38,7 @@ const App = (): JSX.Element => {
   return (
     // <AuthProvider>
     <BrowserRouter>
-      <Switch>
-        <Routes />
-      </Switch>
+      <Routes />
     </BrowserRouter>
     // </AuthProvider>
   );

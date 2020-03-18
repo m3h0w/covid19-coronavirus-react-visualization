@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { csv } from 'd3-request';
 import { scaleLog } from 'd3-scale';
+import pink from '@material-ui/core/colors/pink';
 import {
   ComposableMap,
   Geographies,
@@ -42,8 +43,8 @@ const MapChart = observer(
     const dataStore = useDataStore();
 
     const colorScale = scaleLog()
-      .domain([5, 2000])
-      .range([theme.palette.primary.light, theme.palette.primary.dark]);
+      .domain([1, 2000])
+      .range([pink[50], theme.palette.primary.dark]);
 
     return (
       <ComposableMap

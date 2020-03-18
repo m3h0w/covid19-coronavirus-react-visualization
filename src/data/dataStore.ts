@@ -143,6 +143,10 @@ export class DataStore {
 
     return undefined;
   }
+
+  @computed get ready() {
+    return this.confirmedCsv && this.deadCsv;
+  }
 }
 
 const getStore = () => new DataStore();

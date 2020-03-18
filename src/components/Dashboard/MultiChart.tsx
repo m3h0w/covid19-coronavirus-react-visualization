@@ -34,27 +34,26 @@ export type Row = {
 type Column = 'Province/State' | 'Country/Region' | 'Lat' | 'Long' | string;
 
 interface IProps {
+  title: string;
   countries: string[];
   dataByCountry: { [key: string]: { confirmed: Row; dead: Row } };
   dates: Moment[];
 }
 
-const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) => {
+const MultiChart: FC<IProps> = observer(({ title, yLabel, countries, dataByCountry, dates }) => {
   const theme = useTheme();
-  const [firstCaseDate, setFirstCaseDate] = useState();
   const [confirmedCasesData, setConfirmedCasesData] = useState();
   let colorsHelper = new Colors();
   const [colors, setColors] = useState();
 
   useEffect(() => {
     if (dataByCountry && countries && countries.length && dates) {
-      let lastZeroDay: Moment | undefined;
       const d = dates.map((date) => {
         let toReturn: { [key: string]: number } = {
           time: date.unix(),
         };
         countries.forEach((country: string) => {
-          if (dataByCountry[country].confirmed) {
+          if (dataByCountry[country] && dataByCountry[country].confirmed) {
             const confirmedCases = Number(dataByCountry[country].confirmed[momentToFormat(date)]);
             toReturn[`confirmedCases${country}`] = confirmedCases;
           }
@@ -65,7 +64,6 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
       //   return moment(el.time * 1000).isAfter(lastZeroDay);
       // });
       setConfirmedCasesData(d);
-      setFirstCaseDate(lastZeroDay);
     }
   }, [countries, dataByCountry, dates]);
 
@@ -126,7 +124,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
           marginBottom: '10px',
         }}
       >
-        <Title>Cases</Title>
+        <Title>{title}</Title>
         <Button
           style={{ marginLeft: 15 }}
           variant='outlined'
@@ -156,7 +154,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          {getYAxis('No. cases')}
+          {getYAxis(yLabel)}
           {getFormattedLine(true)}
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
           {brush}

@@ -139,8 +139,10 @@ const ComparisonPage = observer(() => {
   );
 
   useEffect(() => {
-    addCountry('Italy');
-  }, [addCountry]);
+    if (dataStore.ready) {
+      addCountry('Italy');
+    }
+  }, [addCountry, dataStore, dataStore.ready]);
 
   return (
     <Dashboard title='Comparison'>
@@ -177,6 +179,8 @@ const ComparisonPage = observer(() => {
       <Grid item xs={12}>
         <Paper className={fixedHeightPaper}>
           <MultiChart
+            title={'Cases'}
+            yLabel={'No. cases'}
             countries={data ? Object.keys(data) : []}
             dataByCountry={data}
             dates={dataStore.dates}
