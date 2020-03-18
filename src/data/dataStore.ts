@@ -86,26 +86,6 @@ export class DataStore {
   }
 
   public getCountryData = (country: string) => {
-    // const toReturn: ICountryData = {
-    //   confirmed: undefined,
-    //   dead: undefined,
-    // };
-    // if (this.confirmedCsv) {
-    //   this.confirmedCsv.forEach((row: Row) => {
-    //     if (row['Country/Region'] === country) {
-    //       toReturn.confirmed = row;
-    //     }
-    //   });
-    // }
-
-    // if (this.deadCsv) {
-    //   this.deadCsv.forEach((row: Row) => {
-    //     if (row['Country/Region'] === country) {
-    //       toReturn.dead = row;
-    //     }
-    //   });
-    // }
-
     if (!this.confirmedCsv || !this.deadCsv) {
       return;
     }
@@ -116,7 +96,7 @@ export class DataStore {
   };
 
   @computed get possibleCountries() {
-    if (this.confirmedCsv) {
+    if (this.ready && this.confirmedCsv) {
       // return [...new Set(this.confirmedCsv.map((row: Row) => row['Country/Region']))].sort();
       return Object.keys(this.confirmedCsv);
     }
@@ -124,7 +104,7 @@ export class DataStore {
   }
 
   @computed get dates() {
-    if (this.confirmedCsv) {
+    if (this.ready && this.confirmedCsv) {
       for (const countryName of Object.keys(this.confirmedCsv)) {
         const row = this.confirmedCsv[countryName];
         const dates = getDatesFromDataRow(row);

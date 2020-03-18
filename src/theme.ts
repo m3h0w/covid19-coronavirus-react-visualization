@@ -11,11 +11,11 @@ export default createMuiTheme({
   },
   typography: {
     fontFamily: [
-      'Caveat',
-      // '-apple-system',
-      // 'BlinkMacSystemFont',
-      // '"Segoe UI"',
       'Roboto',
+      'Caveat',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
       '"Helvetica Neue"',
       'Arial',
       'sans-serif',

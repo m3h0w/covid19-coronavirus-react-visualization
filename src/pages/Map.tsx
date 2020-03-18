@@ -8,6 +8,10 @@ import ReactTooltip from 'react-tooltip';
 import createPersistedState from '../utils/memoryState';
 import { showInfoSnackBar } from '../components/Snackbar';
 import { useStateAndLocalStorage } from 'persistence-hooks';
+import Typography from '@material-ui/core/Typography';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import IconButton from '@material-ui/core/IconButton';
+import StopIcon from '@material-ui/icons/Stop';
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
@@ -21,6 +25,7 @@ const MapPage = observer(() => {
     false,
     'shownMapSliderSnackbar'
   );
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const checkKey = (e) => {
@@ -50,6 +55,18 @@ const MapPage = observer(() => {
   }, [sliderValue, dataStore, dataStore.datesConverted]);
 
   useEffect(() => {
+    if (playing) {
+      if (sliderValue === maxSliderValue) {
+        setPlaying(false);
+      } else {
+        setTimeout(() => {
+          setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
+        }, 500);
+      }
+    }
+  }, [playing, sliderValue, maxSliderValue]);
+
+  useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
       showInfoSnackBar('Use the slider on the bottom to travel in time 🦋', 4000);
       setShownSnackbar(true);
@@ -76,22 +93,44 @@ const MapPage = observer(() => {
           </div>
         ) : null}
       </div>
-      <div style={{ width: '80%', margin: '0 auto' }}>
+      <div
+        style={{
+          position: 'relative',
+          bottom: '20px',
+          width: '80%',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-          <IOSSlider
-            valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-            getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-            aria-labelledby='dates-map-slider'
-            valueLabelDisplay='auto'
-            onChange={(event: any, newValue: number | number[]) => {
-              setSliderValue(newValue as number);
-            }}
-            value={sliderValue}
-            step={1}
-            marks
-            min={0}
-            max={maxSliderValue}
-          />
+          <>
+            <Typography style={{ marginTop: '-1px' }}>Play</Typography>
+            <IconButton
+              onClick={() => {
+                setSliderValue(0);
+                setPlaying(!playing);
+              }}
+            >
+              {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
+            </IconButton>
+            <IOSSlider
+              valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+              getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+              aria-labelledby='dates-map-slider'
+              valueLabelDisplay='auto'
+              onChange={(event: any, newValue: number | number[]) => {
+                setSliderValue(newValue as number);
+              }}
+              value={sliderValue}
+              step={1}
+              marks
+              min={0}
+              max={maxSliderValue}
+            />
+          </>
         ) : null}
       </div>
     </Dashboard>
