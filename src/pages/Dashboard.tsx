@@ -3,7 +3,7 @@ import Dashboard from 'components/Dashboard/Dashboard';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { CustomAutocomplete } from '../components/Dashboard/Select';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Chart from '../components/Dashboard/Chart';
 import CurrentCount from '../components/Dashboard/CurrentCount';
 import clsx from 'clsx';
@@ -11,6 +11,7 @@ import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
+import { Typography, Card, ButtonBase } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -104,6 +105,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const history = useHistory();
+  const theme = useTheme();
 
   useEffect(() => {
     const countryFromUrl = props.match.params.country;
@@ -133,7 +135,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
         </Paper>
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
-        <Paper className={fixedHeightPaper}>
+        <Paper className={classes.paper}>
           {rowData && rowData.confirmed && rowData.dead && (
             <CurrentCount
               confirmedCases={
@@ -143,6 +145,19 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             />
           )}
         </Paper>
+        <div style={{ height: '20px' }} />
+        <Card>
+          <ButtonBase
+            className={classes.paper}
+            style={{ backgroundColor: theme.palette.secondary.main, cursor: 'pointer' }}
+            onClick={() => {
+              history.push(`/comparison/${selectedCountry}`);
+            }}
+          >
+            <Typography variant='h5'>Compare to other countries</Typography>
+          </ButtonBase>
+        </Card>
+        {/* <Paper className={classes.paper}></Paper> */}
       </Grid>
       {/* Recent Orders */}
       {/* <Grid item xs={12}>

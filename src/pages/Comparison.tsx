@@ -23,6 +23,7 @@ import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import Colors from '../utils/colors';
 import createPersistedState from '../utils/memoryState';
+import { useHistory, RouteComponentProps } from 'react-router';
 
 const drawerWidth = 240;
 
@@ -136,7 +137,7 @@ let colorsHelper = new Colors();
 const useMemoryStateA = createPersistedState();
 const useMemoryStateB = createPersistedState();
 
-const ComparisonPage = observer(() => {
+const ComparisonPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -144,6 +145,7 @@ const ComparisonPage = observer(() => {
   const possibleCountries = dataStore.possibleCountries;
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
   const [data, setData] = useMemoryStateB<{ [key: string]: IRowData }>({});
+  const history = useHistory();
 
   const generateNewColors = useCallback(() => {
     if (data && Object.keys(data).length) {
@@ -171,10 +173,18 @@ const ComparisonPage = observer(() => {
   );
 
   useEffect(() => {
-    if (dataStore.ready && !Object.keys(data).length) {
+    if (dataStore.ready && !Object.keys(data).length && !props.match.params.country) {
       addCountry('Italy');
     }
   }, [addCountry, dataStore.ready]);
+
+  useEffect(() => {
+    const countryFromUrl = props.match.params.country;
+    if (countryFromUrl) {
+      history.push(`/comparison`);
+      addCountry(countryFromUrl);
+    }
+  }, [props.match.params.country, history, addCountry]);
 
   return (
     <Dashboard title='Comparison'>

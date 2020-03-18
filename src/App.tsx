@@ -30,6 +30,7 @@ const Routes = () => {
       <Route path='/dashboard/:country' component={DashboardPage} />
       <Route exact path='/dashboard' component={DashboardPage} />
       <Route exact path='/map' component={MapPage} />
+      <Route path='/comparison/:country' component={ComparisonPage} />
       <Route exact path='/comparison' component={ComparisonPage} />
       <Route exact path='/todo' component={Todo} />
       <Redirect from='/' to='/map' />

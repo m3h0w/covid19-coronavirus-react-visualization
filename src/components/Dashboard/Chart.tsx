@@ -117,10 +117,17 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
           <Line
             type='monotone'
             dataKey='confirmedCases'
+            name='Confirmed cases'
             stroke={theme.palette.primary.main}
             dot={true}
           />
-          <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
+          <Line
+            type='monotone'
+            dataKey='deaths'
+            name='Deaths'
+            stroke={theme.palette.secondary.main}
+            dot={true}
+          />
           {brush}
           <Tooltip labelFormatter={formatXAxis} allowEscapeViewBox={{ x: true, y: true }} />
         </LineChart>
