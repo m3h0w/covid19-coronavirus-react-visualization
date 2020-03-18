@@ -16,6 +16,9 @@ import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { Moment } from 'moment';
 import geoUrl from '../data/worldMap.json';
+import { useHistory } from 'react-router';
+import { showInfoSnackBar } from './Snackbar';
+import { useStateAndLocalStorage } from 'persistence-hooks';
 
 const rounded = (num) => {
   if (num > 1000000000) {
@@ -37,14 +40,24 @@ const getMatchingCountryKey = (dataStore, geo) => {
   return undefined;
 };
 
+const scaleWithDomain = scaleLog().domain([1, 2000]);
+
 const MapChart = observer(
   ({ date, setTooltipContent }: { date: string; setTooltipContent: (content: string) => void }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
+    const history = useHistory();
+    const colorScale = scaleWithDomain.range([pink[50], theme.palette.primary.dark]);
+    const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(
+      false,
+      'shownMapClickSnackbar'
+    );
+    const routeChange = (country: string) => {
+      history.push(`/dashboard/${country}`);
+    };
 
-    const colorScale = scaleLog()
-      .domain([1, 2000])
-      .range([pink[50], theme.palette.primary.dark]);
+    // console.log({ date });
+    // console.log(dataStore.ready);
 
     return (
       <ComposableMap
@@ -60,7 +73,7 @@ const MapChart = observer(
         <ZoomableGroup zoom={1}>
           <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
           <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
-          {dataStore.possibleCountries.length > 0 && (
+          {dataStore.ready && (
             <Geographies geography={geoUrl}>
               {({ geographies }) =>
                 geographies.map((geo) => {
@@ -77,15 +90,20 @@ const MapChart = observer(
                         } else {
                           setTooltipContent(`${NAME} — 0 cases`);
                         }
+
+                        if (!shownSnackbar) {
+                          showInfoSnackBar(
+                            'Click on a country to go directly to its dashboard 💨',
+                            3000
+                          );
+                          setShownSnackbar(true);
+                        }
                       }}
                       onMouseLeave={() => {
                         setTooltipContent('');
                       }}
                       onClick={() => {
-                        const { NAME, POP_EST } = geo.properties;
-                        if (d?.confirmed && d.confirmed[date]) {
-                          setTooltipContent(`${NAME} — ${d.confirmed[date]}`);
-                        }
+                        routeChange(countryKey);
                       }}
                       style={{
                         default: {
@@ -99,6 +117,7 @@ const MapChart = observer(
                         hover: {
                           fill: theme.palette.secondary.main,
                           outline: 'none',
+                          cursor: 'pointer',
                         },
                         pressed: {
                           fill: '#E42',

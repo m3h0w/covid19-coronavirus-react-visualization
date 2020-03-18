@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, createRef } from 'react';
 import { Switch, useHistory } from 'react-router';
 import { Route, BrowserRouter, Redirect } from 'react-router-dom';
 import DashboardPage from './pages/Dashboard';
@@ -6,6 +6,10 @@ import ComparisonPage from './pages/Comparison';
 import Todo from './pages/Todo';
 import MapPage from './pages/Map';
 import googleAnalyticsInstance from './utils/googleAnalytics';
+import { SnackbarProvider } from 'notistack';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import CustomizedSnackbar from './components/Snackbar';
 
 const Routes = () => {
   const history = useHistory();
@@ -23,8 +27,9 @@ const Routes = () => {
 
   return (
     <Switch>
-      <Route exact path='/map' component={MapPage} />
+      <Route path='/dashboard/:country' component={DashboardPage} />
       <Route exact path='/dashboard' component={DashboardPage} />
+      <Route exact path='/map' component={MapPage} />
       <Route exact path='/comparison' component={ComparisonPage} />
       <Route exact path='/todo' component={Todo} />
       <Redirect from='/' to='/map' />
@@ -35,11 +40,39 @@ const Routes = () => {
 };
 
 const App = (): JSX.Element => {
+  const notistackRef = createRef();
+  const onClickDismiss = (key: string | number | undefined) => () => {
+    if (notistackRef && notistackRef.current) {
+      notistackRef.current.closeSnackbar(key);
+    }
+  };
   return (
     // <AuthProvider>
-    <BrowserRouter>
-      <Routes />
-    </BrowserRouter>
+    <SnackbarProvider
+      ref={notistackRef}
+      action={(key) => (
+        <IconButton
+          color='inherit'
+          aria-label='dismiss pop up'
+          onClick={onClickDismiss(key)}
+          edge='start'
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
+      maxSnack={3}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      dense={false}
+    >
+      <CustomizedSnackbar />
+      <BrowserRouter>
+        <Routes />
+      </BrowserRouter>
+    </SnackbarProvider>
+
     // </AuthProvider>
   );
 };

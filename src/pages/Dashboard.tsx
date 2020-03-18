@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import Dashboard from 'components/Dashboard/Dashboard';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -7,13 +7,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Chart from '../components/Dashboard/Chart';
 import CurrentCount from '../components/Dashboard/CurrentCount';
 import clsx from 'clsx';
-import { csv } from 'd3-request';
-import confirmedCsvUrl from '../data/confirmed.csv';
-import deathsCsvUrl from '../data/deaths.csv';
-import { Row } from '../components/Dashboard/Chart';
 import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
+import { useHistory, RouteComponentProps } from 'react-router';
 
 const drawerWidth = 240;
 
@@ -99,13 +96,22 @@ const useStyles = makeStyles((theme) => ({
 
 const useMemoryState = createPersistedState();
 
-const DashboardPage = observer(() => {
+const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useMemoryState('Poland');
   const dataStore = useDataStore();
   const rowData = dataStore.getCountryData(selectedCountry);
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const history = useHistory();
+
+  useEffect(() => {
+    const countryFromUrl = props.match.params.country;
+    if (countryFromUrl) {
+      history.push(`/dashboard`);
+      setSelectedCountry(countryFromUrl);
+    }
+  }, [props.match.params.country, history, setSelectedCountry]);
 
   return (
     <Dashboard title='Country dashboard'>

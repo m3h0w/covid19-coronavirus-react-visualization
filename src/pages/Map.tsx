@@ -5,6 +5,9 @@ import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import IOSSlider from '../components/IOSSlider';
 import ReactTooltip from 'react-tooltip';
+import createPersistedState from '../utils/memoryState';
+import { showInfoSnackBar } from '../components/Snackbar';
+import { useStateAndLocalStorage } from 'persistence-hooks';
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
@@ -14,6 +17,10 @@ const MapPage = observer(() => {
   const [date, setDate] = useState<string>();
   const [tooltipContent, setTooltipContent] = useState();
   const [maxSliderValue, setMaxSliderValue] = useState();
+  const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(
+    false,
+    'shownMapSliderSnackbar'
+  );
 
   useEffect(() => {
     const checkKey = (e) => {
@@ -41,6 +48,13 @@ const MapPage = observer(() => {
       setDate(dataStore.datesConverted[sliderValue]);
     }
   }, [sliderValue, dataStore, dataStore.datesConverted]);
+
+  useEffect(() => {
+    if (!shownSnackbar && dataStore.ready) {
+      showInfoSnackBar('Use the slider on the bottom to travel in time 🦋', 4000);
+      setShownSnackbar(true);
+    }
+  }, [shownSnackbar, setShownSnackbar, dataStore.ready]);
 
   return (
     <Dashboard title='Map (confirmed cases)' grid={false}>

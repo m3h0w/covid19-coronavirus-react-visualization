@@ -161,8 +161,9 @@ const ComparisonPage = observer(() => {
           />
           <div className={classes.clipWrapper}>
             {data &&
-              Object.keys(data).map((country) => (
+              Object.keys(data).map((country: string, i: number) => (
                 <CustomClip
+                  key={i}
                   handleDelete={() => {
                     setData((prevRowData) => {
                       const newRowData = { ...prevRowData };
