@@ -21,6 +21,7 @@ import { Button } from '@material-ui/core';
 import useDataStore from '../../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { momentToFormat } from '../../utils/getDatesFromDataRow';
+import getYAxis from './YAxis';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -143,9 +144,9 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
           data={confirmedCasesData}
           margin={{
             top: 16,
-            right: 16,
+            right: 0,
             bottom: 0,
-            left: 24,
+            left: 0,
           }}
         >
           <CartesianGrid strokeDasharray='1 3' />
@@ -155,15 +156,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          <YAxis stroke={theme.palette.text.secondary} domain={[0, 'auto']}>
-            <Label
-              angle={270}
-              position='left'
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
-            >
-              Cases
-            </Label>
-          </YAxis>
+          {getYAxis('Cases')}
           {getFormattedLine(true)}
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
           {brush}

@@ -10,6 +10,7 @@ import {
   TickFormatterFunction,
   CartesianGrid,
   Tooltip,
+  LabelProps,
 } from 'recharts';
 import Title from './Title';
 
@@ -17,6 +18,8 @@ import moment, { Moment } from 'moment';
 import { FaBrush } from 'react-icons/fa';
 import getBrush from './Brush';
 import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
+import { Hidden } from '@material-ui/core';
+import getYAxis from './YAxis';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -98,9 +101,9 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
           data={data}
           margin={{
             top: 16,
-            right: 16,
+            right: 0,
             bottom: 0,
-            left: 24,
+            left: 0,
           }}
         >
           <CartesianGrid strokeDasharray='1 3' />
@@ -110,15 +113,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          <YAxis stroke={theme.palette.text.secondary} domain={[0, 'auto']}>
-            <Label
-              angle={270}
-              position='left'
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
-            >
-              Cases & Deaths
-            </Label>
-          </YAxis>
+          {getYAxis('Cases & Deaths')}
           <Line
             type='monotone'
             dataKey='confirmedCases'
