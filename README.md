@@ -1,4 +1,6 @@
-The motivation behind this project is to create a simpler to understand visualization of covid-19. Initially I was hoping to create a map that's easier to interpret than the John Hopkins' one. Now, the scope broadened to include more information in an easier-to-analyze manner.
+Main ideas:
+- easier-to-understand map with time travel capability
+- charts for comparing countries and estimating where they are in their stage
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), uses TypeScript, Material UI, Recharts, react-simple-maps, and now.sh for deployment.
 
