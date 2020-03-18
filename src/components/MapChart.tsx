@@ -73,9 +73,9 @@ const MapChart = observer(
                       onMouseEnter={() => {
                         const { NAME, POP_EST } = geo.properties;
                         if (d?.confirmed && d.confirmed[date]) {
-                          setTooltipContent(`${NAME} — ${d.confirmed[date]}`);
+                          setTooltipContent(`${NAME} — ${d.confirmed[date]} cases`);
                         } else {
-                          setTooltipContent(`${NAME} — 0`);
+                          setTooltipContent(`${NAME} — 0 cases`);
                         }
                       }}
                       onMouseLeave={() => {

@@ -32,6 +32,7 @@ const MapPage = observer(() => {
   useEffect(() => {
     if (dataStore && dataStore.datesConverted) {
       setMaxSliderValue(dataStore.datesConverted.length - 1);
+      setSliderValue(dataStore.datesConverted.length - 1);
     }
   }, [dataStore, dataStore.datesConverted]);
 
@@ -41,14 +42,8 @@ const MapPage = observer(() => {
     }
   }, [sliderValue, dataStore, dataStore.datesConverted]);
 
-  useEffect(() => {
-    if (maxSliderValue && sliderValue !== undefined) {
-      setSliderValue(maxSliderValue);
-    }
-  }, [maxSliderValue, sliderValue]);
-
   return (
-    <Dashboard title='Map' grid={false}>
+    <Dashboard title='Map (confirmed cases)' grid={false}>
       <div
         style={{
           width: '100%',
