@@ -40,7 +40,6 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
 
   useEffect(() => {
     if (rowData && rowData.confirmed && rowData.dead) {
-      console.log({ rowData });
       let lastZeroDay: Moment | undefined = moment(FIRST_DATE);
       const d = dates
         .map((date) => {

@@ -55,15 +55,15 @@ const MapPage = observer(() => {
           // marginTop: '-130px',
         }}
       >
-        {dataStore.datesConverted?.length && (
+        {dataStore.datesConverted?.length ? (
           <div>
             <MapChart date={date} setTooltipContent={setTooltipContent} />
             <ReactTooltip>{tooltipContent}</ReactTooltip>
           </div>
-        )}
+        ) : null}
       </div>
       <div style={{ width: '80%', margin: '0 auto' }}>
-        {sliderValue !== undefined && dataStore?.datesConverted?.length && date && (
+        {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
           <IOSSlider
             valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
             getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
@@ -78,7 +78,7 @@ const MapPage = observer(() => {
             min={0}
             max={maxSliderValue}
           />
-        )}
+        ) : null}
       </div>
     </Dashboard>
   );

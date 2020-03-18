@@ -46,9 +46,6 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
   const [colors, setColors] = useState();
 
   useEffect(() => {
-    console.log({ dataByCountry });
-    console.log({ countries });
-    console.log({ dates });
     if (dataByCountry && countries && countries.length && dates) {
       let lastZeroDay: Moment | undefined;
       const d = dates.map((date) => {

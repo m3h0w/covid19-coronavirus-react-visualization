@@ -1,9 +1,9 @@
 import moment, { Moment } from 'moment';
 import { Row } from '../components/Dashboard/MultiChart';
 
-export const FIRST_DATE = '1/22/20';
+export const FIRST_DATE = '1/22/2020';
 
-export const momentToFormat = (m: Moment): string => m.format('M/D/YY');
+export const momentToFormat = (m: Moment): string => m.format('M/D/YYYY');
 
 export const getDatesFromDataRow = (data: Row | undefined) => {
   if (!data) {

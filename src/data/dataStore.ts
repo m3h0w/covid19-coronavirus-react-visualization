@@ -54,24 +54,32 @@ export class DataStore {
       csv(confirmedCsvUrl, (err, data: any) => {
         if (data) {
           this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
         }
       });
 
       csv(deathsCsvUrl, (err, data: any) => {
         if (data) {
           this.deadCsv = groupBy(data, COUNTRY_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
         }
       });
     } else {
       fetchCsv('confirmed', (data: Row[]) => {
         if (data) {
           this.confirmedCsv = groupBy(data, COUNTRY_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
         }
       });
 
       fetchCsv('dead', (data: Row[]) => {
         if (data) {
           this.deadCsv = groupBy(data, COUNTRY_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
         }
       });
     }
@@ -119,7 +127,6 @@ export class DataStore {
     if (this.confirmedCsv) {
       for (const countryName of Object.keys(this.confirmedCsv)) {
         const row = this.confirmedCsv[countryName];
-        console.log({ row });
         const dates = getDatesFromDataRow(row);
         if (dates) {
           return dates;
