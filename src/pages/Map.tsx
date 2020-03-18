@@ -65,8 +65,8 @@ const MapPage = observer(() => {
       <div style={{ width: '80%', margin: '0 auto' }}>
         {sliderValue !== undefined && dataStore?.datesConverted?.length && date && (
           <IOSSlider
-            valueLabelFormat={() => date}
-            getAriaValueText={() => date}
+            valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+            getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
             aria-labelledby='dates-map-slider'
             valueLabelDisplay='auto'
             onChange={(event: any, newValue: number | number[]) => {

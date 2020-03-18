@@ -97,7 +97,7 @@ const MapChart = observer(
                           outline: 'none',
                         },
                         hover: {
-                          fill: '#F53',
+                          fill: theme.palette.secondary.main,
                           outline: 'none',
                         },
                         pressed: {
