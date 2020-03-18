@@ -126,7 +126,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
           marginBottom: '10px',
         }}
       >
-        <Title>Today</Title>
+        <Title>Cases</Title>
         <Button
           style={{ marginLeft: 15 }}
           variant='outlined'
@@ -156,7 +156,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          {getYAxis('Cases')}
+          {getYAxis('No. cases')}
           {getFormattedLine(true)}
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
           {brush}

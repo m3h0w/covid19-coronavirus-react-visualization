@@ -95,7 +95,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
 
   return (
     <>
-      <Title>Today</Title>
+      <Title>Cases & Deaths</Title>
       <ResponsiveContainer width={'100%'}>
         <LineChart
           data={data}
@@ -113,7 +113,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          {getYAxis('Cases & Deaths')}
+          {getYAxis('No. of cases & deaths')}
           <Line
             type='monotone'
             dataKey='confirmedCases'
