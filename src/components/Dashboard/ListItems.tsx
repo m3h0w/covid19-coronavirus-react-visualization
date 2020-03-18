@@ -16,6 +16,8 @@ import { SvgIconProps } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
 import CallMadeIcon from '@material-ui/icons/CallMade';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import List from '@material-ui/core/List';
 
 interface ICustomListItemProps {
   to?: string;
@@ -23,9 +25,10 @@ interface ICustomListItemProps {
   text: string;
   Icon: (SvgIconProps) => JSX.Element;
   AfterIcon?: (SvgIconProps) => JSX.Element;
+  style?: CSSProperties;
 }
 
-const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterIcon }) => {
+const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterIcon, style }) => {
   const location = useLocation();
   const theme = useTheme();
   let LinkElement = RouterLink;
@@ -39,6 +42,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
       style={{
         textDecoration: location.pathname.split('/')[1] === to ? 'underline' : 'initial',
         textDecorationColor: theme.palette.secondary.main,
+        ...style,
       }}
       selected={location.pathname.split('/')[1] === to}
       button
@@ -58,7 +62,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 
 export const MainListItems = () => {
   return (
-    <div>
+    <List style={{ height: '100%' }}>
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
       <CustomListItem to='dashboard' text='Country dashboard' Icon={DashboardIcon} />
       <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
@@ -67,6 +71,7 @@ export const MainListItems = () => {
         text={`GitHub repository`}
         Icon={GitHubIcon}
         AfterIcon={CallMadeIcon}
+        style={{ position: 'absolute', bottom: 0 }}
       />
       {/* <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} /> */}
 
@@ -94,7 +99,7 @@ export const MainListItems = () => {
       </ListItemIcon>
       <ListItemText primary="Integrations" />
     </ListItem> */}
-    </div>
+    </List>
   );
 };
 

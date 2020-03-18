@@ -175,9 +175,7 @@ const Dashboard: FC<IProps> = ({ title, children, grid = true, startOpen = false
           </IconButton>
         </div>
         <Divider />
-        <List>
-          <MainListItems />
-        </List>
+        <MainListItems />
         {/*<Divider />
         <List>{secondaryListItems}</List> */}
       </Drawer>
