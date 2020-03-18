@@ -7,6 +7,7 @@ const todos = [
   'Time travel on the map ✔',
   'Gapminder-like plot with time travel',
   'Radar chart (Uber react-vis) per country',
+  'ML for predicting cases and deaths per country',
 ];
 
 const Todo = () => (

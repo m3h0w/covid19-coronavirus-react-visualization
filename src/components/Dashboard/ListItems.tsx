@@ -13,16 +13,24 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
 import { SvgIconProps } from '@material-ui/core';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import Link from '@material-ui/core/Link';
 
 interface ICustomListItemProps {
-  to: string;
+  to?: string;
+  href?: string;
   text: string;
   Icon: (SvgIconProps) => JSX.Element;
 }
 
-const CustomListItem: FC<ICustomListItemProps> = ({ to, text, Icon }) => {
+const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon }) => {
   const location = useLocation();
   const theme = useTheme();
+  let LinkElement = RouterLink;
+
+  if (href) {
+    LinkElement = Link;
+  }
 
   return (
     <ListItem
@@ -32,8 +40,10 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, text, Icon }) => {
       }}
       selected={location.pathname.split('/')[1] === to}
       button
-      component={RouterLink}
+      component={LinkElement}
       to={to}
+      href={href}
+      target='_blank'
     >
       <ListItemIcon>
         <Icon />
@@ -49,6 +59,11 @@ export const MainListItems = () => {
       <CustomListItem to='dashboard' text='Dashboard' Icon={DashboardIcon} />
       <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
+      <CustomListItem
+        href='https://github.com/m3h0w/covid19-coronavirus-react-visualization'
+        text='GitHub repository'
+        Icon={GitHubIcon}
+      />
       {/* <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} /> */}
 
       {/* <ListItem button>

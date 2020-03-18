@@ -47,7 +47,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
           const confirmedCases = Number(rowData.confirmed[momentToFormat(date)]);
           const deaths = Number(rowData.dead[momentToFormat(date)]);
 
-          if (confirmedCases === 0) {
+          if (lastZeroDay?.isSame(moment(FIRST_DATE)) && confirmedCases > 0) {
             lastZeroDay = date.clone();
             lastZeroDay.subtract(2, 'days');
           }
