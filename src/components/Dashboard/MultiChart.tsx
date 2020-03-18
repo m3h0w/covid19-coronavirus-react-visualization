@@ -169,7 +169,7 @@ const MultiChart: FC<IProps> = observer(({ countries, dataByCountry, dates }) =>
           </YAxis>
           {getFormattedLine(true)}
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
-          {/* {brush} */}
+          {brush}
           <Tooltip
             offset={-120}
             labelFormatter={formatXAxis}

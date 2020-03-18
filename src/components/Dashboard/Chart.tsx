@@ -127,7 +127,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
             dot={true}
           />
           <Line type='monotone' dataKey='deaths' stroke={theme.palette.secondary.main} dot={true} />
-          {/* {brush} */}
+          {brush}
           <Tooltip labelFormatter={formatXAxis} allowEscapeViewBox={{ x: true, y: true }} />
         </LineChart>
       </ResponsiveContainer>
