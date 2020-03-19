@@ -5,26 +5,16 @@ import {
   Line,
   XAxis,
   YAxis,
-  Label,
   ResponsiveContainer,
   TickFormatterFunction,
   CartesianGrid,
-  Tooltip,
-  LabelProps,
 } from 'recharts';
 import Title from './Title';
-
 import moment, { Moment } from 'moment';
-import { FaBrush } from 'react-icons/fa';
 import getBrush from './Brush';
 import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
-import { Hidden } from '@material-ui/core';
 import getYAxis from './YAxis';
 import getTooltip from './Tooltip';
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
 
 export type Row = {
   [key in Column]: string;
