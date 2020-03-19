@@ -65,7 +65,11 @@ export const MainListItems = () => {
     <List style={{ height: '100%' }}>
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
       <CustomListItem to='dashboard' text='Country dashboard' Icon={DashboardIcon} />
-      <CustomListItem to='comparison' text='Comparison' Icon={BarChartIcon} />
+      <CustomListItem
+        to='infection-trajectories'
+        text='Infection trajectories'
+        Icon={BarChartIcon}
+      />
       <CustomListItem
         href='https://github.com/m3h0w/covid19-coronavirus-react-visualization'
         text={`GitHub repository`}

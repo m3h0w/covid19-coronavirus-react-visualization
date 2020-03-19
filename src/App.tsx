@@ -30,8 +30,8 @@ const Routes = () => {
       <Route path='/dashboard/:country' component={DashboardPage} />
       <Route exact path='/dashboard' component={DashboardPage} />
       <Route exact path='/map' component={MapPage} />
-      <Route path='/comparison/:country' component={ComparisonPage} />
-      <Route exact path='/comparison' component={ComparisonPage} />
+      <Route path='/infection-trajectories/:country' component={ComparisonPage} />
+      <Route exact path='/infection-trajectories' component={ComparisonPage} />
       <Route exact path='/todo' component={Todo} />
       <Redirect from='/' to='/map' />
       {/* <Route exact path='/login' component={Login} />

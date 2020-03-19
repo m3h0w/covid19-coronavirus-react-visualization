@@ -61,7 +61,7 @@ const MapPage = observer(() => {
       } else {
         setTimeout(() => {
           setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
-        }, 500);
+        }, 350);
       }
     }
   }, [playing, sliderValue, maxSliderValue]);

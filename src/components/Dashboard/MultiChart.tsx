@@ -22,10 +22,6 @@ import useDataStore from '../../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { momentToFormat } from '../../utils/getDatesFromDataRow';
 import getYAxis from './YAxis';
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
 
 export type Row = {
   [key in Column]: string;
@@ -35,42 +31,21 @@ type Column = 'Province/State' | 'Country/Region' | 'Lat' | 'Long' | string;
 
 interface IProps {
   title: string;
+  yLabel: string;
   countries: string[];
   dataByCountry: { [key: string]: { confirmed: Row; dead: Row } };
   dates: Moment[];
   colors: { [country: string]: string };
   generateNewColors: () => void;
+  syncId: string;
+  dataType: 'confirmed' | 'dead';
 }
 
 const MultiChart: FC<IProps> = observer(
-  ({ title, yLabel, countries, dataByCountry, dates, colors, generateNewColors }) => {
+  ({ title, yLabel, countries, dataType, colors, syncId }) => {
     const theme = useTheme();
-    const [confirmedCasesData, setConfirmedCasesData] = useState();
-
-    useEffect(() => {
-      if (dataByCountry && countries && countries.length && dates) {
-        const d = dates.map((date) => {
-          let toReturn: { [key: string]: number } = {
-            time: date.unix(),
-          };
-          countries.forEach((country: string) => {
-            if (dataByCountry[country] && dataByCountry[country].confirmed) {
-              const confirmedCases = Number(dataByCountry[country].confirmed[momentToFormat(date)]);
-              toReturn[`confirmedCases${country}`] = confirmedCases;
-            }
-          });
-          return toReturn;
-        });
-        // .filter((el) => {
-        //   return moment(el.time * 1000).isAfter(lastZeroDay);
-        // });
-        setConfirmedCasesData(d);
-      }
-    }, [countries, dataByCountry, dates]);
-
-    // useEffect(() => {
-    //   newColors();
-    // }, [countries, newColors]);
+    const dataStore = useDataStore();
+    const confirmedCasesData = dataStore.dataForAfter100Cases(dataType, countries);
 
     const getFormattedLine = (dot: boolean = false) => {
       if (!confirmedCasesData) {
@@ -82,11 +57,11 @@ const MultiChart: FC<IProps> = observer(
           <Line
             key={i}
             type='monotone'
-            dataKey={`confirmedCases${country}`}
+            dataKey={country}
             name={country}
             stroke={colors[country]}
             dot={false}
-            strokeWidth={2}
+            strokeWidth={1.5}
           />
         );
       });
@@ -105,6 +80,8 @@ const MultiChart: FC<IProps> = observer(
       ),
     });
 
+    console.log(dataStore.dataForAfter100Cases(dataType, countries));
+
     return (
       <>
         <div
@@ -117,17 +94,6 @@ const MultiChart: FC<IProps> = observer(
           }}
         >
           <Title>{title}</Title>
-          <Button
-            style={{ marginLeft: 15 }}
-            variant='outlined'
-            color='primary'
-            size={'small'}
-            onClick={() => {
-              generateNewColors();
-            }}
-          >
-            New colors
-          </Button>
         </div>
         <ResponsiveContainer width={'100%'}>
           <LineChart
@@ -138,13 +104,18 @@ const MultiChart: FC<IProps> = observer(
               bottom: 0,
               left: 0,
             }}
+            syncId={syncId}
           >
-            <CartesianGrid strokeDasharray='1 3' />
+            <CartesianGrid strokeDasharray='1 6' />
             <XAxis
-              angle={-15}
+              // angle={-15}
               dataKey='time'
               stroke={theme.palette.text.secondary}
-              tickFormatter={formatXAxis}
+              // tickFormatter={formatXAxis}
+              domain={['auto', 'auto']}
+              label={{ value: 'Days after a 100th case', position: 'insideTopRight', dy: -20 }}
+              // height={30}
+              type={'number'}
             />
             {getYAxis(yLabel)}
             {getFormattedLine(true)}
@@ -157,7 +128,7 @@ const MultiChart: FC<IProps> = observer(
             {brush}
             <Tooltip
               offset={-120}
-              labelFormatter={formatXAxis}
+              // labelFormatter={formatXAxis}
               allowEscapeViewBox={{ x: true, y: true }}
             />
           </LineChart>

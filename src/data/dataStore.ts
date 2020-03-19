@@ -85,6 +85,105 @@ export class DataStore {
     }
   }
 
+  @computed get dayOf100CasesByCountry() {
+    const threshold = 100;
+    if (!this.ready) {
+      return undefined;
+    }
+    return this.possibleCountries.reduce((acc, country) => {
+      const countryData = this.getCountryData(country);
+      const values = this.datesConverted.map((date) => countryData?.confirmed[date]);
+      acc[country] = values.findIndex((v) => v > threshold);
+      return acc;
+    }, {});
+  }
+
+  public dataForAfter100Cases(type: 'confirmed' | 'dead', countries: string[]) {
+    if (!this.ready) {
+      return undefined;
+    }
+    return this.dates
+      ?.map((_, i: number) => {
+        const d = {
+          time: i,
+        };
+        this.possibleCountries.forEach((country) => {
+          const index = this.dayOf100CasesByCountry[country] + i;
+          if (index <= this.dates.length - 1) {
+            const date = this.dates[index];
+            if (countries.includes(country)) {
+              const value = this.getCountryData(country)[type][momentToFormat(date)];
+              d[country] = value;
+            }
+          }
+        });
+        return d;
+      })
+      .filter((el) =>
+        Object.keys(el).some((k) => {
+          if (k === 'time') {
+            return undefined;
+          }
+          return el[k];
+        })
+      );
+  }
+
+  @computed get confirmedCasesArray() {
+    return this.dates?.map((date) => {
+      const d = {
+        time: date.unix(),
+      };
+      this.possibleCountries.forEach((country) => {
+        d[country] = this.confirmedCsv[country][momentToFormat(date)];
+      });
+      return d;
+    });
+  }
+
+  public getDataArrayWithTime(type: 'confirmed' | 'dead', countries: string[]) {
+    return this.dates?.map((date, i: number) => {
+      const d = {
+        time: date.unix(),
+        number: i,
+      };
+      this.possibleCountries.forEach((country) => {
+        if (countries.includes(country)) {
+          const value = this.getCountryData(country)[type][momentToFormat(date)];
+          d[country] = value;
+        }
+      });
+      return d;
+    });
+  }
+
+  public getDataArrayWithTimeOffset(type: 'confirmed' | 'dead', countries: string[]) {
+    return this.dates?.map((date, i: number) => {
+      const d = {
+        time: date.unix(),
+      };
+      this.possibleCountries.forEach((country) => {
+        if (countries.includes(country)) {
+          const value = this.getCountryData(country)[type][momentToFormat(date)];
+          d[country] = value;
+        }
+      });
+      return d;
+    });
+  }
+
+  @computed get deathsByCountry() {
+    return Object.keys(this.dead).reduce((acc, country) => {
+      acc[country] = dates.map((date) => {
+        return {
+          time: date.unix(),
+          deaths: this.dead[country],
+        };
+      });
+      return acc;
+    }, {});
+  }
+
   public getCountryData = (country: string) => {
     if (!this.confirmedCsv || !this.deadCsv) {
       return;
@@ -97,7 +196,6 @@ export class DataStore {
 
   @computed get possibleCountries() {
     if (this.ready && this.confirmedCsv) {
-      // return [...new Set(this.confirmedCsv.map((row: Row) => row['Country/Region']))].sort();
       return Object.keys(this.confirmedCsv);
     }
     return [];

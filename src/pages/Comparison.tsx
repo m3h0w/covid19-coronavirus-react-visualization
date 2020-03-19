@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, FC } from 'react';
 import Dashboard from 'components/Dashboard/Dashboard';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -12,18 +12,14 @@ import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
 import MultiChart from '../components/Dashboard/MultiChart';
-import { Chip } from '@material-ui/core';
+import { Chip, Button } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import {
-  useStateAndLocalStorage,
-  useStateAndCookie,
-  useStateAndSessionStorage,
-} from 'persistence-hooks';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import Colors from '../utils/colors';
 import createPersistedState from '../utils/memoryState';
 import { useHistory, RouteComponentProps } from 'react-router';
+import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
 
 const drawerWidth = 240;
 
@@ -105,10 +101,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 400,
+    height: 350,
   },
   clipWrapper: {
     display: 'flex',
+    maxWidth: '100%',
+    flexWrap: 'wrap',
   },
 }));
 
@@ -139,57 +137,57 @@ let colorsHelper = new Colors();
 const useMemoryStateA = createPersistedState();
 const useMemoryStateB = createPersistedState();
 
-const ComparisonPage: FC<RouteComponentProps> = observer((props) => {
+const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((props) => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
-  const [data, setData] = useMemoryStateB<{ [key: string]: IRowData }>({});
+  const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
 
   const generateNewColors = useCallback(() => {
-    if (data && Object.keys(data).length) {
+    if (countries.length) {
       colorsHelper = new Colors();
       const newColors = {};
-      Object.keys(data).forEach((key) => {
+      countries.forEach((key) => {
         newColors[key] = colorsHelper.getRandomColor();
       });
       setColors(newColors);
     }
-  }, [setColors, data]);
+  }, [setColors, countries]);
 
-  const addCountry = useCallback(
-    (country) => {
-      if (dataStore.ready) {
-        setData((oldData) => {
-          return { ...oldData, [country]: dataStore.getCountryData(country) };
-        });
-        setColors((oldColors) => {
-          return { ...oldColors, [country]: colorsHelper.getRandomColor() };
-        });
+  const addCountry = (country) => {
+    setCountries([...new Set([country, ...countries])]);
+    setColors({ ...colors, [country]: colorsHelper.getRandomColor() });
+  };
+  useEffect(() => {
+    addCountry('Italy');
+
+    if (props.match.params.country) {
+      const countryFromUrl = props.match.params.country;
+      if (countryFromUrl) {
+        history.push(`/infection-trajectories`);
+        addCountry(countryFromUrl);
       }
-    },
-    [dataStore, setData, setColors]
-  );
-
-  useEffect(() => {
-    if (dataStore.ready && !Object.keys(data).length && !props.match.params.country) {
-      addCountry('Italy');
     }
-  }, [addCountry, dataStore.ready]);
+  }, [props.match.params.country, history]);
 
-  useEffect(() => {
-    const countryFromUrl = props.match.params.country;
-    if (countryFromUrl) {
-      history.push(`/comparison`);
-      addCountry(countryFromUrl);
-    }
-  }, [props.match.params.country, history, addCountry]);
+  // useEffect(() => {
+  //   const countryFromUrl = props.match.params.country;
+  //   if (countryFromUrl) {
+  //     history.push(`/infection-trajectories`);
+  //     addCountry('Italy');
+  //     addCountry(countryFromUrl);
+  //   }
+  // }, [props.match.params.country, history, addCountry]);
+  // if (!dataStore.ready) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
-    <Dashboard title='Comparison'>
+    <Dashboard title='Infection trajectories'>
       <Grid item xs={12}>
         <Paper className={classes.paper}>
           <CustomAutocomplete
@@ -203,17 +201,24 @@ const ComparisonPage: FC<RouteComponentProps> = observer((props) => {
             id={'select-country'}
             width={'auto'}
           />
+          <Button
+            style={{ maxWidth: 300, marginBottom: 10 }}
+            variant='outlined'
+            color='primary'
+            size={'small'}
+            onClick={() => {
+              generateNewColors();
+            }}
+          >
+            New colors
+          </Button>
           <div className={classes.clipWrapper}>
-            {data &&
-              Object.keys(data).map((country: string, i: number) => (
+            {dataStore.ready &&
+              countries.map((country: string, i: number) => (
                 <CustomChip
                   key={i}
                   handleDelete={() => {
-                    setData((prevRowData) => {
-                      const newRowData = { ...prevRowData };
-                      delete newRowData[country];
-                      return newRowData;
-                    });
+                    setCountries(countries.filter((c) => c !== country));
                   }}
                   label={country}
                   backgroundColor={colors[country]}
@@ -222,16 +227,31 @@ const ComparisonPage: FC<RouteComponentProps> = observer((props) => {
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={6}>
         <Paper className={fixedHeightPaper}>
           <MultiChart
-            title={'Cases'}
+            title={'Cases trajectory'}
             yLabel={'No. cases'}
-            countries={data ? Object.keys(data) : []}
-            dataByCountry={data}
-            dates={dataStore.dates}
+            countries={countries}
+            // dataByCountry={extractKeyFromNestedObj(data, 'confirmed')}
+            // dates={dataStore.dates}
+            dataType={'confirmed'}
             colors={colors}
             generateNewColors={generateNewColors}
+            syncId={'comparison'}
+          />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper className={fixedHeightPaper}>
+          <MultiChart
+            title={'Deaths trajectory'}
+            yLabel={'No. deaths'}
+            countries={countries}
+            dataType={'dead'}
+            colors={colors}
+            generateNewColors={generateNewColors}
+            syncId={'comparison'}
           />
         </Paper>
       </Grid>

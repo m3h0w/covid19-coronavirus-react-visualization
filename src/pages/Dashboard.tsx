@@ -136,7 +136,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <Chart country={selectedCountry} rowData={rowData} dates={dataStore.dates} />
         </Paper>
       </Grid>
-      <Grid item xs={12} md={4} lg={3}>
+      <Grid item xs={6} md={4} lg={3}>
         <Paper className={classes.paper}>
           {rowData && rowData.confirmed && rowData.dead && (
             <CurrentCount
@@ -153,10 +153,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             className={classes.paper}
             style={{ backgroundColor: theme.palette.secondary.main, cursor: 'pointer' }}
             onClick={() => {
-              history.push(`/comparison/${selectedCountry}`);
+              history.push(`/infection-trajectories/${selectedCountry}`);
             }}
           >
-            <Typography variant='h5'>Compare to other countries</Typography>
+            <Typography variant='h5'>Compare infection trajectories</Typography>
           </ButtonBase>
         </Card>
         {/* <Paper className={classes.paper}></Paper> */}
