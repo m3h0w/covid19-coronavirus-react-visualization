@@ -76,6 +76,16 @@ const MapChart = observer(
       history.push(`/dashboard/${country}`);
     };
 
+    const getScale = () => {
+      if (window.innerWidth < 400) {
+        return 90;
+      }
+      if (window.innerHeight < 400) {
+        return 120;
+      }
+      return 200;
+    };
+
     return (
       <ComposableMap
         width={window.innerWidth}
@@ -83,7 +93,7 @@ const MapChart = observer(
         style={{ width: '100%', height: '100%' }}
         projectionConfig={{
           rotate: [-11, 0, 0],
-          scale: 200,
+          scale: getScale(),
         }}
         data-tip=''
       >

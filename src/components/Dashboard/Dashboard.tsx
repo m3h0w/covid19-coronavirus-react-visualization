@@ -25,6 +25,8 @@ import Orders from './Orders';
 import CustomSelect from './Select';
 import { CustomAutocomplete } from './Select';
 import { Row } from './Chart';
+import useDataStore from '../../data/dataStore';
+import { Hidden } from '@material-ui/core';
 
 function Copyright() {
   return (
@@ -72,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 15,
   },
   menuButtonHidden: {
     display: 'none',
@@ -145,6 +147,7 @@ const Dashboard: FC<IProps> = ({
 }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(startOpen);
+  const dataStore = useDataStore();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -178,6 +181,13 @@ const Dashboard: FC<IProps> = ({
               <NotificationsIcon />
             </Badge>
           </IconButton> */}
+          <Hidden xsDown implementation='css'>
+            {dataStore.ready && (
+              <Typography>
+                Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
+              </Typography>
+            )}
+          </Hidden>
         </Toolbar>
       </AppBar>
       <Drawer
