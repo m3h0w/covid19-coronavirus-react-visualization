@@ -158,33 +158,31 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     }
   }, [setColors, countries]);
 
-  const addCountry = (country) => {
-    setCountries([...new Set([country, ...countries])]);
-    setColors({ ...colors, [country]: colorsHelper.getRandomColor() });
-  };
-  useEffect(() => {
-    addCountry('Italy');
+  console.log({ countries });
 
+  const addCountries = (newCountries: string[]) => {
+    setCountries([...new Set([...newCountries, ...countries])]);
+    const newColors = {
+      ...colors,
+    };
+    newCountries.forEach((country: string) => {
+      newColors[country] = colorsHelper.getRandomColor();
+    });
+    // setColors({ ...colors, [country]: colorsHelper.getRandomColor() });
+    setColors(newColors);
+  };
+
+  useEffect(() => {
     if (props.match.params.country) {
       const countryFromUrl = props.match.params.country;
       if (countryFromUrl) {
         history.push(`/infection-trajectories`);
-        addCountry(countryFromUrl);
+        addCountries(['Italy', countryFromUrl]);
       }
+    } else {
+      addCountries(['Italy', 'Germany']);
     }
-  }, [props.match.params.country, history]);
-
-  // useEffect(() => {
-  //   const countryFromUrl = props.match.params.country;
-  //   if (countryFromUrl) {
-  //     history.push(`/infection-trajectories`);
-  //     addCountry('Italy');
-  //     addCountry(countryFromUrl);
-  //   }
-  // }, [props.match.params.country, history, addCountry]);
-  // if (!dataStore.ready) {
-  //   return <div>Loading...</div>;
-  // }
+  }, []);
 
   return (
     <Dashboard title='Infection trajectories'>
@@ -193,7 +191,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
           <CustomAutocomplete
             label={'Add country'}
             handleChange={(country) => {
-              addCountry(country);
+              addCountries([country]);
               setSelectedCountry(null);
             }}
             selectedValue={selectedCountry}

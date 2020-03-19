@@ -22,6 +22,7 @@ import useDataStore from '../../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { momentToFormat } from '../../utils/getDatesFromDataRow';
 import getYAxis from './YAxis';
+import getTooltip from './Tooltip';
 
 export type Row = {
   [key in Column]: string;
@@ -126,11 +127,7 @@ const MultiChart: FC<IProps> = observer(
               dot={true}
             />
             {brush}
-            <Tooltip
-              offset={-120}
-              // labelFormatter={formatXAxis}
-              allowEscapeViewBox={{ x: true, y: true }}
-            />
+            {getTooltip()}
           </LineChart>
         </ResponsiveContainer>
       </>

@@ -20,6 +20,7 @@ import getBrush from './Brush';
 import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
 import { Hidden } from '@material-ui/core';
 import getYAxis from './YAxis';
+import getTooltip from './Tooltip';
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
@@ -129,7 +130,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
             dot={true}
           />
           {brush}
-          <Tooltip labelFormatter={formatXAxis} allowEscapeViewBox={{ x: true, y: true }} />
+          {getTooltip(formatXAxis)}
         </LineChart>
       </ResponsiveContainer>
     </>
