@@ -68,11 +68,12 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
     }
   }, [rowData]);
 
-  const getFormattedLine = () => (
+  const getFormattedLine = (dataKey, name, stroke?: string) => (
     <Line
       type='monotone'
-      dataKey='confirmedCases'
-      stroke={theme.palette.primary.main}
+      dataKey={dataKey}
+      name={name}
+      stroke={stroke || theme.palette.primary.main}
       dot={false}
     />
   );
@@ -85,7 +86,8 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
     children: (
       <LineChart>
         <YAxis hide domain={[0, 'auto']} />
-        {getFormattedLine()}
+        {getFormattedLine('confirmedCases', 'Confirmed cases')}
+        {getFormattedLine('deaths', 'Deaths', theme.palette.secondary.main)}
       </LineChart>
     ),
   });
@@ -115,20 +117,8 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
             tickFormatter={formatXAxis}
           />
           {getYAxis('No. of cases & deaths')}
-          <Line
-            type='monotone'
-            dataKey='confirmedCases'
-            name='Confirmed cases'
-            stroke={theme.palette.primary.main}
-            dot={true}
-          />
-          <Line
-            type='monotone'
-            dataKey='deaths'
-            name='Deaths'
-            stroke={theme.palette.secondary.main}
-            dot={true}
-          />
+          {getFormattedLine('confirmedCases', 'Confirmed cases')}
+          {getFormattedLine('deaths', 'Deaths', theme.palette.secondary.main)}
           {brush}
           {getTooltip(formatXAxis)}
         </LineChart>

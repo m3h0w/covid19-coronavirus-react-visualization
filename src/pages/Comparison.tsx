@@ -158,8 +158,6 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     }
   }, [setColors, countries]);
 
-  console.log({ countries });
-
   const addCountries = (newCountries: string[]) => {
     setCountries([...new Set([...newCountries, ...countries])]);
     const newColors = {

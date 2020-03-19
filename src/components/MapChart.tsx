@@ -40,14 +40,34 @@ const getMatchingCountryKey = (dataStore, geo) => {
   return undefined;
 };
 
-const scaleWithDomain = scaleLog().domain([1, 2000]);
+// const scaleWithDomain = ;
+const getColorsScale = (dataType, theme) => {
+  switch (dataType) {
+    case 'confirmed':
+      return scaleLog()
+        .domain([1, 2000])
+        .range([pink[50], theme.palette.primary.dark]);
+    case 'dead':
+      return scaleLog()
+        .domain([1, 1000])
+        .range([pink[50], '#000']);
+  }
+};
 
 const MapChart = observer(
-  ({ date, setTooltipContent }: { date: string; setTooltipContent: (content: string) => void }) => {
+  ({
+    date,
+    setTooltipContent,
+    dataType,
+  }: {
+    date: string;
+    setTooltipContent: (content: string) => void;
+    dataType: 'confirmed' | 'dead';
+  }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
     const history = useHistory();
-    const colorScale = scaleWithDomain.range([pink[50], theme.palette.primary.dark]);
+    const colorScale = getColorsScale(dataType, theme);
     const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(
       false,
       'shownMapClickSnackbar'
@@ -55,9 +75,6 @@ const MapChart = observer(
     const routeChange = (country: string) => {
       history.push(`/dashboard/${country}`);
     };
-
-    // console.log({ date });
-    // console.log(dataStore.ready);
 
     return (
       <ComposableMap
@@ -85,10 +102,10 @@ const MapChart = observer(
                       geography={geo}
                       onMouseEnter={() => {
                         const { NAME, POP_EST } = geo.properties;
-                        if (d?.confirmed && d.confirmed[date]) {
-                          setTooltipContent(`${NAME} — ${d.confirmed[date]} cases`);
+                        if (d && d[dataType] && d[dataType][date]) {
+                          setTooltipContent(`${NAME} — ${d[dataType][date]} ${dataType}`);
                         } else {
-                          setTooltipContent(`${NAME} — 0 cases`);
+                          setTooltipContent(`${NAME} — 0 ${dataType}`);
                         }
 
                         if (!shownSnackbar) {
@@ -108,8 +125,8 @@ const MapChart = observer(
                       style={{
                         default: {
                           fill:
-                            d?.confirmed && d.confirmed[date]
-                              ? colorScale(d.confirmed[date])
+                            d && d[dataType] && d[dataType][date]
+                              ? colorScale(d[dataType][date])
                               : '#F5F4F6',
 
                           outline: 'none',

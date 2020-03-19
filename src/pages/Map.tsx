@@ -12,6 +12,9 @@ import Typography from '@material-ui/core/Typography';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
+import { Fab } from '@material-ui/core';
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
@@ -26,6 +29,7 @@ const MapPage = observer(() => {
     'shownMapSliderSnackbar'
   );
   const [playing, setPlaying] = useState(false);
+  const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
 
   useEffect(() => {
     const checkKey = (e) => {
@@ -73,8 +77,38 @@ const MapPage = observer(() => {
     }
   }, [shownSnackbar, setShownSnackbar, dataStore.ready]);
 
+  const DashboardSwitch = () => {
+    return (
+      <Fab
+        onClick={() => {
+          if (dataType === 'dead') {
+            setDataType('confirmed');
+          } else {
+            setDataType('dead');
+          }
+        }}
+        variant='extended'
+        size='small'
+        color='primary'
+        aria-label='add'
+      >
+        {dataType === 'confirmed' ? (
+          <>
+            <LocalHospitalIcon />
+            confirmed cases
+          </>
+        ) : (
+          <>
+            <AirlineSeatFlatIcon />
+            deaths
+          </>
+        )}
+      </Fab>
+    );
+  };
+
   return (
-    <Dashboard title='Map (confirmed cases)' grid={false}>
+    <Dashboard title='Map' grid={false} Icon={DashboardSwitch}>
       <div
         style={{
           width: '100%',
@@ -88,7 +122,7 @@ const MapPage = observer(() => {
       >
         {dataStore.datesConverted?.length ? (
           <div>
-            <MapChart date={date} setTooltipContent={setTooltipContent} />
+            <MapChart date={date} setTooltipContent={setTooltipContent} dataType={dataType} />
             <ReactTooltip>{tooltipContent}</ReactTooltip>
           </div>
         ) : null}

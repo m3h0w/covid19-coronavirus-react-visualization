@@ -5,11 +5,10 @@ import {
   Line,
   XAxis,
   YAxis,
-  Label,
   ResponsiveContainer,
   TickFormatterFunction,
   CartesianGrid,
-  Tooltip,
+  Dot,
 } from 'recharts';
 import Title from './Title';
 
@@ -34,8 +33,6 @@ interface IProps {
   title: string;
   yLabel: string;
   countries: string[];
-  dataByCountry: { [key: string]: { confirmed: Row; dead: Row } };
-  dates: Moment[];
   colors: { [country: string]: string };
   generateNewColors: () => void;
   syncId: string;
@@ -46,14 +43,41 @@ const MultiChart: FC<IProps> = observer(
   ({ title, yLabel, countries, dataType, colors, syncId }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
-    const confirmedCasesData = dataStore.dataForAfter100Cases(dataType, countries);
+    const data = dataStore.dataForAfter100Cases(dataType, countries);
 
     const getFormattedLine = (dot: boolean = false) => {
-      if (!confirmedCasesData) {
+      const CustomizedDot = (props) => {
+        const { cx, cy, stroke, payload, value, lastX } = props;
+
+        if (payload.time === lastX) {
+          return (
+            <svg x={cx - 5} y={cy - 5} width={50} height={50} fill={stroke} viewBox='0 0 1024 1024'>
+              <path
+                d='
+                 M 100, 100
+                 m -75, 0
+                 a 75,75 0 1,0 150,0
+                 a 75,75 0 1,0 -150,0
+                 '
+              />
+            </svg>
+          );
+        }
+
+        return <div></div>;
+      };
+
+      if (!data) {
         return null;
       }
 
       return countries.map((country: string, i: number) => {
+        const values = Object.values(data.map((el) => el[country])).filter((v) => v !== undefined);
+        const maxValue = Math.max(...values);
+        const maxIndices = values.reduce(
+          (acc, curr, idx) => (curr === maxValue ? [...acc, idx] : acc),
+          []
+        );
         return (
           <Line
             key={i}
@@ -61,15 +85,16 @@ const MultiChart: FC<IProps> = observer(
             dataKey={country}
             name={country}
             stroke={colors[country]}
-            dot={false}
+            dot={<CustomizedDot lastX={Math.max(...maxIndices)} />}
             strokeWidth={1.5}
+            opacity={0.8}
           />
         );
       });
     };
 
     const brush = getBrush({
-      data: confirmedCasesData,
+      data: data,
       color: theme.palette.text.secondary,
       tickFormatter: formatXAxis,
       dataKey: 'time',
@@ -80,8 +105,6 @@ const MultiChart: FC<IProps> = observer(
         </LineChart>
       ),
     });
-
-    console.log(dataStore.dataForAfter100Cases(dataType, countries));
 
     return (
       <>
@@ -98,7 +121,7 @@ const MultiChart: FC<IProps> = observer(
         </div>
         <ResponsiveContainer width={'100%'}>
           <LineChart
-            data={confirmedCasesData}
+            data={data}
             margin={{
               top: 16,
               right: 0,
@@ -120,12 +143,6 @@ const MultiChart: FC<IProps> = observer(
             />
             {getYAxis(yLabel)}
             {getFormattedLine(true)}
-            <Line
-              type='monotone'
-              dataKey='deaths'
-              stroke={theme.palette.secondary.main}
-              dot={true}
-            />
             {brush}
             {getTooltip()}
           </LineChart>

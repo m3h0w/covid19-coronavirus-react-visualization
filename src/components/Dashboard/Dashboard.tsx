@@ -79,6 +79,13 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    '& *': {
+      marginRight: 10,
+    },
   },
   drawerPaper: {
     position: 'relative',
@@ -125,10 +132,17 @@ const useStyles = makeStyles((theme) => ({
 
 interface IProps {
   title: string;
+  icon: FC;
   grid?: boolean;
 }
 
-const Dashboard: FC<IProps> = ({ title, children, grid = true, startOpen = false }) => {
+const Dashboard: FC<IProps> = ({
+  title,
+  children,
+  Icon = () => null,
+  grid = true,
+  startOpen = false,
+}) => {
   const classes = useStyles();
   const [open, setOpen] = useState(startOpen);
 
@@ -153,10 +167,12 @@ const Dashboard: FC<IProps> = ({ title, children, grid = true, startOpen = false
           >
             <MenuIcon />
           </IconButton>
-          <Typography component='h1' variant='h6' color='inherit' noWrap className={classes.title}>
-            {title}
-          </Typography>
-
+          <div className={classes.title}>
+            <Typography component='h1' variant='h6' color='inherit' noWrap>
+              {title}
+            </Typography>
+            <Icon />
+          </div>
           {/* <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
               <NotificationsIcon />
