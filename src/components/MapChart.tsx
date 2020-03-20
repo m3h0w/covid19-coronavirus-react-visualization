@@ -45,8 +45,8 @@ const getColorsScale = (dataType, theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()
-        .domain([1, 2000])
-        .range([pink[50], theme.palette.primary.dark]);
+        .domain([1, 10000, 100000])
+        .range([pink[50], theme.palette.primary.dark, '#000']);
     case 'dead':
       return scaleLog()
         .domain([1, 1000])
