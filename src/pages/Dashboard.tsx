@@ -11,7 +11,8 @@ import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
-import { Typography, Card, ButtonBase } from '@material-ui/core';
+import { Typography, Card, ButtonBase, Slide, Grow } from '@material-ui/core';
+import { animationTime } from '../utils/consts';
 
 const drawerWidth = 240;
 
@@ -132,40 +133,54 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   return (
     <Dashboard title='Country dashboard'>
       <Grid item xs={12}>
-        <Paper className={classes.paper}>
-          <CustomAutocomplete
-            label={'Select country'}
-            handleChange={setSelectedCountry}
-            selectedValue={selectedCountry}
-            possibleValues={possibleCountries}
-            id={'select-country'}
-            width={'auto'}
-          />
-        </Paper>
+        <Slide
+          direction='down'
+          in={dataStore.ready}
+          mountOnEnter
+          unmountOnExit
+          timeout={animationTime}
+        >
+          <Paper className={classes.paper}>
+            <CustomAutocomplete
+              label={'Select country'}
+              handleChange={setSelectedCountry}
+              selectedValue={selectedCountry}
+              possibleValues={possibleCountries}
+              id={'select-country'}
+              width={'auto'}
+            />
+          </Paper>
+        </Slide>
       </Grid>
       <Grid item xs={12} md={8} lg={9}>
-        <Paper className={fixedHeightPaper}>
-          <Chart country={selectedCountry} rowData={rowData} dates={dataStore.dates} />
-        </Paper>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={fixedHeightPaper}>
+            <Chart country={selectedCountry} rowData={rowData} dates={dataStore.dates} />
+          </Paper>
+        </Grow>
       </Grid>
       <Grid item xs={6} md={4} lg={3}>
-        <Paper className={classes.paper}>
-          {rowData && rowData.confirmed && rowData.dead && (
-            <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
-          )}
-        </Paper>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={classes.paper}>
+            {rowData && rowData.confirmed && rowData.dead && (
+              <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
+            )}
+          </Paper>
+        </Grow>
         <div style={{ height: '20px' }} />
-        <Card>
-          <ButtonBase
-            className={classes.paper}
-            style={{ backgroundColor: theme.palette.secondary.main, cursor: 'pointer' }}
-            onClick={() => {
-              history.push(`/infection-trajectories/${selectedCountry}`);
-            }}
-          >
-            <Typography variant='h5'>Compare infection trajectories</Typography>
-          </ButtonBase>
-        </Card>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Card>
+            <ButtonBase
+              className={classes.paper}
+              style={{ backgroundColor: theme.palette.secondary.main, cursor: 'pointer' }}
+              onClick={() => {
+                history.push(`/infection-trajectories/${selectedCountry}`);
+              }}
+            >
+              <Typography variant='h5'>Compare infection trajectories</Typography>
+            </ButtonBase>
+          </Card>
+        </Grow>
         {/* <Paper className={classes.paper}></Paper> */}
       </Grid>
       {/* Recent Orders */}

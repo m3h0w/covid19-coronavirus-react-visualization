@@ -12,7 +12,7 @@ import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
 import MultiChart from '../components/Dashboard/MultiChart';
-import { Chip, Button, createStyles } from '@material-ui/core';
+import { Chip, Button, createStyles, Grow, Slide } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
@@ -22,6 +22,7 @@ import { useHistory, RouteComponentProps } from 'react-router';
 import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
 import { getContrastYIQ } from '../utils/colors';
 import CustomChip from '../components/CustomChip';
+import { animationTime } from '../utils/consts';
 
 const drawerWidth = 240;
 
@@ -170,71 +171,83 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   return (
     <Dashboard title='Infection trajectories'>
       <Grid item xs={12}>
-        <Paper className={classes.paper}>
-          <CustomAutocomplete
-            label={'Add country'}
-            handleChange={(country) => {
-              addCountries([country]);
-              setSelectedCountry(null);
-            }}
-            selectedValue={selectedCountry}
-            possibleValues={possibleCountries}
-            id={'select-country'}
-            width={'auto'}
-          />
-          <Button
-            style={{ maxWidth: 300, marginBottom: 10 }}
-            variant='outlined'
-            color='secondary'
-            size={'small'}
-            onClick={() => {
-              generateNewColors();
-            }}
-          >
-            New colors
-          </Button>
-          <div className={classes.clipWrapper}>
-            {dataStore.ready &&
-              countries.map((country: string, i: number) => (
-                <CustomChip
-                  key={i}
-                  handleDelete={() => {
-                    setCountries(countries.filter((c) => c !== country));
-                  }}
-                  label={country}
-                  backgroundColor={colors[country]}
-                />
-              ))}
-          </div>
-        </Paper>
+        <Slide
+          direction='down'
+          in={dataStore.ready}
+          mountOnEnter
+          unmountOnExit
+          timeout={animationTime}
+        >
+          <Paper className={classes.paper}>
+            <CustomAutocomplete
+              label={'Add country'}
+              handleChange={(country) => {
+                addCountries([country]);
+                setSelectedCountry(null);
+              }}
+              selectedValue={selectedCountry}
+              possibleValues={possibleCountries}
+              id={'select-country'}
+              width={'auto'}
+            />
+            <Button
+              style={{ maxWidth: 300, marginBottom: 10 }}
+              variant='outlined'
+              color='secondary'
+              size={'small'}
+              onClick={() => {
+                generateNewColors();
+              }}
+            >
+              New colors
+            </Button>
+            <div className={classes.clipWrapper}>
+              {dataStore.ready &&
+                countries.map((country: string, i: number) => (
+                  <CustomChip
+                    key={i}
+                    handleDelete={() => {
+                      setCountries(countries.filter((c) => c !== country));
+                    }}
+                    label={country}
+                    backgroundColor={colors[country]}
+                  />
+                ))}
+            </div>
+          </Paper>
+        </Slide>
       </Grid>
       <Grid item xs={12} md={6}>
-        <Paper className={fixedHeightPaper}>
-          <MultiChart
-            title={'Cases trajectory'}
-            yLabel={'No. cases'}
-            countries={countries}
-            // dataByCountry={extractKeyFromNestedObj(data, 'confirmed')}
-            // dates={dataStore.dates}
-            dataType={'confirmed'}
-            colors={colors}
-            generateNewColors={generateNewColors}
-            syncId={'comparison'}
-          />
-        </Paper>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={fixedHeightPaper}>
+            <MultiChart
+              title={'Cases trajectory'}
+              yLabel={'No. cases'}
+              countries={countries}
+              // dataByCountry={extractKeyFromNestedObj(data, 'confirmed')}
+              // dates={dataStore.dates}
+              dataType={'confirmed'}
+              colors={colors}
+              generateNewColors={generateNewColors}
+              syncId={'comparison'}
+            />
+          </Paper>
+        </Grow>
       </Grid>
       <Grid item xs={12} md={6}>
-        <Paper className={fixedHeightPaper}>
-          <MultiChart
-            title={'Deaths trajectory'}
-            yLabel={'No. deaths'}
-            countries={countries}
-            dataType={'dead'}
-            colors={colors}
-            generateNewColors={generateNewColors}
-            syncId={'comparison'}
-          />
-        </Paper>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={fixedHeightPaper}>
+            <MultiChart
+              title={'Deaths trajectory'}
+              yLabel={'No. deaths'}
+              countries={countries}
+              dataType={'dead'}
+              colors={colors}
+              generateNewColors={generateNewColors}
+              syncId={'comparison'}
+            />
+          </Paper>
+        </Grow>
       </Grid>
       {/* <Grid item xs={12} md={4} lg={3}>
         <Paper className={fixedHeightPaper}>
