@@ -12,12 +12,17 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
-import { SvgIconProps } from '@material-ui/core';
+import { SvgIconProps, withStyles } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
 import CallMadeIcon from '@material-ui/icons/CallMade';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+
+const StyledListItemIcon = withStyles((theme) => ({
+  root: { minWidth: '45px' },
+}))(ListItemIcon);
 
 interface ICustomListItemProps {
   to?: string;
@@ -32,6 +37,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
   const location = useLocation();
   const theme = useTheme();
   let LinkElement = RouterLink;
+  const isSelected = location.pathname.split('/')[1] === to;
 
   if (href) {
     LinkElement = Link;
@@ -40,20 +46,23 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
   return (
     <ListItem
       style={{
-        textDecoration: location.pathname.split('/')[1] === to ? 'underline' : 'initial',
+        textDecoration: isSelected ? 'underline' : 'initial',
         textDecorationColor: theme.palette.secondary.main,
+        background: 'none',
         ...style,
       }}
-      selected={location.pathname.split('/')[1] === to}
+      selected={isSelected}
       button
       component={LinkElement}
       to={to}
       href={href}
       target={href ? '_blank' : '_self'}
     >
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
+      <StyledListItemIcon>
+        <Icon
+          style={{ color: isSelected ? theme.palette.secondary.main : theme.palette.grey[800] }}
+        />
+      </StyledListItemIcon>
       <ListItemText primary={text} />
       {AfterIcon && <AfterIcon fontSize={'small'} />}
     </ListItem>
@@ -62,7 +71,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 
 export const MainListItems = () => {
   return (
-    <List style={{ height: '100%' }}>
+    <List style={{ height: '100%', padding: 0 }}>
       <CustomListItem to='map' text='Map' Icon={MapIcon} />
       <CustomListItem to='dashboard' text='Country dashboard' Icon={DashboardIcon} />
       <CustomListItem
@@ -70,6 +79,7 @@ export const MainListItems = () => {
         text='Infection trajectories'
         Icon={BarChartIcon}
       />
+      <Divider />
       <CustomListItem
         href='https://github.com/m3h0w/covid19-coronavirus-react-visualization'
         text={`GitHub repository`}
@@ -77,32 +87,6 @@ export const MainListItems = () => {
         AfterIcon={CallMadeIcon}
         style={{ position: 'absolute', bottom: 0 }}
       />
-      {/* <CustomListItem to='todo' text='Todo' Icon={ShoppingCartIcon} /> */}
-
-      {/* <ListItem button>
-      <ListItemIcon>
-        <ShoppingCartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Orders" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Customers" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Reports" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Integrations" />
-    </ListItem> */}
     </List>
   );
 };

@@ -42,6 +42,7 @@ function Copyright() {
 }
 
 const drawerWidth = 240;
+const toolbarHeight = 48;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,13 +51,15 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
     color: 'white',
+    minHeight: toolbarHeight,
   },
   toolbarIcon: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: '0 8px',
-    ...theme.mixins.toolbar,
+    minHeight: toolbarHeight,
+    // ...theme.mixins.toolbar,
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -109,7 +112,10 @@ const useStyles = makeStyles((theme) => ({
     //   width: theme.spacing(7),
     // },
   },
-  appBarSpacer: theme.mixins.toolbar,
+  appBarSpacer: {
+    minHeight: toolbarHeight,
+    // ...theme.mixins.toolbar,
+  },
   content: {
     flexGrow: 1,
     height: '100vh',
@@ -204,7 +210,7 @@ const Dashboard: FC<IProps> = ({
         </div>
         <Divider />
         <MainListItems />
-        {/*<Divider />
+        {/* <Divider />
         <List>{secondaryListItems}</List> */}
       </Drawer>
       <main className={classes.content}>

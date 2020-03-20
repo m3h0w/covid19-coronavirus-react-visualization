@@ -137,7 +137,12 @@ const MultiChart: FC<IProps> = observer(
               stroke={theme.palette.text.secondary}
               // tickFormatter={formatXAxis}
               domain={['auto', 'auto']}
-              label={{ value: 'Days after a 100th case', position: 'insideTopRight', dy: -20 }}
+              label={{
+                fontSize: 10,
+                value: 'Days after a 100th case',
+                position: 'insideTopRight',
+                dy: -20,
+              }}
               // height={30}
               type={'number'}
             />

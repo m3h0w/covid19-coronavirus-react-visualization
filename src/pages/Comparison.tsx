@@ -12,7 +12,7 @@ import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
 import MultiChart from '../components/Dashboard/MultiChart';
-import { Chip, Button } from '@material-ui/core';
+import { Chip, Button, createStyles } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
@@ -20,6 +20,8 @@ import Colors from '../utils/colors';
 import createPersistedState from '../utils/memoryState';
 import { useHistory, RouteComponentProps } from 'react-router';
 import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
+import { getContrastYIQ } from '../utils/colors';
+import CustomChip from '../components/CustomChip';
 
 const drawerWidth = 240;
 
@@ -115,24 +117,6 @@ interface IRowData {
   dead: Row | undefined;
 }
 
-function getContrastYIQ(hexcolor) {
-  hexcolor = hexcolor.replace('#', '');
-  var r = parseInt(hexcolor.substr(0, 2), 16);
-  var g = parseInt(hexcolor.substr(2, 2), 16);
-  var b = parseInt(hexcolor.substr(4, 2), 16);
-  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
-  return yiq >= 128 ? 'black' : 'white';
-}
-
-const CustomChip = ({ handleDelete, label, backgroundColor }) => (
-  <Chip
-    style={{ margin: 5, backgroundColor, color: getContrastYIQ(backgroundColor) }}
-    // avatar={<Avatar alt='Natacha' src='/static/images/avatar/1.jpg' />}
-    label={label}
-    onDelete={handleDelete}
-  />
-);
-
 let colorsHelper = new Colors();
 const useMemoryStateA = createPersistedState();
 const useMemoryStateB = createPersistedState();
@@ -200,7 +184,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
           <Button
             style={{ maxWidth: 300, marginBottom: 10 }}
             variant='outlined'
-            color='primary'
+            color='secondary'
             size={'small'}
             onClick={() => {
               generateNewColors();
