@@ -252,8 +252,8 @@ export class DataStore {
     return undefined;
   }
 
-  @computed get ready() {
-    return this.confirmedCsv && this.deadCsv;
+  @computed get ready(): boolean {
+    return Boolean(this.confirmedCsv) && Boolean(this.deadCsv);
   }
 }
 

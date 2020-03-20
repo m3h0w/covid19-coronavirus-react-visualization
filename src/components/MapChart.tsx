@@ -19,6 +19,7 @@ import geoUrl from '../data/worldMap.json';
 import { useHistory } from 'react-router';
 import { showInfoSnackBar } from './Snackbar';
 import { useStateAndLocalStorage } from 'persistence-hooks';
+import { Fade, Theme } from '@material-ui/core';
 
 const rounded = (num) => {
   if (num > 1000000000) {
@@ -41,16 +42,16 @@ const getMatchingCountryKey = (dataStore, geo) => {
 };
 
 // const scaleWithDomain = ;
-const getColorsScale = (dataType, theme) => {
+const getColorsScale = (dataType, theme: Theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()
         .domain([1, 10000, 100000])
-        .range([pink[50], theme.palette.primary.dark, '#000']);
+        .range(['#F2EAEA', theme.palette.primary.dark, '#000']);
     case 'dead':
       return scaleLog()
         .domain([1, 10000, 15000])
-        .range([pink[50], '#222', '#000']);
+        .range(['#F2EAEA', '#222', '#000']);
   }
 };
 
@@ -98,9 +99,9 @@ const MapChart = observer(
         data-tip=''
       >
         <ZoomableGroup zoom={1}>
-          <Sphere stroke='#E4E5E6' strokeWidth={0.5} />
           <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
-          {dataStore.ready && (
+          {/* {dataStore.ready && ( */}
+          <Fade in={dataStore.ready} timeout={1000}>
             <Geographies geography={geoUrl}>
               {({ geographies }) =>
                 geographies.map((geo) => {
@@ -134,10 +135,11 @@ const MapChart = observer(
                       }}
                       style={{
                         default: {
+                          transition: 'fill 0.6s linear',
                           fill:
                             d && d[dataType] && d[dataType][date]
                               ? colorScale(d[dataType][date])
-                              : '#F5F4F6',
+                              : '#F4EEEE',
 
                           outline: 'none',
                         },
@@ -156,7 +158,8 @@ const MapChart = observer(
                 })
               }
             </Geographies>
-          )}
+          </Fade>
+          {/* )} */}
         </ZoomableGroup>
       </ComposableMap>
     );
