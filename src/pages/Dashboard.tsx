@@ -144,6 +144,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1]
               }
               deaths={Object.values(rowData.dead)[Object.values(rowData.dead).length - 1]}
+              mortalityRate={
+                Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] /
+                Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1]
+              }
             />
           )}
         </Paper>

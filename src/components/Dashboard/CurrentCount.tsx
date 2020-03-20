@@ -15,18 +15,27 @@ const useStyles = makeStyles({
   },
 });
 
-export default function CurrentCount({ confirmedCases, deaths }) {
+export default function CurrentCount({ confirmedCases, deaths, mortalityRate }) {
   const classes = useStyles();
+  const typoStyle = { marginTop: '-13px', marginBottom: '5px' };
   return (
     <React.Fragment>
       <Title color={'initial'}>Confirmed cases</Title>
-      <Typography color={'primary'} component='p' variant='h4'>
+      <Typography color={'primary'} component='p' variant='h4' style={typoStyle}>
         {confirmedCases}
       </Typography>
       <Title color={'initial'}>Deaths</Title>
-      <Typography color={'secondary'} component='p' variant='h4'>
+      <Typography color={'secondary'} component='p' variant='h4' style={typoStyle}>
         {deaths}
       </Typography>
+      {mortalityRate && (
+        <>
+          <Title color={'initial'}>Mortality rate</Title>
+          <Typography color={'textPrimary'} component='p' variant='h4' style={typoStyle}>
+            {(mortalityRate * 100).toFixed(2)}%
+          </Typography>
+        </>
+      )}
       {/* <Typography color='textSecondary' className={classes.depositContext}>
         on 15 March, 2019
       </Typography>
