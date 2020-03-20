@@ -11,8 +11,8 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
-import { useTheme } from '@material-ui/core/styles';
-import { SvgIconProps, withStyles } from '@material-ui/core';
+import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { SvgIconProps, withStyles, createStyles } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
 import CallMadeIcon from '@material-ui/icons/CallMade';
@@ -33,11 +33,27 @@ interface ICustomListItemProps {
   style?: CSSProperties;
 }
 
+const useListItemStyles = makeStyles((theme) =>
+  createStyles({
+    root: (props) => ({
+      textDecoration: props.isSelected ? 'underline' : 'initial',
+      textDecorationColor: theme.palette.secondary.main,
+      '&:hover': {
+        background: `${theme.palette.grey['200']} !important`,
+        textDecoration: 'underline',
+        textDecorationColor: theme.palette.grey['500'],
+      },
+      ...props.style,
+    }),
+  })
+);
+
 const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterIcon, style }) => {
   const location = useLocation();
   const theme = useTheme();
   let LinkElement = RouterLink;
   const isSelected = location.pathname.split('/')[1] === to;
+  const classes = useListItemStyles({ isSelected, style });
 
   if (href) {
     LinkElement = Link;
@@ -45,12 +61,8 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 
   return (
     <ListItem
-      style={{
-        textDecoration: isSelected ? 'underline' : 'initial',
-        textDecorationColor: theme.palette.secondary.main,
-        background: 'none',
-        ...style,
-      }}
+      style={{ background: 'none' }}
+      className={classes.root}
       selected={isSelected}
       button
       component={LinkElement}
