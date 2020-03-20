@@ -96,7 +96,6 @@ const MultiChart: FC<IProps> = observer(
     const brush = getBrush({
       data: data,
       color: theme.palette.text.secondary,
-      tickFormatter: formatXAxis,
       dataKey: 'time',
       children: (
         <LineChart>

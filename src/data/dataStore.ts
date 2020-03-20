@@ -196,7 +196,7 @@ export class DataStore {
 
   @computed get possibleCountries() {
     if (this.ready && this.confirmedCsv) {
-      return Object.keys(this.confirmedCsv);
+      return Object.keys(this.confirmedCsv).sort();
     }
     return [];
   }

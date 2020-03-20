@@ -1,7 +1,15 @@
 import React from 'react';
-import { Brush } from 'recharts';
+import { Brush, TickFormatterFunction } from 'recharts';
 
-const getBrush = ({ color, tickFormatter, data, children, dataKey = 'timestamp' }) => (
+interface IProps {
+  color: string;
+  tickFormatter?: TickFormatterFunction;
+  data: any;
+  children: () => JSX.Element;
+  dataKey?: string;
+}
+
+const getBrush = ({ color, tickFormatter, data, children, dataKey = 'timestamp' }: IProps) => (
   <Brush
     travellerWidth={10}
     // gap={1}

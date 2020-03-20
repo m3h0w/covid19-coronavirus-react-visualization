@@ -117,6 +117,18 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     }
   }, [props.match.params.country, history, setSelectedCountry]);
 
+  const cases =
+    (rowData &&
+      rowData.confirmed &&
+      (Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1] as number)) ||
+    0;
+  const deaths =
+    (rowData &&
+      rowData.dead &&
+      (Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] as number)) ||
+    0;
+  const mortalityRate = cases ? deaths / cases : undefined;
+
   return (
     <Dashboard title='Country dashboard'>
       <Grid item xs={12}>
@@ -139,16 +151,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       <Grid item xs={6} md={4} lg={3}>
         <Paper className={classes.paper}>
           {rowData && rowData.confirmed && rowData.dead && (
-            <CurrentCount
-              confirmedCases={
-                Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1]
-              }
-              deaths={Object.values(rowData.dead)[Object.values(rowData.dead).length - 1]}
-              mortalityRate={
-                Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] /
-                Object.values(rowData.confirmed)[Object.values(rowData.confirmed).length - 1]
-              }
-            />
+            <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
           )}
         </Paper>
         <div style={{ height: '20px' }} />
