@@ -83,18 +83,18 @@ const MapChart = observer(
       if (window.innerHeight < 400) {
         return 120;
       }
-      return 200;
+      return 150;
     };
 
     return (
       <ComposableMap
-        width={window.innerWidth}
-        height={window.innerHeight}
-        style={{ width: '100%', height: '100%' }}
-        projectionConfig={{
-          rotate: [-11, 0, 0],
-          scale: getScale(),
-        }}
+        // width={window.innerWidth}
+        // height={window.innerHeight}
+        // style={{ width: '100%', height: '100%' }}
+        // projectionConfig={{
+        //   rotate: [-11, 0, 0],
+        //   scale: getScale(),
+        // }}
         data-tip=''
       >
         <ZoomableGroup zoom={1}>

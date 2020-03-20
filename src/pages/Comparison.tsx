@@ -104,6 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fixedHeight: {
     height: 350,
+    maxHeight: '80vh',
   },
   clipWrapper: {
     display: 'flex',

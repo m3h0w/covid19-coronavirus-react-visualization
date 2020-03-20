@@ -5,7 +5,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-  background: #aaa;
+  background: #666;
 }
 
 code {
@@ -44,6 +44,6 @@ canvas {
 
 #root {
   /* position: fixed; */
-  background: #eaeaea;
+  background: #666;
   z-index: -1;
 }

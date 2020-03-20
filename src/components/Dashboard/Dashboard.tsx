@@ -47,6 +47,7 @@ const toolbarHeight = 48;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    position: 'relative',
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -122,6 +123,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: '#f6f6f6',
   },
   container: {
     paddingTop: theme.spacing(4),

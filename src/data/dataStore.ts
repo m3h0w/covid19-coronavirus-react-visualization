@@ -85,6 +85,36 @@ export class DataStore {
     }
   }
 
+  @computed get totalConfirmedCasesArray():
+    | Array<{ time: number; totalCases: number }>
+    | undefined {
+    return this.confirmedCasesArray?.map((el) => {
+      return {
+        time: el.time,
+        totalCases: Object.keys(el).reduce((acc: number, key: string) => {
+          if (key !== 'time') {
+            acc = acc + el[key];
+          }
+          return acc;
+        }, 0),
+      };
+    });
+  }
+
+  @computed get totalDeathsArray(): Array<{ time: number; totalDeaths: number }> | undefined {
+    return this.deathsArray?.map((el) => {
+      return {
+        time: el.time,
+        totalDeaths: Object.keys(el).reduce((acc: number, key: string) => {
+          if (key !== 'time') {
+            acc = acc + el[key];
+          }
+          return acc;
+        }, 0),
+      };
+    });
+  }
+
   @computed get dayOf100CasesByCountry() {
     const threshold = 100;
     if (!this.ready) {
@@ -141,6 +171,18 @@ export class DataStore {
     });
   }
 
+  @computed get deathsArray() {
+    return this.dates?.map((date) => {
+      const d = {
+        time: date.unix(),
+      };
+      this.possibleCountries.forEach((country) => {
+        d[country] = this.deadCsv[country][momentToFormat(date)];
+      });
+      return d;
+    });
+  }
+
   public getDataArrayWithTime(type: 'confirmed' | 'dead', countries: string[]) {
     return this.dates?.map((date, i: number) => {
       const d = {
@@ -170,18 +212,6 @@ export class DataStore {
       });
       return d;
     });
-  }
-
-  @computed get deathsByCountry() {
-    return Object.keys(this.dead).reduce((acc, country) => {
-      acc[country] = dates.map((date) => {
-        return {
-          time: date.unix(),
-          deaths: this.dead[country],
-        };
-      });
-      return acc;
-    }, {});
   }
 
   public getCountryData = (country: string) => {
