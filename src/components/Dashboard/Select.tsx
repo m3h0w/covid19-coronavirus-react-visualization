@@ -59,7 +59,7 @@ export const CustomAutocomplete: FC<IProps> = ({
       <Autocomplete
         value={selectedValue}
         onChange={(event: any, newValue: string) => {
-          if (newValue) {
+          if (newValue || newValue === null) {
             handleChange(newValue);
             return;
           }

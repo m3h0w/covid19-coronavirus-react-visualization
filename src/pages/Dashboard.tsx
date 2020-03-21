@@ -11,8 +11,11 @@ import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
-import { Typography, Card, ButtonBase, Slide, Grow } from '@material-ui/core';
+import { Typography, Card, ButtonBase, Slide, Grow, Fade } from '@material-ui/core';
 import { animationTime } from '../utils/consts';
+import UsaMapChart from '../components/UsaMapChart';
+import last from '../utils/last';
+import ReactTooltip from 'react-tooltip';
 
 const drawerWidth = 240;
 
@@ -99,16 +102,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const useMemoryState = createPersistedState();
+const useMemoryState2 = createPersistedState();
 
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useMemoryState('Poland');
+  const [selectedCountry, setSelectedCountry] = useMemoryState('US');
+  const [selectedRegion, setSelectedRegion] = useMemoryState2('');
   const dataStore = useDataStore();
-  const rowData = dataStore.getCountryData(selectedCountry);
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const history = useHistory();
   const theme = useTheme();
+  const [tooltipContent, setTooltipContent] = useState();
+  const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
 
   useEffect(() => {
     const countryFromUrl = props.match.params.country;
@@ -117,6 +123,11 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       setSelectedCountry(countryFromUrl);
     }
   }, [props.match.params.country, history, setSelectedCountry]);
+
+  let rowData = dataStore.getCountryData(selectedCountry);
+  if (selectedRegion) {
+    rowData = dataStore.getRegionData(selectedRegion);
+  }
 
   const cases =
     (rowData &&
@@ -129,6 +140,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       (Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] as number)) ||
     0;
   const mortalityRate = cases ? deaths / cases : undefined;
+  const isUs = selectedCountry === 'US';
 
   return (
     <Dashboard title='Country dashboard'>
@@ -149,13 +161,27 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
               id={'select-country'}
               width={'auto'}
             />
+            {isUs && (
+              <CustomAutocomplete
+                label={'Select region'}
+                handleChange={setSelectedRegion}
+                selectedValue={selectedRegion}
+                possibleValues={dataStore.getPossibleRegionsByCountry(selectedCountry)}
+                id={'select-region'}
+                width={'auto'}
+              />
+            )}
           </Paper>
         </Slide>
       </Grid>
       <Grid item xs={12} md={8} lg={9}>
         <Grow in={dataStore.ready} timeout={animationTime}>
           <Paper className={fixedHeightPaper}>
-            <Chart country={selectedCountry} rowData={rowData} dates={dataStore.dates} />
+            <Chart
+              showingDataFor={selectedRegion || selectedCountry}
+              rowData={rowData}
+              dates={dataStore.dates}
+            />
           </Paper>
         </Grow>
       </Grid>
@@ -182,6 +208,22 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           </Card>
         </Grow>
         {/* <Paper className={classes.paper}></Paper> */}
+      </Grid>
+      <Grid item xs={12}>
+        {isUs && (
+          <>
+            <UsaMapChart
+              date={last(dataStore.datesConverted)}
+              setTooltipContent={setTooltipContent}
+              dataType={dataType}
+              style={{ maxHeight: '80vh' }}
+              onClick={(stateKey) => {
+                setSelectedRegion(stateKey);
+              }}
+            />
+            <ReactTooltip>{tooltipContent}</ReactTooltip>
+          </>
+        )}
       </Grid>
       {/* Recent Orders */}
       {/* <Grid item xs={12}>

@@ -25,9 +25,10 @@ type Column = 'Province/State' | 'Country/Region' | 'Lat' | 'Long' | string;
 interface IProps {
   rowData: { confirmed: Row; dead: Row };
   dates: Moment[];
+  showingDataFor: string;
 }
 
-const Chart: FC<IProps> = ({ rowData, dates }) => {
+const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
   const theme = useTheme();
   const [firstCaseDate, setFirstCaseDate] = useState();
   const [data, setData] = useState();
@@ -88,7 +89,7 @@ const Chart: FC<IProps> = ({ rowData, dates }) => {
 
   return (
     <>
-      <Title>Cases & Deaths</Title>
+      <Title>Cases & Deaths{showingDataFor && `: ${showingDataFor}`}</Title>
       <ResponsiveContainer width={'100%'}>
         <LineChart
           data={data}

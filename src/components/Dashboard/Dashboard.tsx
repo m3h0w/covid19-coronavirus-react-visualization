@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#f6f6f6',
   },
   container: {
-    paddingTop: theme.spacing(4),
+    paddingTop: (props) => (props.paddingTop ? theme.spacing(4) : 0),
     paddingBottom: theme.spacing(4),
   },
   paper: {
@@ -144,6 +144,7 @@ interface IProps {
   title: string;
   icon: FC;
   grid?: boolean;
+  paddingTop?: boolean;
 }
 
 const Dashboard: FC<IProps> = ({
@@ -152,8 +153,9 @@ const Dashboard: FC<IProps> = ({
   Icon = () => null,
   grid = true,
   startOpen = false,
+  paddingTop = true,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ paddingTop });
   const [open, setOpen] = useState(startOpen);
   const dataStore = useDataStore();
 
@@ -219,7 +221,7 @@ const Dashboard: FC<IProps> = ({
         {grid ? (
           <>
             <div className={classes.appBarSpacer} />
-            <Container maxWidth='lg' className={classes.container}>
+            <Container maxWidth='xl' className={classes.container}>
               <Grid container spacing={3}>
                 {children}
               </Grid>

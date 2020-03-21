@@ -151,7 +151,7 @@ const MapPage = observer(() => {
   };
 
   const NumberGrid = () => (
-    <Grid container>
+    <>
       <Grid item lg={6} sm={6} xs={12}>
         <Paper className={classes.paper}>
           <NumberWithTitle
@@ -180,12 +180,22 @@ const MapPage = observer(() => {
   <Grid item lg={3} sm={6} xs={12}>
     <Paper className={classes.paper}>100</Paper>
   </Grid> */}
-    </Grid>
+    </>
   );
 
   return (
-    <Dashboard title='Map' grid={false} Icon={DashboardSwitch}>
-      <div style={{ position: 'relative', maxWidth: '100%', height: '100%' }}>
+    <Dashboard title='Map' Icon={DashboardSwitch} paddingTop={false}>
+      <Grid
+        item
+        xs={12}
+        style={{
+          position: 'relative',
+          maxWidth: '100%',
+          height: '100%',
+          maxHeight: '100vh',
+          paddingTop: 0,
+        }}
+      >
         {dataStore.ready && (
           <div
             style={{
@@ -266,8 +276,8 @@ const MapPage = observer(() => {
             </div>
           ) : null}
         </div>
-      </div>
-      <div>{dataStore.ready && <NumberGrid />}</div>
+      </Grid>
+      {dataStore.ready && <NumberGrid />}
     </Dashboard>
   );
 });

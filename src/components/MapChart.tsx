@@ -20,6 +20,7 @@ import { useHistory } from 'react-router';
 import { showInfoSnackBar } from './Snackbar';
 import { useStateAndLocalStorage } from 'persistence-hooks';
 import { Fade, Theme } from '@material-ui/core';
+import { DataStore } from '../data/dataStore';
 
 const rounded = (num) => {
   if (num > 1000000000) {
@@ -31,7 +32,7 @@ const rounded = (num) => {
   }
 };
 
-const getMatchingCountryKey = (dataStore, geo) => {
+const getMatchingCountryKey = (dataStore: DataStore, geo) => {
   for (const key of Object.keys(geo.properties)) {
     const countryName = geo.properties[key];
     if (dataStore.possibleCountries.includes(countryName)) {
@@ -88,16 +89,7 @@ const MapChart = observer(
     };
 
     return (
-      <ComposableMap
-        // width={window.innerWidth}
-        // height={window.innerHeight}
-        // style={{ width: '100%', height: '100%' }}
-        // projectionConfig={{
-        //   rotate: [-11, 0, 0],
-        //   scale: getScale(),
-        // }}
-        data-tip=''
-      >
+      <ComposableMap data-tip=''>
         <ZoomableGroup zoom={1}>
           <Graticule stroke='#E4E5E6' strokeWidth={0.5} />
           {/* {dataStore.ready && ( */}
