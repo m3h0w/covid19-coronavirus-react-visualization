@@ -178,7 +178,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             )}
           </Paper>
         </Slide>
-        <div style={{ height: 10 }} />
+        <div style={{ height: 15 }} />
         <Grow in={dataStore.ready} timeout={animationTime}>
           <Paper className={classes.paper} style={{ height: 230 }}>
             {rowData && rowData.confirmed && rowData.dead && (

@@ -57,6 +57,14 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     maxHeight: '80vh',
   },
+  mapCard: { maxHeight: '90vh' },
+  bigNumberContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
+    left: 10,
+    zIndex: 0,
+  },
   bigNumber: {
     color: theme.palette.grey[100],
     fontWeight: 900,
@@ -161,38 +169,78 @@ const MapPage = observer(() => {
     );
   };
 
-  const NumberGrid = () => (
-    <>
-      <Grid item lg={6} sm={6} xs={12}>
-        <Paper className={classes.paper}>
-          <NumberWithTitle
-            version='large'
-            centered={true}
-            color={'primary'}
-            title={'Confirmed cases worldwide'}
-            number={dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || ''}
-          />
-        </Paper>
-      </Grid>
-      <Grid item lg={6} sm={6} xs={12}>
-        <Paper className={classes.paper}>
-          <NumberWithTitle
-            version='large'
-            centered={true}
-            color={'secondary'}
-            title={'Deaths worldwide'}
-            number={dataStore.totalDeathsArray[sliderValue]?.totalDeaths || ''}
-          />
-        </Paper>
-      </Grid>
-      {/* <Grid item lg={3} sm={6} xs={12}>
+  const NumberGrid = () => {
+    if (!dataStore.ready) {
+      return null;
+    }
+    const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
+    const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
+    let mortalityRate: number | string = '';
+    if (totalCases && totalDeaths) {
+      mortalityRate = totalDeaths / totalCases;
+    }
+    return (
+      <>
+        <Grid
+          item
+          lg={4}
+          sm={4}
+          xs={12}
+          onClick={() => {
+            setDataType('confirmed');
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'primary'}
+              title={'Confirmed cases (world)'}
+              number={totalCases || ''}
+            />
+          </Paper>
+        </Grid>
+        <Grid
+          item
+          lg={4}
+          sm={4}
+          xs={12}
+          onClick={() => {
+            setDataType('dead');
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'secondary'}
+              title={'Deaths (world)'}
+              number={totalDeaths || ''}
+            />
+          </Paper>
+        </Grid>
+        <Grid item lg={4} sm={4} xs={12}>
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'initial'}
+              title={'Motality rate (world)'}
+              number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
+            />
+          </Paper>
+        </Grid>
+        {/* <Grid item lg={3} sm={6} xs={12}>
     <Paper className={classes.paper}>100</Paper>
   </Grid>
   <Grid item lg={3} sm={6} xs={12}>
     <Paper className={classes.paper}>100</Paper>
   </Grid> */}
-    </>
-  );
+      </>
+    );
+  };
 
   return (
     <Dashboard title='Map' Icon={DashboardSwitch}>
@@ -207,17 +255,9 @@ const MapPage = observer(() => {
           paddingTop: 0,
         }}
       >
-        <Card style={{ maxHeight: '90vh' }}>
+        <Card className={classes.mapCard}>
           {dataStore.ready && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'absolute',
-                left: 10,
-                zIndex: 0,
-              }}
-            >
+            <div className={classes.bigNumberContainer}>
               <Typography className={classes.bigNumber} component='span' variant='body1'>
                 {dataType === 'confirmed'
                   ? dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases
