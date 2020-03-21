@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#f6f6f6',
+    backgroundColor: theme.palette.grey[100],
   },
   container: {
     paddingTop: (props) => (props.paddingTop ? theme.spacing(4) : 0),

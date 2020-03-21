@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { geoCentroid } from 'd3-geo';
 import {
   ComposableMap,
@@ -64,12 +64,14 @@ const UsaMapChart = observer(
     dataType,
     style,
     onClick,
+    selectedRegion,
   }: {
     date: string;
     setTooltipContent: (content: string) => void;
     dataType: 'confirmed' | 'dead';
     style: CSSProperties;
     onClick: () => void;
+    selectedRegion: string;
   }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
@@ -78,6 +80,19 @@ const UsaMapChart = observer(
     const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(
       false,
       'shownMapClickSnackbar'
+    );
+
+    const getDefaultFill = useCallback(
+      (stateKey) => {
+        // console.log({ selectedRegion }, stateKey);
+        if (selectedRegion === stateKey) {
+          return theme.palette.secondary.dark;
+        }
+
+        const d = dataStore.getRegionData(stateKey);
+        return d && d[dataType] && d[dataType][date] ? colorScale(d[dataType][date]) : '#F4EEEE';
+      },
+      [selectedRegion, dataStore, dataType, date]
     );
 
     return useMemo(
@@ -91,8 +106,8 @@ const UsaMapChart = observer(
                   {geographies.map((geo) => {
                     const stateKey = getMatchingStateKey(dataStore, geo);
                     const d = dataStore.getRegionData(stateKey);
-                    console.log({ stateKey });
-                    console.log({ d });
+                    // console.log({ stateKey });
+                    // console.log({ d });
                     return (
                       <Geography
                         key={geo.rsmKey}
@@ -121,11 +136,7 @@ const UsaMapChart = observer(
                         style={{
                           default: {
                             transition: 'fill 0.6s linear',
-                            fill:
-                              d && d[dataType] && d[dataType][date]
-                                ? colorScale(d[dataType][date])
-                                : '#F4EEEE',
-
+                            fill: getDefaultFill(stateKey),
                             outline: 'none',
                           },
                           hover: {
@@ -134,7 +145,7 @@ const UsaMapChart = observer(
                             cursor: 'pointer',
                           },
                           pressed: {
-                            fill: '#E42',
+                            fill: theme.palette.secondary.dark,
                             outline: 'none',
                           },
                         }}
@@ -175,7 +186,7 @@ const UsaMapChart = observer(
           </Fade>
         </ComposableMap>
       ),
-      [date]
+      [date, selectedRegion]
     );
   }
 );

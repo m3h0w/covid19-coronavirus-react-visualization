@@ -7,6 +7,7 @@ import deathsCsvUrl from '../data/deaths.csv';
 import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
+import { US_NAME } from '../utils/consts';
 
 const USE_LOCAL_DATA = true;
 
@@ -22,18 +23,25 @@ function isNumber(n) {
 function groupBy(arr, key) {
   let reducer = (grouped, item) => {
     let group_value = item[key];
+    if (group_value === 'US') {
+      group_value = US_NAME;
+    }
     if (!grouped[group_value]) {
       grouped[group_value] = {};
     }
 
     Object.keys(item).forEach((rowKey) => {
+      let v = item[rowKey];
       if (!grouped[group_value][rowKey]) {
         grouped[group_value][rowKey] = 0;
       }
-      if (item[rowKey] && isNumber(item[rowKey])) {
-        grouped[group_value][rowKey] += parseFloat(item[rowKey]);
+      if (v && isNumber(v)) {
+        grouped[group_value][rowKey] += parseFloat(v);
       } else {
-        grouped[group_value][rowKey] = item[rowKey];
+        if (v === 'US') {
+          v = US_NAME;
+        }
+        grouped[group_value][rowKey] = v;
       }
     });
 
@@ -234,7 +242,7 @@ export class DataStore {
 
   public getPossibleRegionsByCountry = (country: string) => {
     return this.possibleRegions.filter((region) => {
-      if (country === 'US') {
+      if (country === US_NAME) {
         if (!Object.values(stateNames).includes(region)) {
           return false;
         }

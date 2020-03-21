@@ -141,7 +141,7 @@ const MapChart = observer(
                           cursor: 'pointer',
                         },
                         pressed: {
-                          fill: '#E42',
+                          fill: theme.palette.secondary.dark,
                           outline: 'none',
                         },
                       }}

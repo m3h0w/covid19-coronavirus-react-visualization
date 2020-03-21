@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
-import { Fab } from '@material-ui/core';
+import { Fab, Card } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -48,13 +48,23 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
-    margin: theme.spacing(2),
+    // margin: theme.spacing(2),
     display: 'flex',
     overflow: 'visible',
     flexDirection: 'column',
   },
   fixedHeight: {
     height: 400,
+  },
+  bigNumber: {
+    color: theme.palette.grey[100],
+    fontWeight: 900,
+    fontSize: '12vw',
+    lineHeight: 0.54,
+    marginLeft: -5,
+    [theme.breakpoints.up('md')]: {
+      marginLeft: -15,
+    },
   },
 }));
 
@@ -184,7 +194,7 @@ const MapPage = observer(() => {
   );
 
   return (
-    <Dashboard title='Map' Icon={DashboardSwitch} paddingTop={false}>
+    <Dashboard title='Map' Icon={DashboardSwitch}>
       <Grid
         item
         xs={12}
@@ -196,86 +206,79 @@ const MapPage = observer(() => {
           paddingTop: 0,
         }}
       >
-        {dataStore.ready && (
+        <Card style={{ maxHeight: '90vh' }}>
+          {dataStore.ready && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'absolute',
+                left: 10,
+                zIndex: 0,
+              }}
+            >
+              <Typography className={classes.bigNumber} component='span' variant='body1'>
+                {dataType === 'confirmed'
+                  ? dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases
+                  : dataStore.totalDeathsArray[sliderValue]?.totalDeaths}
+              </Typography>
+            </div>
+          )}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'absolute',
-              left: 10,
-              zIndex: 0,
+              maxWidth: '1000px',
+              // height: '500px',
+              position: 'relative',
+              margin: '0 auto',
+              zIndex: 1,
+              // height: '80%',
+              // maxHeight: '105vh',
+              // overflow: 'auto',
+              // padding: '30px',
+              marginTop: '-2%',
             }}
           >
-            <Typography
-              style={{
-                color: 'white',
-                fontWeight: 900,
-                fontSize: '12vw',
-                lineHeight: 0.8,
-              }}
-              component='span'
-              variant='body1'
-            >
-              {dataType === 'confirmed'
-                ? dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases
-                : dataStore.totalDeathsArray[sliderValue]?.totalDeaths}
-            </Typography>
+            {dataStore.datesConverted?.length ? (
+              <>
+                <MapChart date={date} setTooltipContent={setTooltipContent} dataType={dataType} />
+                <ReactTooltip>{tooltipContent}</ReactTooltip>
+              </>
+            ) : null}
           </div>
-        )}
-        <div
-          style={{
-            maxWidth: '1000px',
-            // height: '500px',
-            position: 'relative',
-            margin: '0 auto',
-            zIndex: 1,
-            // height: '80%',
-            // maxHeight: '105vh',
-            // overflow: 'auto',
-            // padding: '30px',
-            marginTop: '-2%',
-          }}
-        >
-          {dataStore.datesConverted?.length ? (
-            <>
-              <MapChart date={date} setTooltipContent={setTooltipContent} dataType={dataType} />
-              <ReactTooltip>{tooltipContent}</ReactTooltip>
-            </>
-          ) : null}
-        </div>
-        <div className={classes.sliderWrapper}>
-          {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-            <div className={classes.slider}>
-              <Typography style={{ marginTop: '-1px' }}>Play</Typography>
-              <IconButton
-                onClick={() => {
-                  if (playing) {
-                    setSliderValue(maxSliderValue);
-                  } else {
-                    setSliderValue(0);
-                  }
-                  setPlaying(!playing);
-                }}
-              >
-                {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
-              </IconButton>
-              <IOSSlider
-                valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-                getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-                aria-labelledby='dates-map-slider'
-                valueLabelDisplay='auto'
-                onChange={(event: any, newValue: number | number[]) => {
-                  setSliderValue(newValue as number);
-                }}
-                value={sliderValue}
-                step={1}
-                marks
-                min={0}
-                max={maxSliderValue}
-              />
-            </div>
-          ) : null}
-        </div>
+          <div className={classes.sliderWrapper}>
+            {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
+              <div className={classes.slider}>
+                <Typography style={{ marginTop: '-1px' }}>Play</Typography>
+                <IconButton
+                  onClick={() => {
+                    if (playing) {
+                      setSliderValue(maxSliderValue);
+                    } else {
+                      setSliderValue(0);
+                    }
+                    setPlaying(!playing);
+                  }}
+                >
+                  {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
+                </IconButton>
+                <IOSSlider
+                  valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+                  getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+                  aria-labelledby='dates-map-slider'
+                  valueLabelDisplay='auto'
+                  onChange={(event: any, newValue: number | number[]) => {
+                    setSliderValue(newValue as number);
+                  }}
+                  value={sliderValue}
+                  step={1}
+                  marks
+                  min={0}
+                  max={maxSliderValue}
+                />
+              </div>
+            ) : null}
+          </div>
+        </Card>
       </Grid>
       {dataStore.ready && <NumberGrid />}
     </Dashboard>

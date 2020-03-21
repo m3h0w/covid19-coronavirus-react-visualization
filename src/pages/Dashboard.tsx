@@ -12,7 +12,7 @@ import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
 import { Typography, Card, ButtonBase, Slide, Grow, Fade } from '@material-ui/core';
-import { animationTime } from '../utils/consts';
+import { animationTime, US_NAME } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
 import last from '../utils/last';
 import ReactTooltip from 'react-tooltip';
@@ -106,7 +106,7 @@ const useMemoryState2 = createPersistedState();
 
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useMemoryState('US');
+  const [selectedCountry, setSelectedCountry] = useMemoryState(US_NAME);
   const [selectedRegion, setSelectedRegion] = useMemoryState2('');
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
@@ -114,13 +114,14 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const history = useHistory();
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
-  const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
+  // const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
 
   useEffect(() => {
     const countryFromUrl = props.match.params.country;
     if (countryFromUrl) {
       history.push(`/dashboard`);
       setSelectedCountry(countryFromUrl);
+      // setSelectedRegion(null);
     }
   }, [props.match.params.country, history, setSelectedCountry]);
 
@@ -140,7 +141,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       (Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] as number)) ||
     0;
   const mortalityRate = cases ? deaths / cases : undefined;
-  const isUs = selectedCountry === 'US';
+  const isUs = selectedCountry === US_NAME;
 
   return (
     <Dashboard title='Country dashboard'>
@@ -212,15 +213,37 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       <Grid item xs={12}>
         {isUs && (
           <>
-            <UsaMapChart
-              date={last(dataStore.datesConverted)}
-              setTooltipContent={setTooltipContent}
-              dataType={dataType}
-              style={{ maxHeight: '80vh' }}
-              onClick={(stateKey) => {
-                setSelectedRegion(stateKey);
-              }}
-            />
+            <Card>
+              <UsaMapChart
+                date={last(dataStore.datesConverted)}
+                setTooltipContent={setTooltipContent}
+                dataType={'confirmed'}
+                style={{ maxHeight: '80vh' }}
+                onClick={(stateKey) => {
+                  setSelectedRegion(stateKey);
+                }}
+                selectedRegion={selectedRegion}
+              />
+            </Card>
+            <ReactTooltip>{tooltipContent}</ReactTooltip>
+          </>
+        )}
+      </Grid>
+      <Grid item xs={12}>
+        {isUs && (
+          <>
+            <Card>
+              <UsaMapChart
+                date={last(dataStore.datesConverted)}
+                setTooltipContent={setTooltipContent}
+                dataType={'dead'}
+                style={{ maxHeight: '80vh' }}
+                onClick={(stateKey) => {
+                  setSelectedRegion(stateKey);
+                }}
+                selectedRegion={selectedRegion}
+              />
+            </Card>
             <ReactTooltip>{tooltipContent}</ReactTooltip>
           </>
         )}
