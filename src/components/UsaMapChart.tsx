@@ -86,7 +86,7 @@ const UsaMapChart = observer(
       (stateKey) => {
         // console.log({ selectedRegion }, stateKey);
         if (selectedRegion === stateKey) {
-          return theme.palette.secondary.dark;
+          return theme.palette.secondary.main;
         }
 
         const d = dataStore.getRegionData(stateKey);
@@ -140,7 +140,7 @@ const UsaMapChart = observer(
                             outline: 'none',
                           },
                           hover: {
-                            fill: theme.palette.secondary.main,
+                            fill: theme.palette.secondary.light,
                             outline: 'none',
                             cursor: 'pointer',
                           },

@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  typo: { marginTop: '-13px', marginBottom: '5px' },
+  typo: { marginTop: '-17px', marginBottom: '1px' },
 }));
 
 interface IProps {

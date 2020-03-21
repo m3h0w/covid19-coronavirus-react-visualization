@@ -98,6 +98,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fixedHeight: {
     height: 400,
+    maxHeight: '80vh',
   },
 }));
 
@@ -145,7 +146,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
 
   return (
     <Dashboard title='Country dashboard'>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={3}>
         <Slide
           direction='down'
           in={dataStore.ready}
@@ -153,10 +154,13 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           unmountOnExit
           timeout={animationTime}
         >
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} style={{ height: 155 }}>
             <CustomAutocomplete
               label={'Select country'}
-              handleChange={setSelectedCountry}
+              handleChange={(v) => {
+                setSelectedCountry(v);
+                setSelectedRegion(null);
+              }}
               selectedValue={selectedCountry}
               possibleValues={possibleCountries}
               id={'select-country'}
@@ -174,6 +178,14 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             )}
           </Paper>
         </Slide>
+        <div style={{ height: 10 }} />
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={classes.paper} style={{ height: 230 }}>
+            {rowData && rowData.confirmed && rowData.dead && (
+              <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
+            )}
+          </Paper>
+        </Grow>
       </Grid>
       <Grid item xs={12} md={8} lg={9}>
         <Grow in={dataStore.ready} timeout={animationTime}>
@@ -186,20 +198,16 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           </Paper>
         </Grow>
       </Grid>
-      <Grid item xs={6} md={4} lg={3}>
+      <Grid item xs={12}>
         <Grow in={dataStore.ready} timeout={animationTime}>
-          <Paper className={classes.paper}>
-            {rowData && rowData.confirmed && rowData.dead && (
-              <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
-            )}
-          </Paper>
-        </Grow>
-        <div style={{ height: '20px' }} />
-        <Grow in={dataStore.ready} timeout={animationTime}>
-          <Card>
+          <Card style={{ width: '100%' }}>
             <ButtonBase
               className={classes.paper}
-              style={{ backgroundColor: theme.palette.secondary.main, cursor: 'pointer' }}
+              style={{
+                backgroundColor: theme.palette.secondary.main,
+                cursor: 'pointer',
+                width: '100%',
+              }}
               onClick={() => {
                 history.push(`/infection-trajectories/${selectedCountry}`);
               }}
@@ -208,7 +216,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             </ButtonBase>
           </Card>
         </Grow>
-        {/* <Paper className={classes.paper}></Paper> */}
       </Grid>
       <Grid item xs={12}>
         {isUs && (
