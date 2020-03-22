@@ -156,7 +156,7 @@ export class DataStore {
         };
         this.possibleCountries.forEach((country) => {
           const dayOf100Cases = this.dayOf100CasesByCountry[country];
-          if (!dayOf100Cases) {
+          if (dayOf100Cases === undefined) {
             return;
           }
           const index = dayOf100Cases + i;
@@ -276,7 +276,7 @@ export class DataStore {
   @computed get countriesWithOver100Cases() {
     if (this.ready && this.confirmedByCountry) {
       return Object.keys(this.confirmedByCountry)
-        .filter((key) => this.dayOf100CasesByCountry[key])
+        .filter((key) => this.dayOf100CasesByCountry[key] !== undefined)
         .sort();
     }
     return [];
