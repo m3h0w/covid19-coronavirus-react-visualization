@@ -122,7 +122,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     if (countryFromUrl) {
       history.push(`/dashboard`);
       setSelectedCountry(countryFromUrl);
-      // setSelectedRegion(null);
+      setSelectedRegion(null);
     }
   }, [props.match.params.country, history, setSelectedCountry]);
 
