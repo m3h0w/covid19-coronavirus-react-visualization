@@ -10,10 +10,10 @@ export default function CurrentCount({ confirmedCases, deaths, mortalityRate }) 
   return (
     <React.Fragment>
       <NumberWithTitle color={'primary'} title={'Confirmed cases'} number={confirmedCases} />
-      <NumberWithTitle color={'secondary'} title={'Deaths'} number={deaths} />
+      <NumberWithTitle color={'initial'} title={'Deaths'} number={deaths} />
       {mortalityRate ? (
         <NumberWithTitle
-          color={'initial'}
+          color={'secondary'}
           title={'Mortality rate'}
           number={`${(mortalityRate * 100).toFixed(2)}%`}
         />

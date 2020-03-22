@@ -139,7 +139,8 @@ export class DataStore {
     return this.possibleCountries.reduce((acc, country) => {
       const countryData = this.getCountryData(country);
       const values = this.datesConverted.map((date) => countryData?.confirmed[date]);
-      acc[country] = values.findIndex((v) => v > threshold);
+      const day = values.findIndex((v) => v > threshold);
+      acc[country] = day !== -1 ? day : undefined;
       return acc;
     }, {});
   }
@@ -154,7 +155,11 @@ export class DataStore {
           time: i,
         };
         this.possibleCountries.forEach((country) => {
-          const index = this.dayOf100CasesByCountry[country] + i;
+          const dayOf100Cases = this.dayOf100CasesByCountry[country];
+          if (!dayOf100Cases) {
+            return;
+          }
+          const index = dayOf100Cases + i;
           if (index <= this.dates.length - 1) {
             const date = this.dates[index];
             if (countries.includes(country)) {
@@ -264,6 +269,15 @@ export class DataStore {
   @computed get possibleCountries() {
     if (this.ready && this.confirmedByCountry) {
       return Object.keys(this.confirmedByCountry).sort();
+    }
+    return [];
+  }
+
+  @computed get countriesWithOver100Cases() {
+    if (this.ready && this.confirmedByCountry) {
+      return Object.keys(this.confirmedByCountry)
+        .filter((key) => this.dayOf100CasesByCountry[key])
+        .sort();
     }
     return [];
   }

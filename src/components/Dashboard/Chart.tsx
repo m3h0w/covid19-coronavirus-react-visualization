@@ -109,7 +109,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           />
           {getYAxis('No. of cases & deaths')}
           {getFormattedLine('confirmedCases', 'Confirmed cases')}
-          {getFormattedLine('deaths', 'Deaths', theme.palette.secondary.main)}
+          {getFormattedLine('deaths', 'Deaths', '#000')}
           {brush}
           {getTooltip(formatXAxis)}
         </LineChart>

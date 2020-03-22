@@ -189,7 +189,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
                 setSelectedCountry(null);
               }}
               selectedValue={selectedCountry}
-              possibleValues={possibleCountries}
+              possibleValues={dataStore.countriesWithOver100Cases}
               id={'select-country'}
               width={'auto'}
             />

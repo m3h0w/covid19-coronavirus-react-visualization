@@ -215,7 +215,7 @@ const MapPage = observer(() => {
             <NumberWithTitle
               version='large'
               centered={true}
-              color={'secondary'}
+              color={'initial'}
               title={'Deaths (world)'}
               number={totalDeaths || ''}
             />
@@ -226,7 +226,7 @@ const MapPage = observer(() => {
             <NumberWithTitle
               version='large'
               centered={true}
-              color={'initial'}
+              color={'secondary'}
               title={'Motality rate (world)'}
               number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
             />

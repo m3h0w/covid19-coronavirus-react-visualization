@@ -220,7 +220,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       <Grid item xs={12}>
         {isUs && (
           <>
-            <Card>
+            <Card style={{ position: 'relative' }}>
               <UsaMapChart
                 date={last(dataStore.datesConverted)}
                 setTooltipContent={setTooltipContent}
@@ -231,6 +231,13 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 }}
                 selectedRegion={selectedRegion}
               />
+              <Typography
+                variant='h4'
+                color={'primary'}
+                style={{ position: 'absolute', bottom: 0, right: 5 }}
+              >
+                Confirmed cases
+              </Typography>
             </Card>
             <ReactTooltip>{tooltipContent}</ReactTooltip>
           </>
@@ -239,7 +246,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       <Grid item xs={12}>
         {isUs && (
           <>
-            <Card>
+            <Card style={{ position: 'relative' }}>
               <UsaMapChart
                 date={last(dataStore.datesConverted)}
                 setTooltipContent={setTooltipContent}
@@ -250,6 +257,13 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 }}
                 selectedRegion={selectedRegion}
               />
+              <Typography
+                variant='h4'
+                color='inital'
+                style={{ position: 'absolute', bottom: 0, right: 5 }}
+              >
+                Deaths
+              </Typography>
             </Card>
             <ReactTooltip>{tooltipContent}</ReactTooltip>
           </>
