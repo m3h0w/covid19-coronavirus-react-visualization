@@ -61,19 +61,14 @@ const useStyles = makeStyles((theme) => ({
   bigNumberContainer: {
     display: 'flex',
     flexDirection: 'column',
-    position: 'absolute',
-    left: 10,
+    position: 'absolute'
     zIndex: 0,
   },
   bigNumber: {
     color: theme.palette.grey[100],
     fontWeight: 900,
-    fontSize: '12vw',
-    lineHeight: 0.54,
-    marginLeft: -5,
-    [theme.breakpoints.up('md')]: {
-      marginLeft: -15,
-    },
+    fontSize: '6vw',
+    lineHeight: 0.5
   },
 }));
 
