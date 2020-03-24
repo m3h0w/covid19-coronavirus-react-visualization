@@ -16,6 +16,7 @@ import { animationTime, US_NAME } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
 import last from '../utils/last';
 import ReactTooltip from 'react-tooltip';
+import { showInfoSnackBar } from '../components/Snackbar';
 
 const drawerWidth = 240;
 
@@ -104,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
 
 const useMemoryState = createPersistedState();
 const useMemoryState2 = createPersistedState();
+const useMemoryState3 = createPersistedState();
 
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
@@ -115,7 +117,17 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const history = useHistory();
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
+  const [shownUsInfoSnack, setShownUsInfoSnack] = useMemoryState3(false);
   // const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
+
+  useEffect(() => {
+    if (!shownUsInfoSnack && selectedCountry === US_NAME) {
+      showInfoSnackBar(
+        `The state-wise data for United States has been last updated on the 22nd of March. We're working on it.`
+      );
+      setShownUsInfoSnack(true);
+    }
+  }, [shownUsInfoSnack, selectedCountry]);
 
   useEffect(() => {
     const countryFromUrl = props.match.params.country;
