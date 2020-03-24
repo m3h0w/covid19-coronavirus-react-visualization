@@ -373,23 +373,25 @@ const MapPage = observer(() => {
       </Grid>
       {dataStore.ready && <NumberGrid setDataType={setDataType} sliderValue={sliderValue} />}
       <Grid item xs={12}>
-        <Paper className={classes.paper} style={{ height: '500px', width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title>Cases by continent</Title>
-            <Button
-              style={{ maxWidth: 300, marginBottom: 10 }}
-              variant='outlined'
-              color='secondary'
-              size={'small'}
-              onClick={() => {
-                setColors(generateNewColors(whoDataStore.possibleRegions?.length));
-              }}
-            >
-              New colors
-            </Button>
-          </div>
-          <WhoBarChart colors={colors} />
-        </Paper>
+        <Grow in={whoDataStore.ready}>
+          <Paper className={classes.paper} style={{ height: '500px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Title>Cases by continent</Title>
+              <Button
+                style={{ maxWidth: 300, marginBottom: 10 }}
+                variant='outlined'
+                color='secondary'
+                size={'small'}
+                onClick={() => {
+                  setColors(generateNewColors(whoDataStore.possibleRegions?.length));
+                }}
+              >
+                New colors
+              </Button>
+            </div>
+            <WhoBarChart colors={colors} />
+          </Paper>
+        </Grow>
       </Grid>
     </Dashboard>
   );
@@ -413,9 +415,10 @@ const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
         {getYAxis('Cases')}
         <Tooltip />
         <Legend />
-        {whoDataStore?.possibleRegions?.map((region, i) => {
-          return <Bar dataKey={region} stackId={'a'} fill={colors[i]} key={i} />;
-        })}
+        {colors &&
+          whoDataStore?.possibleRegions?.map((region, i) => {
+            return <Bar dataKey={region} stackId={'a'} fill={colors[i]} key={i} />;
+          })}
       </BarChart>
     </ResponsiveContainer>
   );
