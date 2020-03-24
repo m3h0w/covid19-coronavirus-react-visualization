@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     color: '#DCDFE4' || theme.palette.grey[100],
     fontWeight: 900,
     fontSize: '12vw',
-    lineHeight: 0.57,
+    lineHeight: 0.56,
     marginLeft: -5,
     [theme.breakpoints.up('md')]: {
       marginLeft: -13,

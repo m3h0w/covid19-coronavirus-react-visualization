@@ -65,7 +65,8 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
       dataKey={dataKey}
       name={name}
       stroke={stroke || theme.palette.primary.main}
-      dot={false}
+      dot={true}
+      strokeWidth={2}
     />
   );
 
