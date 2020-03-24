@@ -175,6 +175,18 @@ const NumberGrid = observer(({ setDataType, sliderValue }) => {
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
+const generateNewColors = (length: number) => {
+  if (!length) {
+    return;
+  }
+  const colorHelper = new Colors();
+  const array = [];
+  for (let index = 0; index < length; index++) {
+    array.push(colorHelper.getRandomColor());
+  }
+  return array;
+};
+
 const MapPage = observer(() => {
   const classes = useStyles();
   const dataStore = useDataStore();
@@ -190,13 +202,11 @@ const MapPage = observer(() => {
   const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
   const [colors, setColors] = useState();
   const whoDataStore = useWhoDataStore();
-  const generateNewColors = () => {
-    const colorHelper = new Colors();
-    setColors(whoDataStore.possibleRegions?.map(() => colorHelper.getRandomColor()));
-  };
 
   useEffect(() => {
-    generateNewColors();
+    if (whoDataStore.possibleRegions) {
+      setColors(generateNewColors(whoDataStore.possibleRegions.length));
+    }
   }, [whoDataStore.possibleRegions]);
 
   useEffect(() => {
@@ -372,7 +382,7 @@ const MapPage = observer(() => {
               color='secondary'
               size={'small'}
               onClick={() => {
-                generateNewColors();
+                setColors(generateNewColors(whoDataStore.possibleRegions?.length));
               }}
             >
               New colors
