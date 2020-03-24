@@ -44,7 +44,6 @@ const MultiChart: FC<IProps> = observer(
     const theme = useTheme();
     const dataStore = useDataStore();
     const data = dataStore.dataForAfter100Cases(dataType, countries);
-    console.log({ data });
 
     const getFormattedLine = (dot: boolean = false) => {
       const CustomizedDot = (props) => {

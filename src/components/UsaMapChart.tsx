@@ -36,7 +36,6 @@ const offsets = {
 const getMatchingStateKey = (dataStore: DataStore, geo) => {
   for (const key of Object.keys(geo.properties)) {
     const regionName = geo.properties[key];
-    console.log(regionName, dataStore.possibleRegions);
     if (dataStore.possibleRegions.includes(regionName)) {
       return regionName;
     }
@@ -90,7 +89,6 @@ const UsaMapChart = observer(
         }
 
         const d = dataStore.getRegionData(stateKey);
-        console.log(stateKey, { d });
         return d && d[dataType] && d[dataType][date] ? colorScale(d[dataType][date]) : '#F4EEEE';
       },
       [selectedRegion, dataStore, dataType, date]

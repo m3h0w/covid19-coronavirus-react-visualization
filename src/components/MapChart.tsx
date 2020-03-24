@@ -21,6 +21,7 @@ import { showInfoSnackBar } from './Snackbar';
 import { useStateAndLocalStorage } from 'persistence-hooks';
 import { Fade, Theme } from '@material-ui/core';
 import { DataStore } from '../data/dataStore';
+import { mdUp } from '../utils/breakpoints';
 
 const rounded = (num) => {
   if (num > 1000000000) {
@@ -122,9 +123,13 @@ const MapChart = observer(
                       onMouseLeave={() => {
                         setTooltipContent('');
                       }}
-                      onClick={() => {
-                        routeChange(countryKey);
-                      }}
+                      onClick={
+                        mdUp()
+                          ? () => {
+                              routeChange(countryKey);
+                            }
+                          : undefined
+                      }
                       style={{
                         default: {
                           transition: 'fill 0.6s linear',

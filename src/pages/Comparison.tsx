@@ -22,7 +22,7 @@ import { useHistory, RouteComponentProps } from 'react-router';
 import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
 import { getContrastYIQ } from '../utils/colors';
 import CustomChip from '../components/CustomChip';
-import { animationTime } from '../utils/consts';
+import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 
 const drawerWidth = 240;
 
@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   drawerPaper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     position: 'relative',
     whiteSpace: 'nowrap',
     width: drawerWidth,
@@ -98,6 +99,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   paper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     padding: theme.spacing(2),
     display: 'flex',
     overflow: 'visible',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import MapChart from 'components/MapChart';
 import Dashboard from 'components/Dashboard/Dashboard';
 import useDataStore from '../data/dataStore';
@@ -14,13 +14,14 @@ import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
-import { Fab, Card } from '@material-ui/core';
+import { Fab, Card, Grow, Slide } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import last from '../utils/last';
 import Title from 'components/Dashboard/Title';
 import NumberWithTitle from '../components/NumberWithTitle';
+import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -47,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   paper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     padding: theme.spacing(2),
     // margin: theme.spacing(2),
     display: 'flex',
@@ -57,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     maxHeight: '80vh',
   },
-  mapCard: { maxHeight: '90vh' },
+  mapCard: { opacity: GLOBAL_PAPER_OPACITY, maxHeight: '90vh' },
   bigNumberContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -66,16 +68,95 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 0,
   },
   bigNumber: {
-    color: theme.palette.grey[100],
+    color: '#DCDFE4' || theme.palette.grey[100],
     fontWeight: 900,
     fontSize: '12vw',
-    lineHeight: 0.54,
+    lineHeight: 0.57,
     marginLeft: -5,
     [theme.breakpoints.up('md')]: {
-      marginLeft: -15,
+      marginLeft: -13,
     },
   },
 }));
+
+const NumberGrid = observer(({ setDataType, sliderValue }) => {
+  const classes = useStyles();
+  const dataStore = useDataStore();
+  if (!dataStore.ready) {
+    return null;
+  }
+  const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
+  const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
+  let mortalityRate: number | string = '';
+  if (totalCases && totalDeaths) {
+    mortalityRate = totalDeaths / totalCases;
+  }
+  return (
+    <>
+      <Grid
+        item
+        lg={4}
+        xs={12}
+        onClick={() => {
+          setDataType('confirmed');
+        }}
+        style={{ cursor: 'pointer' }}
+      >
+        <Grow in={dataStore.ready}>
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'primary'}
+              title={'Confirmed cases (world)'}
+              number={totalCases || ''}
+            />
+          </Paper>
+        </Grow>
+      </Grid>
+      <Grid
+        item
+        lg={4}
+        xs={12}
+        onClick={() => {
+          setDataType('dead');
+        }}
+        style={{ cursor: 'pointer' }}
+      >
+        <Grow in={dataStore.ready}>
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'initial'}
+              title={'Deaths (world)'}
+              number={totalDeaths || ''}
+            />
+          </Paper>
+        </Grow>
+      </Grid>
+      <Grid item lg={4} xs={12}>
+        <Grow in={dataStore.ready}>
+          <Paper className={classes.paper}>
+            <NumberWithTitle
+              version='large'
+              centered={true}
+              color={'secondary'}
+              title={'Motality rate (world)'}
+              number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
+            />
+          </Paper>
+        </Grow>
+      </Grid>
+      {/* <Grid item lg={3} sm={6} xs={12}>
+  <Paper className={classes.paper}>100</Paper>
+</Grid>
+<Grid item lg={3} sm={6} xs={12}>
+  <Paper className={classes.paper}>100</Paper>
+</Grid> */}
+    </>
+  );
+});
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
@@ -169,79 +250,6 @@ const MapPage = observer(() => {
     );
   };
 
-  const NumberGrid = () => {
-    if (!dataStore.ready) {
-      return null;
-    }
-    const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
-    const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
-    let mortalityRate: number | string = '';
-    if (totalCases && totalDeaths) {
-      mortalityRate = totalDeaths / totalCases;
-    }
-    return (
-      <>
-        <Grid
-          item
-          lg={4}
-          sm={4}
-          xs={12}
-          onClick={() => {
-            setDataType('confirmed');
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          <Paper className={classes.paper}>
-            <NumberWithTitle
-              version='large'
-              centered={true}
-              color={'primary'}
-              title={'Confirmed cases (world)'}
-              number={totalCases || ''}
-            />
-          </Paper>
-        </Grid>
-        <Grid
-          item
-          lg={4}
-          sm={4}
-          xs={12}
-          onClick={() => {
-            setDataType('dead');
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          <Paper className={classes.paper}>
-            <NumberWithTitle
-              version='large'
-              centered={true}
-              color={'initial'}
-              title={'Deaths (world)'}
-              number={totalDeaths || ''}
-            />
-          </Paper>
-        </Grid>
-        <Grid item lg={4} sm={4} xs={12}>
-          <Paper className={classes.paper}>
-            <NumberWithTitle
-              version='large'
-              centered={true}
-              color={'secondary'}
-              title={'Motality rate (world)'}
-              number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
-            />
-          </Paper>
-        </Grid>
-        {/* <Grid item lg={3} sm={6} xs={12}>
-    <Paper className={classes.paper}>100</Paper>
-  </Grid>
-  <Grid item lg={3} sm={6} xs={12}>
-    <Paper className={classes.paper}>100</Paper>
-  </Grid> */}
-      </>
-    );
-  };
-
   return (
     <Dashboard title='Map' Icon={DashboardSwitch}>
       <Grid
@@ -252,9 +260,10 @@ const MapPage = observer(() => {
           maxWidth: '100%',
           height: '100%',
           maxHeight: '100vh',
-          paddingTop: 0,
+          // paddingTop: 0,
         }}
       >
+        {/* <Grow in={dataStore.ready} timeout={animationTime}> */}
         <Card className={classes.mapCard}>
           {dataStore.ready && (
             <div className={classes.bigNumberContainer}>
@@ -320,8 +329,9 @@ const MapPage = observer(() => {
             ) : null}
           </div>
         </Card>
+        {/* </Grow> */}
       </Grid>
-      {dataStore.ready && <NumberGrid />}
+      {dataStore.ready && <NumberGrid setDataType={setDataType} sliderValue={sliderValue} />}
     </Dashboard>
   );
 });

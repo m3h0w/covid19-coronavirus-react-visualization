@@ -26,7 +26,9 @@ import CustomSelect from './Select';
 import { CustomAutocomplete } from './Select';
 import { Row } from './Chart';
 import useDataStore from '../../data/dataStore';
-import { Hidden } from '@material-ui/core';
+import { Hidden, Grow, Fade } from '@material-ui/core';
+import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
+import { GLOBAL_PAPER_OPACITY, animationTime } from '../../utils/consts';
 
 function Copyright() {
   return (
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
+    paddingLeft: 16,
     color: 'white',
     minHeight: toolbarHeight,
   },
@@ -63,6 +66,8 @@ const useStyles = makeStyles((theme) => ({
     // ...theme.mixins.toolbar,
   },
   appBar: {
+    background: 'linear-gradient(to right bottom, #fe217d, #fca2c0)',
+    opacity: GLOBAL_PAPER_OPACITY,
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
@@ -79,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: 15,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   menuButtonHidden: {
     display: 'none',
@@ -94,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   drawerPaper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     position: 'relative',
     whiteSpace: 'nowrap',
     width: drawerWidth,
@@ -103,6 +112,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerPaperClose: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -124,12 +134,15 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.palette.grey[100],
+    backgroundImage: `url(${backgroundSmoke})`,
+    backgroundSize: 'cover',
   },
   container: {
-    paddingTop: (props) => (props.paddingTop ? theme.spacing(4) : 0),
+    paddingTop: (props) => (props.paddingTop ? theme.spacing(2) : 0),
     paddingBottom: theme.spacing(4),
   },
   paper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     // padding: theme.spacing(2),
     display: 'flex',
     overflow: 'visible',
@@ -138,6 +151,9 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 350,
     maxHeight: '80vh',
+  },
+  hidden: {
+    display: 'none',
   },
 }));
 
@@ -182,6 +198,23 @@ const Dashboard: FC<IProps> = ({
             <MenuIcon />
           </IconButton>
           <div className={classes.title}>
+            <Hidden xsDown>
+              <Typography
+                className={open && classes.hidden}
+                component='h1'
+                variant='h6'
+                color='inherit'
+                noWrap
+              >
+                COVID19.PINK
+              </Typography>
+              <Divider
+                className={open && classes.hidden}
+                orientation='vertical'
+                flexItem={true}
+                light={true}
+              />
+            </Hidden>
             <Typography component='h1' variant='h6' color='inherit' noWrap>
               {title}
             </Typography>
@@ -192,7 +225,14 @@ const Dashboard: FC<IProps> = ({
               <NotificationsIcon />
             </Badge>
           </IconButton> */}
-          <Hidden xsDown implementation='css'>
+          <Hidden xsDown mdUp implementation='css'>
+            {dataStore.ready && (
+              <Typography style={{ fontSize: '0.6rem' }}>
+                Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
+              </Typography>
+            )}
+          </Hidden>
+          <Hidden smDown implementation='css'>
             {dataStore.ready && (
               <Typography>
                 Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
@@ -218,26 +258,28 @@ const Dashboard: FC<IProps> = ({
         {/* <Divider />
         <List>{secondaryListItems}</List> */}
       </Drawer>
-      <main className={classes.content}>
-        {grid ? (
-          <>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth='xl' className={classes.container}>
-              <Grid container spacing={3}>
-                {children}
-              </Grid>
-              {/* <Box pt={4}>
+      <Fade in={dataStore.ready} animationTime={animationTime}>
+        <main className={classes.content}>
+          {grid ? (
+            <>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth='xl' className={classes.container}>
+                <Grid container spacing={3}>
+                  {children}
+                </Grid>
+                {/* <Box pt={4}>
             <Copyright />
           </Box> */}
-            </Container>
-          </>
-        ) : (
-          <>
-            <div className={classes.appBarSpacer} />
-            {children}
-          </>
-        )}
-      </main>
+              </Container>
+            </>
+          ) : (
+            <>
+              <div className={classes.appBarSpacer} />
+              {children}
+            </>
+          )}
+        </main>
+      </Fade>
     </div>
   );
 };

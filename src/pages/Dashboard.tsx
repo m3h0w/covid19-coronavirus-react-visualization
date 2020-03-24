@@ -12,7 +12,7 @@ import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
 import { Typography, Card, ButtonBase, Slide, Grow, Fade } from '@material-ui/core';
-import { animationTime, US_NAME } from '../utils/consts';
+import { animationTime, US_NAME, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
 import last from '../utils/last';
 import ReactTooltip from 'react-tooltip';
@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   drawerPaper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     position: 'relative',
     whiteSpace: 'nowrap',
     width: drawerWidth,
@@ -92,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   paper: {
+    opacity: `${GLOBAL_PAPER_OPACITY} !important`,
     padding: theme.spacing(2),
     display: 'flex',
     overflow: 'visible',
