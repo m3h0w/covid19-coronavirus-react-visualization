@@ -70,6 +70,11 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     />
   );
 
+  const lines = [
+    getFormattedLine('confirmedCases', 'Confirmed cases'),
+    getFormattedLine('deaths', 'Deaths', '#000'),
+  ];
+
   const brush = getBrush({
     data,
     color: theme.palette.text.secondary,
@@ -78,8 +83,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     children: (
       <LineChart>
         <YAxis hide domain={[0, 'auto']} />
-        {getFormattedLine('confirmedCases', 'Confirmed cases')}
-        {getFormattedLine('deaths', 'Deaths', theme.palette.secondary.main)}
+        {lines}
       </LineChart>
     ),
   });
@@ -109,8 +113,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             tickFormatter={formatXAxis}
           />
           {getYAxis('No. of cases & deaths')}
-          {getFormattedLine('confirmedCases', 'Confirmed cases')}
-          {getFormattedLine('deaths', 'Deaths', '#000')}
+          {lines}
           {brush}
           {getTooltip(formatXAxis)}
         </LineChart>

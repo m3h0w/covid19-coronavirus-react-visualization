@@ -125,7 +125,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   useEffect(() => {
     if (!shownUsInfoSnack && selectedCountry === US_NAME) {
       showInfoSnackBar(
-        `The state-wise data for United States has been last updated on the 22nd of March. We're working on it.`
+        `The state-wise data for United States has been last updated on the 22nd of March. We're working on it 🙂`
       );
       setShownUsInfoSnack(true);
     }

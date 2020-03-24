@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
-import { Fab, Card, Grow, Slide } from '@material-ui/core';
+import { Fab, Card, Grow, Slide, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -22,6 +22,21 @@ import last from '../utils/last';
 import Title from 'components/Dashboard/Title';
 import NumberWithTitle from '../components/NumberWithTitle';
 import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+  ResponsiveContainer,
+} from 'recharts';
+import useWhoDataStore from '../data/whoDataStore';
+import { mdUp } from '../utils/breakpoints';
+import Colors from '../utils/colors';
+import getYAxis from '../components/Dashboard/YAxis';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -173,6 +188,16 @@ const MapPage = observer(() => {
   );
   const [playing, setPlaying] = useState(false);
   const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
+  const [colors, setColors] = useState();
+  const whoDataStore = useWhoDataStore();
+  const generateNewColors = () => {
+    const colorHelper = new Colors();
+    setColors(whoDataStore.possibleRegions?.map(() => colorHelper.getRandomColor()));
+  };
+
+  useEffect(() => {
+    generateNewColors();
+  }, [whoDataStore.possibleRegions]);
 
   useEffect(() => {
     const checkKey = (e) => {
@@ -215,7 +240,12 @@ const MapPage = observer(() => {
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
-      showInfoSnackBar('Use the slider on the bottom to travel in time 🦋', 4000);
+      showInfoSnackBar('Use the slider on the bottom to travel in time 🦋', 5000);
+      if (mdUp()) {
+        setTimeout(() => {
+          showInfoSnackBar('Hold ctrl and scroll to zoom in 🔎', 5000);
+        }, 2000);
+      }
       setShownSnackbar(true);
     }
   }, [shownSnackbar, setShownSnackbar, dataStore.ready]);
@@ -332,8 +362,57 @@ const MapPage = observer(() => {
         {/* </Grow> */}
       </Grid>
       {dataStore.ready && <NumberGrid setDataType={setDataType} sliderValue={sliderValue} />}
+      <Grid item xs={12}>
+        <Paper className={classes.paper} style={{ height: '500px', width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Title>Cases by continent</Title>
+            <Button
+              style={{ maxWidth: 300, marginBottom: 10 }}
+              variant='outlined'
+              color='secondary'
+              size={'small'}
+              onClick={() => {
+                generateNewColors();
+              }}
+            >
+              New colors
+            </Button>
+          </div>
+          <WhoBarChart colors={colors} />
+        </Paper>
+      </Grid>
     </Dashboard>
   );
 });
+
+const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
+  const whoDataStore = useWhoDataStore();
+  return (
+    <ResponsiveContainer>
+      <BarChart
+        data={whoDataStore?.getDataArrayWithTime}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray='1 6' />
+        <XAxis dataKey='time' tickFormatter={formatXAxis} />
+        {getYAxis('Cases')}
+        <Tooltip />
+        <Legend />
+        {whoDataStore?.possibleRegions?.map((region, i) => {
+          return <Bar dataKey={region} stackId={'a'} fill={colors[i]} key={i} />;
+        })}
+      </BarChart>
+    </ResponsiveContainer>
+  );
+});
+
+const TIME_FORMAT = 'MMM Do';
+const formatXAxis: TickFormatterFunction = (tickItem: number) =>
+  moment(tickItem * 1000).format(TIME_FORMAT);
 
 export default MapPage;
