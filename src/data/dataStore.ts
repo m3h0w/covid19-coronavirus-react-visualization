@@ -4,6 +4,8 @@ import { Row } from '../components/Dashboard/MultiChart';
 import { csv } from 'd3-request';
 import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
+import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
+import deathsGlobalCsvUrl from '../data/deaths_global.csv';
 import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
@@ -36,11 +38,11 @@ function groupBy(arr, key) {
         grouped[group_value][rowKey] = 0;
       }
       if (v && isNumber(v)) {
-        if (group_value === US_NAME) {
-          if (!Object.values(stateNames).includes(item[STATE_KEY])) {
-            return grouped;
-          }
-        }
+        // if (group_value === US_NAME) {
+        //   if (!Object.values(stateNames).includes(item[STATE_KEY])) {
+        //     return grouped;
+        //   }
+        // }
         grouped[group_value][rowKey] += parseFloat(v);
       } else {
         if (v === 'US') {
@@ -71,7 +73,6 @@ export class DataStore {
       csv(confirmedCsvUrl, (err, data: any) => {
         if (data) {
           this.confirmedByRegion = groupBy(data, STATE_KEY);
-          this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -80,6 +81,21 @@ export class DataStore {
       csv(deathsCsvUrl, (err, data: any) => {
         if (data) {
           this.deadByRegion = groupBy(data, STATE_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
+        }
+      });
+
+      csv(confirmedGlobalCsvUrl, (err, data: any) => {
+        if (data) {
+          this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
+        }
+      });
+
+      csv(deathsGlobalCsvUrl, (err, data: any) => {
+        if (data) {
           this.deadByCountry = groupBy(data, COUNTRY_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
@@ -292,6 +308,27 @@ export class DataStore {
       return Object.keys(this.confirmedByRegion).sort();
     }
     return [];
+  }
+
+  @computed get regionDates() {
+    if (this.ready && this.confirmedByRegion) {
+      for (const countryName of Object.keys(this.confirmedByRegion)) {
+        const row = this.confirmedByRegion[countryName];
+        const dates = getDatesFromDataRow(row);
+        if (dates) {
+          return dates;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  @computed get regionDatesConverted() {
+    if (this.regionDates) {
+      return this.regionDates.map(momentToFormat);
+    }
+
+    return undefined;
   }
 
   @computed get dates() {

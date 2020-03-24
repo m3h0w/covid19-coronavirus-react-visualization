@@ -36,6 +36,7 @@ const offsets = {
 const getMatchingStateKey = (dataStore: DataStore, geo) => {
   for (const key of Object.keys(geo.properties)) {
     const regionName = geo.properties[key];
+    console.log(regionName, dataStore.possibleRegions);
     if (dataStore.possibleRegions.includes(regionName)) {
       return regionName;
     }
@@ -52,7 +53,7 @@ const getColorsScale = (dataType, theme: Theme) => {
         .range(['#F2EAEA', theme.palette.primary.dark, '#000']);
     case 'dead':
       return scaleLog()
-        .domain([1, 10000, 15000])
+        .domain([1, 1000, 15000])
         .range(['#F2EAEA', '#222', '#000']);
   }
 };
@@ -84,12 +85,12 @@ const UsaMapChart = observer(
 
     const getDefaultFill = useCallback(
       (stateKey) => {
-        // console.log({ selectedRegion }, stateKey);
         if (selectedRegion === stateKey) {
           return theme.palette.secondary.main;
         }
 
         const d = dataStore.getRegionData(stateKey);
+        console.log(stateKey, { d });
         return d && d[dataType] && d[dataType][date] ? colorScale(d[dataType][date]) : '#F4EEEE';
       },
       [selectedRegion, dataStore, dataType, date]
@@ -105,6 +106,9 @@ const UsaMapChart = observer(
                 <>
                   {geographies.map((geo) => {
                     const stateKey = getMatchingStateKey(dataStore, geo);
+                    if (!stateKey) {
+                      return null;
+                    }
                     const d = dataStore.getRegionData(stateKey);
                     // console.log({ stateKey });
                     // console.log({ d });

@@ -222,7 +222,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <>
             <Card style={{ position: 'relative' }}>
               <UsaMapChart
-                date={last(dataStore.datesConverted)}
+                date={last(dataStore.regionDatesConverted)}
                 setTooltipContent={setTooltipContent}
                 dataType={'confirmed'}
                 style={{ maxHeight: '80vh' }}
@@ -248,7 +248,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <>
             <Card style={{ position: 'relative' }}>
               <UsaMapChart
-                date={last(dataStore.datesConverted)}
+                date={last(dataStore.regionDatesConverted)}
                 setTooltipContent={setTooltipContent}
                 dataType={'dead'}
                 style={{ maxHeight: '80vh' }}
