@@ -36,6 +36,11 @@ function groupBy(arr, key) {
         grouped[group_value][rowKey] = 0;
       }
       if (v && isNumber(v)) {
+        if (group_value === US_NAME) {
+          if (!Object.values(stateNames).includes(item[STATE_KEY])) {
+            return grouped;
+          }
+        }
         grouped[group_value][rowKey] += parseFloat(v);
       } else {
         if (v === 'US') {
