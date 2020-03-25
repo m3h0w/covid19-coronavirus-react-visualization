@@ -21,7 +21,15 @@ const useStyles = makeStyles((theme) =>
 const CustomChip = (props) => {
   const { handleDelete, label, backgroundColor } = props;
   const classes = useStyles({ backgroundColor });
-  return <Chip label={label} onDelete={handleDelete} className={classes.chip} />;
+  return (
+    <Chip
+      onClick={props.onClick}
+      style={props.style}
+      label={label}
+      onDelete={handleDelete}
+      className={classes.chip}
+    />
+  );
 };
 
 export default CustomChip;

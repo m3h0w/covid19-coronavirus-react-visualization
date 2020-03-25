@@ -106,11 +106,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 350,
-    maxHeight: '80vh',
-    [theme.breakpoints.down('md')]: {
-      height: '80vh',
-    },
+    height: '60vh',
   },
   clipWrapper: {
     display: 'flex',
@@ -133,7 +129,6 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
-  const possibleCountries = dataStore.possibleCountries;
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
@@ -173,9 +168,13 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     }
   }, []);
 
+  const routeChange = (country: string) => {
+    history.push(`/dashboard/${country}`);
+  };
+
   return (
     <Dashboard title='Infection trajectories'>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={5} md={3}>
         <Slide
           direction='down'
           in={dataStore.ready}
@@ -187,11 +186,15 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
             <CustomAutocomplete
               label={'Add country'}
               handleChange={(country) => {
-                addCountries([country]);
+                if (country) {
+                  addCountries([country]);
+                }
                 setSelectedCountry(null);
               }}
               selectedValue={selectedCountry}
-              possibleValues={dataStore.countriesWithOver100Cases}
+              possibleValues={dataStore.countriesWithOver100Cases.filter(
+                (country) => !countries.includes(country)
+              )}
               id={'select-country'}
               width={'auto'}
             />
@@ -206,10 +209,20 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
             >
               New colors
             </Button>
+          </Paper>
+        </Slide>
+      </Grid>
+      <Grid item xs={12} sm={7} md={9}>
+        <Grow in={dataStore.ready} timeout={animationTime}>
+          <Paper className={classes.paper}>
             <div className={classes.clipWrapper}>
               {dataStore.ready &&
                 countries.map((country: string, i: number) => (
                   <CustomChip
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      routeChange(country);
+                    }}
                     key={i}
                     handleDelete={() => {
                       setCountries(countries.filter((c) => c !== country));
@@ -220,7 +233,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
                 ))}
             </div>
           </Paper>
-        </Slide>
+        </Grow>
       </Grid>
       <Grid item xs={12} md={6}>
         <Grow in={dataStore.ready} timeout={animationTime}>
