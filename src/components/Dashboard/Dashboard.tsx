@@ -29,19 +29,7 @@ import useDataStore from '../../data/dataStore';
 import { Hidden, Grow, Fade } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
 import { GLOBAL_PAPER_OPACITY, animationTime } from '../../utils/consts';
-
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright © '}
-      <Link color='inherit' href='https://material-ui.com/'>
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import logo from '../../assets/logo_square_white_transparent.png';
 
 const drawerWidth = 240;
 const toolbarHeight = 48;
@@ -54,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
     paddingLeft: 16,
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 6,
+    },
     color: 'white',
     minHeight: toolbarHeight,
   },
@@ -83,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 15,
+    marginRight: 10,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -198,23 +189,35 @@ const Dashboard: FC<IProps> = ({
             <MenuIcon />
           </IconButton>
           <div className={classes.title}>
-            <Hidden xsDown>
-              <Typography
-                className={open && classes.hidden}
-                component='h1'
-                variant='h6'
-                color='inherit'
-                noWrap
-              >
-                COVID19.PINK
-              </Typography>
-              <Divider
-                className={open && classes.hidden}
-                orientation='vertical'
-                flexItem={true}
-                light={true}
-              />
-            </Hidden>
+            <a
+              href={'/'}
+              style={{
+                color: 'inherit',
+                textDecoration: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '3px',
+              }}
+            >
+              <img src={logo} height={40} style={{ marginRight: 1 }} />
+              <Hidden xsDown>
+                <Typography
+                  className={open && classes.hidden}
+                  component='h1'
+                  variant='h6'
+                  color='inherit'
+                  noWrap
+                >
+                  COVID19.PINK
+                </Typography>
+              </Hidden>
+            </a>
+            <Divider
+              className={open && classes.hidden}
+              orientation='vertical'
+              flexItem={true}
+              light={true}
+            />
             <Typography component='h1' variant='h6' color='inherit' noWrap>
               {title}
             </Typography>
@@ -227,7 +230,7 @@ const Dashboard: FC<IProps> = ({
           </IconButton> */}
           <Hidden xsDown mdUp implementation='css'>
             {dataStore.ready && (
-              <Typography style={{ fontSize: '0.6rem' }}>
+              <Typography style={{ fontSize: '0.5rem' }}>
                 Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
               </Typography>
             )}
