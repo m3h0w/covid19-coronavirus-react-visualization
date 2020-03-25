@@ -168,8 +168,9 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   }, [shownUsInfoSnack, selectedCountry]);
 
   useEffect(() => {
-    const countryFromUrl = props.match.params.country;
+    let countryFromUrl = props.match.params.country;
     if (countryFromUrl) {
+      countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
       selectCountry(countryFromUrl);
     }
   }, [props.match.params.country, history, setSelectedCountry]);

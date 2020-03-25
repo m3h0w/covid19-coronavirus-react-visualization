@@ -126,14 +126,11 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   if (!dataStore.ready) {
     return null;
   }
-  const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
-  const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
-  let mortalityRate: number | string = '';
-  if (totalCases && totalDeaths) {
-    mortalityRate = totalDeaths / totalCases;
-  }
-  const confirmedCases = last(dataStore.confirmedCasesArray);
-  const deaths = last(dataStore.deathsArray);
+
+  const confirmedCases = sliderValue
+    ? dataStore.confirmedCasesArray[sliderValue]
+    : last(dataStore.confirmedCasesArray);
+  const deaths = sliderValue ? dataStore.deathsArray[sliderValue] : last(dataStore.deathsArray);
   const possibleCountries = dataStore.possibleCountries;
   const possibleCountriesByConfirmed = useMemo(
     () =>
@@ -141,11 +138,11 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
         possibleCountries,
         (countryA, countryB) => confirmedCases[countryB] - confirmedCases[countryA]
       ),
-    [possibleCountries]
+    [possibleCountries, sliderValue]
   );
   const possibleCountriesByDeaths = useMemo(
     () => sort(possibleCountries, (countryA, countryB) => deaths[countryB] - deaths[countryA]),
-    [possibleCountries]
+    [possibleCountries, sliderValue]
   );
   const possibleCountriesByMortality = useMemo(
     () =>
@@ -165,8 +162,15 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           );
         }
       }),
-    [possibleCountries]
+    [possibleCountries, sliderValue]
   );
+
+  const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
+  const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
+  let mortalityRate: number | string = '';
+  if (totalCases && totalDeaths) {
+    mortalityRate = totalDeaths / totalCases;
+  }
 
   const routeChange = (country: string) => {
     history.push(`/dashboard/${country}`);
