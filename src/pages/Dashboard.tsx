@@ -230,7 +230,15 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 label={'Select region'}
                 handleChange={selectRegion}
                 selectedValue={selectedRegion}
-                possibleValues={dataStore.getPossibleRegionsByCountry(selectedCountry)}
+                possibleValues={sort(
+                  dataStore.getPossibleRegionsByCountry(selectedCountry),
+                  (a, b) => {
+                    return (
+                      dataStore.getRegionData(b)?.confirmed[last(dataStore.regionDatesConverted)] -
+                      dataStore.getRegionData(a)?.confirmed[last(dataStore.regionDatesConverted)]
+                    );
+                  }
+                )}
                 id={'select-region'}
                 width={'auto'}
               />

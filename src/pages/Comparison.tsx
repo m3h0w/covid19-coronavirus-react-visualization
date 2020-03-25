@@ -23,6 +23,8 @@ import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
 import { getContrastYIQ } from '../utils/colors';
 import CustomChip from '../components/CustomChip';
 import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
+import sort from '../utils/sort';
+import last from '../utils/last';
 
 const drawerWidth = 240;
 
@@ -193,9 +195,12 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
                 setSelectedCountry(null);
               }}
               selectedValue={selectedCountry}
-              possibleValues={dataStore.countriesWithOver100Cases.filter(
-                (country) => !countries.includes(country)
-              )}
+              possibleValues={sort(
+                dataStore.countriesWithOver100Cases,
+                (a, b) =>
+                  dataStore.getCountryData(b)?.confirmed[last(dataStore.datesConverted)] -
+                  dataStore.getCountryData(a)?.confirmed[last(dataStore.datesConverted)]
+              ).filter((country) => !countries.includes(country))}
               id={'select-country'}
               width={'auto'}
             />

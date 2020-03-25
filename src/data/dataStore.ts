@@ -9,7 +9,7 @@ import deathsGlobalCsvUrl from '../data/deaths_global.csv';
 import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
-import { US_NAME } from '../utils/consts';
+import { US_NAME, SOUTH_KOREA } from '../utils/consts';
 
 const USE_LOCAL_DATA = true;
 
@@ -21,12 +21,24 @@ interface ICountryData {
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 }
+
+const namesMap = {
+  US: US_NAME,
+  'Korea, South': SOUTH_KOREA,
+};
+const swapName = (name: string): string => {
+  if (!Object.keys(namesMap).includes(name)) {
+    throw new Error(`Tried to swap a country that doesn't exist in the namesMap`);
+  }
+  return namesMap[name];
+};
+
 // _.groupBy
-function groupBy(arr, key) {
-  let reducer = (grouped, item) => {
+function groupBy(arr: any[], key: string) {
+  let reducer = (grouped: object, item: object) => {
     let group_value = item[key];
-    if (group_value === 'US') {
-      group_value = US_NAME;
+    if (Object.keys(namesMap).includes(group_value)) {
+      group_value = swapName(group_value);
     }
     if (!grouped[group_value]) {
       grouped[group_value] = {};
