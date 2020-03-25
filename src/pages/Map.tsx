@@ -33,7 +33,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import useWhoDataStore from '../data/whoDataStore';
-import { mdUp } from '../utils/breakpoints';
+import { mdUp, xsDown } from '../utils/breakpoints';
 import Colors from '../utils/colors';
 import getYAxis from '../components/Dashboard/YAxis';
 import moment from 'moment';
@@ -293,10 +293,12 @@ const MapPage = observer(() => {
   }, [shownSnackbar, setShownSnackbar, dataStore.ready]);
 
   useEffect(() => {
-    if (whoDataStore.ready) {
-      setTimeout(() => {
-        setColors(generateNewColors(whoDataStore.possibleRegions.length));
-      }, 2000);
+    if (xsDown()) {
+      if (whoDataStore.ready) {
+        setTimeout(() => {
+          setColors(generateNewColors(whoDataStore.possibleRegions.length));
+        }, 2000);
+      }
     }
   }, [whoDataStore.ready]);
 

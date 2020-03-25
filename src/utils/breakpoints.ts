@@ -13,3 +13,5 @@ export const smUp = () => getWindowWidth() >= ResponsiveBreakpoints.sm;
 export const mdUp = () => getWindowWidth() >= ResponsiveBreakpoints.md;
 
 export const smDown = () => getWindowWidth() <= ResponsiveBreakpoints.sm;
+
+export const xsDown = () => getWindowWidth() <= ResponsiveBreakpoints.xs;
