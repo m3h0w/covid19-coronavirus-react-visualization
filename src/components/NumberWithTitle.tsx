@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const useStyles = makeStyles((theme) => ({
-  typo: { marginTop: '-17px', marginBottom: '1px' },
+  typo: { marginTop: '-11px', marginBottom: '2px' },
 }));
 
 interface IProps {
@@ -30,7 +30,7 @@ const NumberWithTitle: FC<IProps> = ({
   const classes = useStyles();
   if (version === 'large') {
     return (
-      <div onClick={onClick} style={{ cursor: 'pointer', ...style }}>
+      <div onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'unset', ...style }}>
         <Title style={centered ? { textAlign: 'center' } : {}} color={'initial'}>
           {title}
         </Title>

@@ -59,6 +59,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import sort from '../utils/sort';
 import { useHistory } from 'react-router';
+import Collapsable from '../components/Collapsable';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -114,32 +115,9 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: -13,
     },
   },
-  tableBody: { maxHeight: '40vh', overflow: 'auto' },
 }));
 
-type DataType = 'dead' | 'confirmed';
-
-const Collapsable: FC = ({ children }) => {
-  const classes = useStyles();
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <>
-      <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.tableBody}>
-        {children}
-      </Collapse>
-      <Divider />
-      <IconButton
-        onClick={() => {
-          setExpanded(!expanded);
-        }}
-        style={{ width: '100%', textAlign: 'center', borderRadius: '3px' }}
-      >
-        {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </IconButton>
-    </>
-  );
-};
+export type DataType = 'dead' | 'confirmed';
 
 const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType: DataType }) => {
   const classes = useStyles();
@@ -211,7 +189,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             style={{ padding: 16 }}
           />
           <Collapsable>
-            <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+            <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByConfirmed.map((country) => {
                   return (
@@ -250,7 +228,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             style={{ padding: 16 }}
           />
           <Collapsable>
-            <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+            <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByDeaths.map((country) => {
                   return (
@@ -286,7 +264,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
               style={{ padding: 16 }}
             />
             <Collapsable>
-              <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+              <Table size='small' aria-label='a dense table'>
                 <TableBody>
                   {possibleCountriesByMortality.map((country) => {
                     return (
@@ -304,7 +282,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                           {confirmedCases[country]
                             ? `${((deaths[country] / confirmedCases[country]) * 100).toFixed(2)}%`
                             : '-'}
-                        </TableCell>{' '}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -609,7 +587,7 @@ const MapPage = observer(() => {
                     top: 0,
                   }}
                   variant='outlined'
-                  // color='initial'
+                  color='secondary'
                   size={'small'}
                   onClick={() => {
                     setColors(generateNewColors(whoDataStore.possibleRegions?.length));
@@ -635,13 +613,10 @@ const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
         data={whoDataStore?.getDataArrayWithTime}
         margin={{
           top: 20,
-          // right: 30,
-          // left: 20,
-          // bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray='1 6' />
-        <XAxis dataKey='time' tickFormatter={formatXAxis} />
+        <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
         {getYAxis('Cases')}
         <Tooltip labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')} />
         <Legend />

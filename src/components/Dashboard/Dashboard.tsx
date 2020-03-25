@@ -258,8 +258,6 @@ const Dashboard: FC<IProps> = ({
         </div>
         <Divider />
         <MainListItems />
-        {/* <Divider />
-        <List>{secondaryListItems}</List> */}
       </Drawer>
       <Fade in={dataStore.ready} animationTime={animationTime}>
         <main className={classes.content}>
@@ -270,9 +268,6 @@ const Dashboard: FC<IProps> = ({
                 <Grid container spacing={3}>
                   {children}
                 </Grid>
-                {/* <Box pt={4}>
-            <Copyright />
-          </Box> */}
               </Container>
             </>
           ) : (

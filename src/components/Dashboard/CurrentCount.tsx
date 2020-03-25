@@ -6,9 +6,9 @@ import Title from './Title';
 import theme from 'theme';
 import NumberWithTitle from '../NumberWithTitle';
 
-export default function CurrentCount({ confirmedCases, deaths, mortalityRate }) {
+export default function CurrentCount({ style, confirmedCases, deaths, mortalityRate }) {
   return (
-    <React.Fragment>
+    <div style={style}>
       <NumberWithTitle color={'primary'} title={'Confirmed cases'} number={confirmedCases} />
       <NumberWithTitle color={'initial'} title={'Deaths'} number={deaths} />
       {mortalityRate ? (
@@ -20,6 +20,6 @@ export default function CurrentCount({ confirmedCases, deaths, mortalityRate }) 
       ) : (
         undefined
       )}
-    </React.Fragment>
+    </div>
   );
 }

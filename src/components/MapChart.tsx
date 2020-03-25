@@ -23,16 +23,6 @@ import { Fade, Theme } from '@material-ui/core';
 import { DataStore } from '../data/dataStore';
 import { mdUp, smUp } from '../utils/breakpoints';
 
-const rounded = (num) => {
-  if (num > 1000000000) {
-    return Math.round(num / 100000000) / 10 + 'Bn';
-  } else if (num > 1000000) {
-    return Math.round(num / 100000) / 10 + 'M';
-  } else {
-    return Math.round(num / 100) / 10 + 'K';
-  }
-};
-
 const getMatchingCountryKey = (dataStore: DataStore, geo) => {
   for (const key of Object.keys(geo.properties)) {
     const countryName = geo.properties[key];
@@ -43,8 +33,7 @@ const getMatchingCountryKey = (dataStore: DataStore, geo) => {
   return undefined;
 };
 
-// const scaleWithDomain = ;
-const getColorsScale = (dataType, theme: Theme) => {
+export const getColorsScale = (dataType, theme: Theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()

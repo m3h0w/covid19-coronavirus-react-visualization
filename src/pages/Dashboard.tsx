@@ -11,12 +11,26 @@ import createPersistedState from '../utils/memoryState';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
 import { useHistory, RouteComponentProps } from 'react-router';
-import { Typography, Card, ButtonBase, Slide, Grow, Fade } from '@material-ui/core';
+import {
+  Typography,
+  Card,
+  ButtonBase,
+  Slide,
+  Grow,
+  Fade,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+} from '@material-ui/core';
 import { animationTime, US_NAME, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
 import last from '../utils/last';
 import ReactTooltip from 'react-tooltip';
 import { showInfoSnackBar } from '../components/Snackbar';
+import Collapsable from '../components/Collapsable';
+import sort from '../utils/sort';
 
 const drawerWidth = 240;
 
@@ -126,16 +140,23 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     if (possibleCountries.includes(country)) {
       setSelectedCountry(country);
       setSelectedRegion(null);
-    } else {
-      history.push(`/dashboard`);
+    }
+  };
+
+  const selectRegion = (region: string) => {
+    if (dataStore.possibleRegions.includes(region) || region === null) {
+      setSelectedRegion(region);
     }
   };
 
   useEffect(() => {
-    if (selectedCountry) {
+    if (selectedCountry && !selectedRegion) {
       history.push(`/dashboard/${selectedCountry}`);
     }
-  }, [selectedCountry]);
+    if (selectedCountry && selectedRegion) {
+      history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
+    }
+  }, [selectedCountry, selectedRegion]);
 
   useEffect(() => {
     if (!shownUsInfoSnack && selectedCountry === US_NAME) {
@@ -171,6 +192,11 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const mortalityRate = cases ? deaths / cases : undefined;
   const isUs = selectedCountry === US_NAME;
 
+  const getRegionCases = (region) =>
+    dataStore.getRegionData(region)?.confirmed[last(dataStore.regionDatesConverted)];
+  const getRegionDeaths = (region) =>
+    dataStore.getRegionData(region)?.dead[last(dataStore.regionDatesConverted)];
+
   return (
     <Dashboard title='Country dashboard'>
       <Grid item xs={12} md={3}>
@@ -192,10 +218,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
               id={'select-country'}
               width={'auto'}
             />
-            {isUs && (
+            {dataStore.getPossibleRegionsByCountry.length && (
               <CustomAutocomplete
                 label={'Select region'}
-                handleChange={setSelectedRegion}
+                handleChange={selectRegion}
                 selectedValue={selectedRegion}
                 possibleValues={dataStore.getPossibleRegionsByCountry(selectedCountry)}
                 id={'select-region'}
@@ -204,12 +230,50 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             )}
           </Paper>
         </Slide>
-        <div style={{ height: 15 }} />
+        <div style={{ height: 31 }} />
         <Grow in={dataStore.ready} timeout={animationTime}>
-          <Paper className={classes.paper} style={{ height: 230 }}>
+          <Paper className={classes.paper} style={{ padding: 0 }}>
             {rowData && rowData.confirmed && rowData.dead && (
-              <CurrentCount confirmedCases={cases} deaths={deaths} mortalityRate={mortalityRate} />
+              <CurrentCount
+                style={{ padding: 15 }}
+                confirmedCases={cases}
+                deaths={deaths}
+                mortalityRate={mortalityRate}
+              />
             )}
+            <Collapsable>
+              <Table size='small' aria-label='a dense table'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Region / State</TableCell>
+                    <TableCell align='right'>Cases</TableCell>
+                    <TableCell align='right'>Deaths</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sort(
+                    dataStore.getPossibleRegionsByCountry(selectedCountry),
+                    (a, b) => getRegionCases(b) - getRegionCases(a)
+                  ).map((region) => {
+                    return (
+                      <TableRow
+                        key={region}
+                        onClick={() => {
+                          selectRegion(region);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <TableCell component='th' scope='row'>
+                          {region}
+                        </TableCell>
+                        <TableCell align='right'>{getRegionCases(region)}</TableCell>
+                        <TableCell align='right'>{getRegionDeaths(region)}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Collapsable>
           </Paper>
         </Grow>
       </Grid>
@@ -223,8 +287,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             />
           </Paper>
         </Grow>
-      </Grid>
-      <Grid item xs={12}>
+        <div style={{ height: 15 }} />
         <Grow in={dataStore.ready} timeout={animationTime}>
           <Card style={{ width: '100%' }}>
             <ButtonBase
@@ -253,7 +316,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 dataType={'confirmed'}
                 style={{ maxHeight: '80vh' }}
                 onClick={(stateKey) => {
-                  setSelectedRegion(stateKey);
+                  selectRegion(stateKey);
                 }}
                 selectedRegion={selectedRegion}
               />
@@ -279,7 +342,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 dataType={'dead'}
                 style={{ maxHeight: '80vh' }}
                 onClick={(stateKey) => {
-                  setSelectedRegion(stateKey);
+                  selectRegion(stateKey);
                 }}
                 selectedRegion={selectedRegion}
               />
