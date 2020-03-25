@@ -423,7 +423,7 @@ const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
         <CartesianGrid strokeDasharray='1 6' />
         <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
         {getYAxis('Cases')}
-        <Tooltip />
+        <Tooltip labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')} />
         <Legend />
         {colors &&
           whoDataStore?.possibleRegions?.map((region, i) => {
