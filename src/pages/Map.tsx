@@ -374,11 +374,21 @@ const MapPage = observer(() => {
       {dataStore.ready && <NumberGrid setDataType={setDataType} sliderValue={sliderValue} />}
       <Grid item xs={12}>
         <Grow in={whoDataStore.ready}>
-          <Paper className={classes.paper} style={{ height: '500px', width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Paper
+            className={classes.paper}
+            style={{ height: '550px', maxHeight: '90vh', width: '100%' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                position: 'relative',
+                height: '27px',
+              }}
+            >
               <Title>Cases by continent</Title>
               <Button
-                style={{ maxWidth: 300, marginBottom: 10 }}
+                style={{ maxWidth: 300, marginBottom: 10, position: 'absolute', right: 0, top: 0 }}
                 variant='outlined'
                 color='secondary'
                 size={'small'}
@@ -411,7 +421,7 @@ const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
         }}
       >
         <CartesianGrid strokeDasharray='1 6' />
-        <XAxis dataKey='time' tickFormatter={formatXAxis} />
+        <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
         {getYAxis('Cases')}
         <Tooltip />
         <Legend />
