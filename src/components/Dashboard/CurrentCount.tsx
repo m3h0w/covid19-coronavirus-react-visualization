@@ -14,7 +14,7 @@ export default function CurrentCount({ confirmedCases, deaths, mortalityRate }) 
       {mortalityRate ? (
         <NumberWithTitle
           color={'secondary'}
-          title={'Mortality rate'}
+          title={'Case fatality rate'}
           number={`${(mortalityRate * 100).toFixed(2)}%`}
         />
       ) : (

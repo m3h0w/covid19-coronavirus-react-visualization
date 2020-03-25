@@ -157,7 +157,7 @@ const NumberGrid = observer(({ setDataType, sliderValue }) => {
               version='large'
               centered={true}
               color={'secondary'}
-              title={'Motality rate (world)'}
+              title={'Case fatality rate (world)'}
               number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
             />
           </Paper>
