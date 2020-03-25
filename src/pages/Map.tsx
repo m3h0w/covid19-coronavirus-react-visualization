@@ -37,6 +37,10 @@ import { mdUp } from '../utils/breakpoints';
 import Colors from '../utils/colors';
 import getYAxis from '../components/Dashboard/YAxis';
 import moment from 'moment';
+import ColorScheme from 'color-scheme';
+import shuffleArray from '../utils/shuffleArray';
+import rgbToHsl from '../utils/rgbToHsl';
+import getRandomFromRange from '../utils/getRandomFromRange';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -175,14 +179,43 @@ const NumberGrid = observer(({ setDataType, sliderValue }) => {
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
 
+const newColorScheme = () => {
+  var scheme = new ColorScheme();
+  scheme
+    .from_hue(getRandomFromRange(0, 100))
+    .scheme('tetrade')
+    .distance(0.6)
+    .variation('hard');
+  var colors = shuffleArray(scheme.colors());
+  return colors;
+};
+
 const generateNewColors = (length: number) => {
   if (!length) {
     return;
   }
-  const colorHelper = new Colors();
   const array = [];
-  for (let index = 0; index < length; index++) {
-    array.push(colorHelper.getRandomColor());
+  let counter = 0;
+  let colors = newColorScheme();
+  while (array.length < length) {
+    if (counter > colors.length - 1) {
+      colors = shuffleArray(scheme.colors());
+    }
+    counter = counter % (length - 1);
+    const colorHex = `#${colors[counter]}`;
+    const [h, s, l] = rgbToHsl(colorHex);
+    if (counter < colors.length - 1) {
+      if (l < 0.8) {
+        console.log(l);
+        array.push(colorHex);
+        colors.splice(counter, 1);
+      }
+    } else {
+      console.log('counter high', l);
+      array.push(colorHex);
+      colors.splice(counter, 1);
+    }
+    counter += 1;
   }
   return array;
 };

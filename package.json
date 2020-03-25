@@ -17,6 +17,7 @@
     "@types/react-simple-maps": "^1.0.1",
     "@types/react-tooltip": "^3.11.0",
     "@types/recharts": "^1.8.7",
+    "color-scheme": "^1.0.1",
     "d3-request": "^1.0.6",
     "d3-scale": "^3.2.1",
     "firebase": "^7.1.0",
