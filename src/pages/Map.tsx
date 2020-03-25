@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
-import { Fab, Card, Grow, Slide, Button } from '@material-ui/core';
+import { Fab, Card, Grow, Slide, Button, Hidden } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -41,6 +41,7 @@ import ColorScheme from 'color-scheme';
 import shuffleArray from '../utils/shuffleArray';
 import rgbToHsl from '../utils/rgbToHsl';
 import getRandomFromRange from '../utils/getRandomFromRange';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -206,12 +207,10 @@ const generateNewColors = (length: number) => {
     const [h, s, l] = rgbToHsl(colorHex);
     if (counter < colors.length - 1) {
       if (l < 0.8) {
-        console.log(l);
         array.push(colorHex);
         colors.splice(counter, 1);
       }
     } else {
-      console.log('counter high', l);
       array.push(colorHex);
       colors.splice(counter, 1);
     }
@@ -292,6 +291,14 @@ const MapPage = observer(() => {
       setShownSnackbar(true);
     }
   }, [shownSnackbar, setShownSnackbar, dataStore.ready]);
+
+  useEffect(() => {
+    if (whoDataStore.ready) {
+      setTimeout(() => {
+        setColors(generateNewColors(whoDataStore.possibleRegions.length));
+      }, 2000);
+    }
+  }, [whoDataStore.ready]);
 
   const DashboardSwitch = () => {
     return (
@@ -420,17 +427,47 @@ const MapPage = observer(() => {
               }}
             >
               <Title>Cases by continent</Title>
-              <Button
-                style={{ maxWidth: 300, marginBottom: 10, position: 'absolute', right: 0, top: 0 }}
-                variant='outlined'
-                color='secondary'
-                size={'small'}
-                onClick={() => {
-                  setColors(generateNewColors(whoDataStore.possibleRegions?.length));
-                }}
-              >
-                New colors
-              </Button>
+              <Hidden xsDown>
+                <Button
+                  style={{
+                    maxWidth: 300,
+                    marginBottom: 10,
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                  }}
+                  variant='outlined'
+                  color='secondary'
+                  size={'small'}
+                  onClick={() => {
+                    setColors(generateNewColors(whoDataStore.possibleRegions?.length));
+                  }}
+                >
+                  <ColorLensIcon />
+                  New colors
+                </Button>
+              </Hidden>
+
+              <Hidden smUp>
+                <IconButton
+                  style={{
+                    maxWidth: 300,
+                    // marginTop: -10,
+                    marginBottom: 10,
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                  }}
+                  variant='outlined'
+                  // color='initial'
+                  size={'small'}
+                  onClick={() => {
+                    setColors(generateNewColors(whoDataStore.possibleRegions?.length));
+                  }}
+                >
+                  <ColorLensIcon />
+                </IconButton>
+              </Hidden>
             </div>
             <WhoBarChart colors={colors} />
           </Paper>
@@ -443,18 +480,18 @@ const MapPage = observer(() => {
 const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
   const whoDataStore = useWhoDataStore();
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer height={'100%'} maxHeight={'80vh'}>
       <BarChart
         data={whoDataStore?.getDataArrayWithTime}
         margin={{
           top: 20,
-          right: 30,
-          left: 20,
-          bottom: 5,
+          // right: 30,
+          // left: 20,
+          // bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray='1 6' />
-        <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
+        <XAxis dataKey='time' tickFormatter={formatXAxis} />
         {getYAxis('Cases')}
         <Tooltip labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')} />
         <Legend />

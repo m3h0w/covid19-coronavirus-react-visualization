@@ -38,7 +38,6 @@ function groupBy(arr, key) {
       if (item[STATE_KEY]) {
         return grouped;
       }
-      console.log([item]);
     } else {
       if (excludedProviceStateValues.includes(item[STATE_KEY])) {
         return grouped;
@@ -95,7 +94,6 @@ export class WhoDataStore {
       csv(whoData, (err, data: any) => {
         if (data) {
           this.whoData = groupBy(data, WHO_REGION_KEY);
-          console.log(this.getDataArrayWithTime);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
