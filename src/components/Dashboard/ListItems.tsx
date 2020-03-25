@@ -19,6 +19,8 @@ import CallMadeIcon from '@material-ui/icons/CallMade';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
+import PublicIcon from '@material-ui/icons/Public';
 
 const StyledListItemIcon = withStyles((theme) => ({
   root: { minWidth: '45px' },
@@ -52,7 +54,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
   const location = useLocation();
   const theme = useTheme();
   let LinkElement = RouterLink;
-  const isSelected = location.pathname.split('/')[1] === to;
+  const isSelected = to ? location.pathname.split('/')[1] === to.split('/')[1] : false;
   const classes = useListItemStyles({ isSelected, style });
 
   if (href) {
@@ -84,12 +86,12 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 export const MainListItems = () => {
   return (
     <List style={{ height: '100%', padding: 0 }}>
-      <CustomListItem to='map' text='Map' Icon={MapIcon} />
-      <CustomListItem to='dashboard' text='Country dashboard' Icon={DashboardIcon} />
+      <CustomListItem to='/map' text='World Map' Icon={PublicIcon} />
+      <CustomListItem to='/dashboard' text='Country dashboard' Icon={DashboardIcon} />
       <CustomListItem
-        to='infection-trajectories'
+        to='/infection-trajectories'
         text='Infection trajectories'
-        Icon={BarChartIcon}
+        Icon={TrendingUpIcon}
       />
       <Divider />
       <CustomListItem

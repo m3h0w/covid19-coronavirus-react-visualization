@@ -49,7 +49,7 @@ const getColorsScale = (dataType, theme: Theme) => {
     case 'confirmed':
       return scaleLog()
         .domain([1, 10000, 100000])
-        .range(['#F2EAEA', theme.palette.primary.dark, '#000000']);
+        .range(['#F2EAEA', '#FA4590', '#000000']);
     case 'dead':
       return scaleLog()
         .domain([1, 10000, 15000])

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { FC, useState, useEffect, useCallback, useMemo } from 'react';
 import MapChart from 'components/MapChart';
 import Dashboard from 'components/Dashboard/Dashboard';
 import useDataStore from '../data/dataStore';
@@ -14,7 +14,20 @@ import IconButton from '@material-ui/core/IconButton';
 import StopIcon from '@material-ui/icons/Stop';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
-import { Fab, Card, Grow, Slide, Button, Hidden } from '@material-ui/core';
+import {
+  Fab,
+  Card,
+  Grow,
+  Slide,
+  Button,
+  Hidden,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Collapse,
+  Divider,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -42,6 +55,10 @@ import shuffleArray from '../utils/shuffleArray';
 import rgbToHsl from '../utils/rgbToHsl';
 import getRandomFromRange from '../utils/getRandomFromRange';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import sort from '../utils/sort';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -97,10 +114,36 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: -13,
     },
   },
+  tableBody: { maxHeight: '40vh', overflow: 'auto' },
 }));
 
-const NumberGrid = observer(({ setDataType, sliderValue }) => {
+type DataType = 'dead' | 'confirmed';
+
+const Collapsable: FC = ({ children }) => {
   const classes = useStyles();
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <>
+      <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.tableBody}>
+        {children}
+      </Collapse>
+      <Divider />
+      <IconButton
+        onClick={() => {
+          setExpanded(!expanded);
+        }}
+        style={{ width: '100%', textAlign: 'center', borderRadius: '3px' }}
+      >
+        {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      </IconButton>
+    </>
+  );
+};
+
+const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType: DataType }) => {
+  const classes = useStyles();
+  const history = useHistory();
   const dataStore = useDataStore();
   if (!dataStore.ready) {
     return null;
@@ -111,60 +154,163 @@ const NumberGrid = observer(({ setDataType, sliderValue }) => {
   if (totalCases && totalDeaths) {
     mortalityRate = totalDeaths / totalCases;
   }
+  const confirmedCases = last(dataStore.confirmedCasesArray);
+  const deaths = last(dataStore.deathsArray);
+  const possibleCountries = dataStore.possibleCountries;
+  const possibleCountriesByConfirmed = useMemo(
+    () =>
+      sort(
+        possibleCountries,
+        (countryA, countryB) => confirmedCases[countryB] - confirmedCases[countryA]
+      ),
+    [possibleCountries]
+  );
+  const possibleCountriesByDeaths = useMemo(
+    () => sort(possibleCountries, (countryA, countryB) => deaths[countryB] - deaths[countryA]),
+    [possibleCountries]
+  );
+  const possibleCountriesByMortality = useMemo(
+    () =>
+      sort(possibleCountries, (countryA, countryB) => {
+        if (confirmedCases[countryB] < 100) {
+          return -1;
+        }
+        if (confirmedCases[countryA] < 100) {
+          return 1;
+        }
+        if (!confirmedCases[countryB] || !confirmedCases[countryA]) {
+          return deaths[countryB] - deaths[countryA];
+        } else {
+          return (
+            deaths[countryB] / confirmedCases[countryB] -
+            deaths[countryA] / confirmedCases[countryA]
+          );
+        }
+      }),
+    [possibleCountries]
+  );
+
+  const routeChange = (country: string) => {
+    history.push(`/dashboard/${country}`);
+  };
+
   return (
     <>
-      <Grid
-        item
-        lg={4}
-        xs={12}
-        onClick={() => {
-          setDataType('confirmed');
-        }}
-        style={{ cursor: 'pointer' }}
-      >
-        <Grow in={dataStore.ready}>
-          <Paper className={classes.paper}>
-            <NumberWithTitle
-              version='large'
-              centered={true}
-              color={'primary'}
-              title={'Confirmed cases (world)'}
-              number={totalCases || ''}
-            />
-          </Paper>
-        </Grow>
+      <Grid item lg={4} xs={12}>
+        {/* <Grow in={dataStore.ready}> */}
+        <Paper className={classes.paper} style={{ padding: 0 }}>
+          <NumberWithTitle
+            version='large'
+            centered={true}
+            color={'primary'}
+            title={'Confirmed cases (world)'}
+            number={totalCases || ''}
+            onClick={() => {
+              setDataType('confirmed');
+            }}
+            style={{ padding: 16 }}
+          />
+          <Collapsable>
+            <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+              <TableBody>
+                {possibleCountriesByConfirmed.map((country) => {
+                  return (
+                    <TableRow
+                      key={country}
+                      onClick={() => {
+                        routeChange(country);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <TableCell component='th' scope='row'>
+                        {country}
+                      </TableCell>
+                      <TableCell align='right'>{confirmedCases[country]}</TableCell>{' '}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Collapsable>
+        </Paper>
+        {/* </Grow> */}
       </Grid>
-      <Grid
-        item
-        lg={4}
-        xs={12}
-        onClick={() => {
-          setDataType('dead');
-        }}
-        style={{ cursor: 'pointer' }}
-      >
-        <Grow in={dataStore.ready}>
-          <Paper className={classes.paper}>
-            <NumberWithTitle
-              version='large'
-              centered={true}
-              color={'initial'}
-              title={'Deaths (world)'}
-              number={totalDeaths || ''}
-            />
-          </Paper>
-        </Grow>
+      <Grid item lg={4} xs={12} style={{ cursor: 'pointer' }}>
+        {/* <Grow in={dataStore.ready}> */}
+        <Paper className={classes.paper} style={{ padding: 0 }}>
+          <NumberWithTitle
+            version='large'
+            centered={true}
+            color={'initial'}
+            title={'Deaths (world)'}
+            number={totalDeaths || ''}
+            onClick={() => {
+              setDataType('dead');
+            }}
+            style={{ padding: 16 }}
+          />
+          <Collapsable>
+            <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+              <TableBody>
+                {possibleCountriesByDeaths.map((country) => {
+                  return (
+                    <TableRow
+                      key={country}
+                      onClick={() => {
+                        routeChange(country);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <TableCell component='th' scope='row'>
+                        {country}
+                      </TableCell>
+                      <TableCell align='right'>{deaths[country]}</TableCell>{' '}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Collapsable>
+        </Paper>
+        {/* </Grow> */}
       </Grid>
       <Grid item lg={4} xs={12}>
         <Grow in={dataStore.ready}>
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} style={{ padding: 0 }}>
             <NumberWithTitle
               version='large'
               centered={true}
               color={'secondary'}
               title={'Case fatality rate (world)'}
               number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
+              style={{ padding: 16 }}
             />
+            <Collapsable>
+              <Table size='small' aria-label='a dense table' className={classes.tableBody}>
+                <TableBody>
+                  {possibleCountriesByMortality.map((country) => {
+                    return (
+                      <TableRow
+                        key={country}
+                        onClick={() => {
+                          routeChange(country);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <TableCell component='th' scope='row'>
+                          {country}
+                        </TableCell>
+                        <TableCell align='right'>
+                          {confirmedCases[country]
+                            ? `${((deaths[country] / confirmedCases[country]) * 100).toFixed(2)}%`
+                            : '-'}
+                        </TableCell>{' '}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Collapsable>
           </Paper>
         </Grow>
       </Grid>
@@ -231,7 +377,7 @@ const MapPage = observer(() => {
     'shownMapSliderSnackbar'
   );
   const [playing, setPlaying] = useState(false);
-  const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
+  const [dataType, setDataType] = useState<DataType>('confirmed');
   const [colors, setColors] = useState();
   const whoDataStore = useWhoDataStore();
 
@@ -413,7 +559,9 @@ const MapPage = observer(() => {
         </Card>
         {/* </Grow> */}
       </Grid>
-      {dataStore.ready && <NumberGrid setDataType={setDataType} sliderValue={sliderValue} />}
+      {dataStore.ready && (
+        <NumberGrid dataType={dataType} setDataType={setDataType} sliderValue={sliderValue} />
+      )}
       <Grid item xs={12}>
         <Grow in={whoDataStore.ready}>
           <Paper

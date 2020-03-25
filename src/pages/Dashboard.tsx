@@ -122,6 +122,21 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const [shownUsInfoSnack, setShownUsInfoSnack] = useMemoryState3(false);
   // const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
 
+  const selectCountry = (country: string) => {
+    if (possibleCountries.includes(country)) {
+      setSelectedCountry(country);
+      setSelectedRegion(null);
+    } else {
+      history.push(`/dashboard`);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedCountry) {
+      history.push(`/dashboard/${selectedCountry}`);
+    }
+  }, [selectedCountry]);
+
   useEffect(() => {
     if (!shownUsInfoSnack && selectedCountry === US_NAME) {
       showInfoSnackBar(
@@ -134,9 +149,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   useEffect(() => {
     const countryFromUrl = props.match.params.country;
     if (countryFromUrl) {
-      history.push(`/dashboard`);
-      setSelectedCountry(countryFromUrl);
-      setSelectedRegion(null);
+      selectCountry(countryFromUrl);
     }
   }, [props.match.params.country, history, setSelectedCountry]);
 
@@ -172,8 +185,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             <CustomAutocomplete
               label={'Select country'}
               handleChange={(v) => {
-                setSelectedCountry(v);
-                setSelectedRegion(null);
+                selectCountry(v);
               }}
               selectedValue={selectedCountry}
               possibleValues={possibleCountries}
