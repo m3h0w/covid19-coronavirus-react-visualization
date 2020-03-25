@@ -158,7 +158,8 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
 
   useEffect(() => {
     if (props.match.params.country) {
-      const countryFromUrl = props.match.params.country;
+      let countryFromUrl = props.match.params.country;
+      countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
       if (countryFromUrl) {
         history.push(`/infection-trajectories`);
         addCountries(['Italy', countryFromUrl]);
