@@ -200,7 +200,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             }}
             style={{ padding: 16 }}
           />
-          <Collapsable>
+          <Collapsable startingOpen={true}>
             <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByConfirmed.map((country: string) => {
@@ -245,7 +245,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             }}
             style={{ padding: 16 }}
           />
-          <Collapsable>
+          <Collapsable startingOpen={true}>
             <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByDeaths.map((country: string) => {
@@ -287,7 +287,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
               number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
               style={{ padding: 16 }}
             />
-            <Collapsable>
+            <Collapsable startingOpen={true}>
               <Table size='small' aria-label='a dense table'>
                 <TableBody>
                   {possibleCountriesByMortality.map((country: string) => {

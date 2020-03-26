@@ -10,9 +10,13 @@ const useStyles = makeStyles((theme) => ({
   maxHeight: { maxHeight: '40vh', overflow: 'auto' },
 }));
 
-const Collapsable: FC = ({ children }) => {
+interface IProps {
+  startingOpen: boolean;
+}
+
+const Collapsable: FC<IProps> = ({ startingOpen = false, children }) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(startingOpen);
 
   return (
     <>

@@ -37,7 +37,7 @@ export const getColorsScale = (dataType, theme: Theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()
-        .domain([1, 10000, 100000])
+        .domain([1, 30000, 200000])
         .range(['#F2EAEA', '#FA4590', '#000000']);
     case 'dead':
       return scaleLog()
