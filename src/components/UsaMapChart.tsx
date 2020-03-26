@@ -44,20 +44,6 @@ const getMatchingStateKey = (dataStore: DataStore, geo) => {
   return undefined;
 };
 
-// const scaleWithDomain = ;
-// const getColorsScale = (dataType, theme: Theme) => {
-//   switch (dataType) {
-//     case 'confirmed':
-//       return scaleLog()
-//         .domain([1, 10000, 100000])
-//         .range(['#F2EAEA', theme.palette.primary.dark, '#000']);
-//     case 'dead':
-//       return scaleLog()
-//         .domain([1, 1000, 15000])
-//         .range(['#F2EAEA', '#222', '#000']);
-//   }
-// };
-
 const UsaMapChart = observer(
   ({
     date,

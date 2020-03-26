@@ -47,6 +47,12 @@ function groupBy(arr: any[], key: string) {
       return grouped;
     }
 
+    if (group_value === US_NAME) {
+      if (!Object.values(stateNames).includes(item[STATE_KEY])) {
+        return grouped;
+      }
+    }
+
     if (Object.keys(namesMap).includes(group_value)) {
       group_value = swapName(group_value);
     }
@@ -60,17 +66,19 @@ function groupBy(arr: any[], key: string) {
         grouped[group_value][rowKey] = 0;
       }
       if (v && isNumber(v)) {
-        // if (group_value === US_NAME) {
-        //   if (!Object.values(stateNames).includes(item[STATE_KEY])) {
-        //     return grouped;
-        //   }
-        // }
+        if (group_value === US_NAME) {
+          if (!Object.values(stateNames).includes(item[STATE_KEY])) {
+            return grouped;
+          }
+        }
         grouped[group_value][rowKey] += parseFloat(v);
       } else {
         if (v === 'US') {
           v = US_NAME;
         }
-        grouped[group_value][rowKey] = v;
+        if (v && (typeof v === 'string' || v instanceof String)) {
+          grouped[group_value][rowKey] = v;
+        }
       }
     });
 

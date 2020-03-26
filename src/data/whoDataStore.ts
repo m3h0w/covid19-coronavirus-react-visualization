@@ -7,7 +7,7 @@ import fetchCsv from 'utils/downloadCsv';
 import {
   getDatesFromDataRow,
   momentToFormat,
-  momentToFormatWho,
+  momentToFormatLong,
 } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
 import { US_NAME } from '../utils/consts';
@@ -108,7 +108,7 @@ export class WhoDataStore {
         number: i,
       };
       this.possibleRegions?.forEach((region) => {
-        const value = this.whoData[region][momentToFormatWho(date)];
+        const value = this.whoData[region][momentToFormatLong(date)];
         d[region] = value;
       });
       return d;
@@ -130,7 +130,7 @@ export class WhoDataStore {
 
   @computed get datesConverted() {
     if (this.dates) {
-      return this.dates.map(momentToFormatWho);
+      return this.dates.map(momentToFormatLong);
     }
 
     return undefined;

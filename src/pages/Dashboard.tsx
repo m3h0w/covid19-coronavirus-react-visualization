@@ -197,9 +197,9 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const isUs = selectedCountry === US_NAME;
 
   const getRegionCases = (region) =>
-    dataStore.getRegionData(region)?.confirmed[last(dataStore.regionDatesConverted)];
+    dataStore.getRegionData(region)?.confirmed[last(dataStore.datesConverted)];
   const getRegionDeaths = (region) =>
-    dataStore.getRegionData(region)?.dead[last(dataStore.regionDatesConverted)];
+    dataStore.getRegionData(region)?.dead[last(dataStore.datesConverted)];
   const hasRegions = Boolean(dataStore.getPossibleRegionsByCountry(selectedCountry).length);
 
   return (
@@ -331,7 +331,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <>
             <Card style={{ position: 'relative' }}>
               <UsaMapChart
-                date={last(dataStore.regionDatesConverted)}
+                date={last(dataStore.datesConverted)}
                 setTooltipContent={setTooltipContent}
                 dataType={'confirmed'}
                 style={{ maxHeight: '80vh' }}
@@ -357,7 +357,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <>
             <Card style={{ position: 'relative' }}>
               <UsaMapChart
-                date={last(dataStore.regionDatesConverted)}
+                date={last(dataStore.datesConverted)}
                 setTooltipContent={setTooltipContent}
                 dataType={'dead'}
                 style={{ maxHeight: '80vh' }}

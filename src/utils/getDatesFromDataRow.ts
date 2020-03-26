@@ -4,9 +4,9 @@ import { Row } from '../components/Dashboard/MultiChart';
 export const FIRST_DATE = '1/22/2020';
 export const FIRST_DATE_WHO = '1/21/2020';
 
-export const momentToFormat = (m: Moment): string => m.format('M/D/YY');
+export const momentToFormat = (m: Moment): string => m.format('M/D/YYYY');
 
-export const momentToFormatWho = (m: Moment) => m.format('M/D/YYYY');
+export const momentToFormatLong = (m: Moment) => m.format('M/D/YYYY');
 
 export const getDatesFromDataRow = (data: Row | undefined) => {
   if (!data) {
@@ -36,7 +36,7 @@ export const getDatesFromDataRowWho = (data: Row | undefined) => {
   for (let i = 0; i < days + 1; i = i + 1) {
     const newDate = moment(FIRST_DATE_WHO).add(i, 'days');
     // console.log(momentToFormatWho(newDate), data);
-    if (momentToFormatWho(newDate) in data) {
+    if (momentToFormatLong(newDate) in data) {
       dates.push(newDate);
     }
   }
