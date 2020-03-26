@@ -29,6 +29,7 @@
     "pubsub-js": "^1.8.0",
     "react": "^16.10.2",
     "react-cloudimage-responsive": "^1.6.5",
+    "react-country-flag": "^2.0.1",
     "react-dom": "^16.10.2",
     "react-ga": "^2.7.0",
     "react-icons": "^3.7.0",

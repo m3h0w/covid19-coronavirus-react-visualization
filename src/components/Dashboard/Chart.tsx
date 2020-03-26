@@ -15,6 +15,8 @@ import getBrush from './Brush';
 import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
 import getYAxis from './YAxis';
 import getTooltip from './Tooltip';
+import ReactCountryFlag from 'react-country-flag';
+import countryToCode from '../../utils/countryToCode';
 
 export type Row = {
   [key in Column]: string;
@@ -94,7 +96,15 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
 
   return (
     <>
-      <Title>Cases & Deaths{showingDataFor && `: ${showingDataFor}`}</Title>
+      <Title>
+        Cases & Deaths
+        {showingDataFor && `: ${showingDataFor} `}
+        <ReactCountryFlag
+          countryCode={countryToCode(showingDataFor)}
+          svg
+          style={{ marginTop: -5 }}
+        />
+      </Title>
       <ResponsiveContainer width={'100%'}>
         <LineChart
           data={data}

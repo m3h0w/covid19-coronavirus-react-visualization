@@ -25,6 +25,8 @@ import CustomChip from '../components/CustomChip';
 import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import sort from '../utils/sort';
 import last from '../utils/last';
+import ReactCountryFlag from 'react-country-flag';
+import countryToCode from '../utils/countryToCode';
 
 const drawerWidth = 240;
 
@@ -225,6 +227,13 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               {dataStore.ready &&
                 countries.map((country: string, i: number) => (
                   <CustomChip
+                    avatar={
+                      <ReactCountryFlag
+                        countryCode={countryToCode(country)}
+                        svg
+                        style={{ marginTop: 1, borderRadius: '50%' }}
+                      />
+                    }
                     style={{ cursor: 'pointer' }}
                     onClick={() => {
                       routeChange(country);

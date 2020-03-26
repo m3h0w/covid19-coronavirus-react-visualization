@@ -60,6 +60,8 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import sort from '../utils/sort';
 import { useHistory } from 'react-router';
 import Collapsable from '../components/Collapsable';
+import ReactCountryFlag from 'react-country-flag';
+import countryToCode from '../utils/countryToCode';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -113,6 +115,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: -5,
     [theme.breakpoints.up('md')]: {
       marginLeft: -13,
+    },
+  },
+  countryTableCell: {
+    '&:hover': {
+      cursor: 'pointer',
+      color: theme.palette.secondary.main,
     },
   },
 }));
@@ -195,19 +203,25 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           <Collapsable>
             <Table size='small' aria-label='a dense table'>
               <TableBody>
-                {possibleCountriesByConfirmed.map((country) => {
+                {possibleCountriesByConfirmed.map((country: string) => {
                   return (
-                    <TableRow
-                      key={country}
-                      onClick={() => {
-                        routeChange(country);
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <TableCell component='th' scope='row'>
+                    <TableRow key={country}>
+                      <TableCell
+                        onClick={() => {
+                          routeChange(country);
+                        }}
+                        className={classes.countryTableCell}
+                        component='th'
+                        scope='row'
+                      >
+                        <ReactCountryFlag
+                          style={{ marginTop: -4 }}
+                          countryCode={countryToCode(country)}
+                          svg
+                        />{' '}
                         {country}
                       </TableCell>
-                      <TableCell align='right'>{confirmedCases[country]}</TableCell>{' '}
+                      <TableCell align='right'>{confirmedCases[country]}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -217,7 +231,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
         </Paper>
         {/* </Grow> */}
       </Grid>
-      <Grid item lg={4} xs={12} style={{ cursor: 'pointer' }}>
+      <Grid item lg={4} xs={12}>
         {/* <Grow in={dataStore.ready}> */}
         <Paper className={classes.paper} style={{ padding: 0 }}>
           <NumberWithTitle
@@ -234,16 +248,22 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           <Collapsable>
             <Table size='small' aria-label='a dense table'>
               <TableBody>
-                {possibleCountriesByDeaths.map((country) => {
+                {possibleCountriesByDeaths.map((country: string) => {
                   return (
-                    <TableRow
-                      key={country}
-                      onClick={() => {
-                        routeChange(country);
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <TableCell component='th' scope='row'>
+                    <TableRow key={country}>
+                      <TableCell
+                        onClick={() => {
+                          routeChange(country);
+                        }}
+                        className={classes.countryTableCell}
+                        component='th'
+                        scope='row'
+                      >
+                        <ReactCountryFlag
+                          style={{ marginTop: -4 }}
+                          countryCode={countryToCode(country)}
+                          svg
+                        />{' '}
                         {country}
                       </TableCell>
                       <TableCell align='right'>{deaths[country]}</TableCell>{' '}
@@ -270,16 +290,22 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             <Collapsable>
               <Table size='small' aria-label='a dense table'>
                 <TableBody>
-                  {possibleCountriesByMortality.map((country) => {
+                  {possibleCountriesByMortality.map((country: string) => {
                     return (
-                      <TableRow
-                        key={country}
-                        onClick={() => {
-                          routeChange(country);
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <TableCell component='th' scope='row'>
+                      <TableRow key={country}>
+                        <TableCell
+                          onClick={() => {
+                            routeChange(country);
+                          }}
+                          className={classes.countryTableCell}
+                          component='th'
+                          scope='row'
+                        >
+                          <ReactCountryFlag
+                            style={{ marginTop: -4 }}
+                            countryCode={countryToCode(country)}
+                            svg
+                          />{' '}
                           {country}
                         </TableCell>
                         <TableCell align='right'>

@@ -19,10 +19,11 @@ const useStyles = makeStyles((theme) =>
 );
 
 const CustomChip = (props) => {
-  const { handleDelete, label, backgroundColor } = props;
+  const { handleDelete, label, backgroundColor, avatar } = props;
   const classes = useStyles({ backgroundColor });
   return (
     <Chip
+      avatar={avatar}
       onClick={props.onClick}
       style={props.style}
       label={label}
