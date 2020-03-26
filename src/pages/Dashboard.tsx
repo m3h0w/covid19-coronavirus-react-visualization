@@ -140,13 +140,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     if (possibleCountries.includes(country)) {
       setSelectedCountry(country);
       setSelectedRegion(null);
-
-      if (!shownUsInfoSnack && selectedCountry === US_NAME) {
-        showInfoSnackBar(
-          `The state-wise data for United States has been last updated on the 22nd of March. We're working on it 🙂`
-        );
-        setShownUsInfoSnack(true);
-      }
     }
   };
 
@@ -237,8 +230,8 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                   dataStore.getPossibleRegionsByCountry(selectedCountry),
                   (a, b) => {
                     return (
-                      dataStore.getRegionData(b)?.confirmed[last(dataStore.regionDatesConverted)] -
-                      dataStore.getRegionData(a)?.confirmed[last(dataStore.regionDatesConverted)]
+                      dataStore.getRegionData(b)?.confirmed[last(dataStore.datesConverted)] -
+                      dataStore.getRegionData(a)?.confirmed[last(dataStore.datesConverted)]
                     );
                   }
                 )}
