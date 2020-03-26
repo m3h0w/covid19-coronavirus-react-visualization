@@ -193,7 +193,11 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     dataStore.getRegionData(region)?.confirmed[last(dataStore.datesConverted)];
   const getRegionDeaths = (region) =>
     dataStore.getRegionData(region)?.dead[last(dataStore.datesConverted)];
-  const hasRegions = Boolean(dataStore.getPossibleRegionsByCountry(selectedCountry).length);
+  const possibleRegionsForSelectedCountry = dataStore.getPossibleRegionsByCountry(
+    selectedCountry,
+    true
+  );
+  const hasRegions = Boolean(possibleRegionsForSelectedCountry.length);
 
   return (
     <Dashboard title='Country dashboard'>
@@ -212,12 +216,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 selectCountry(v);
               }}
               selectedValue={selectedCountry}
-              possibleValues={sort(
-                dataStore.possibleCountries,
-                (a, b) =>
-                  dataStore.getCountryData(b)?.confirmed[last(dataStore.datesConverted)] -
-                  dataStore.getCountryData(a)?.confirmed[last(dataStore.datesConverted)]
-              )}
+              possibleValues={dataStore.possibleCountriesSortedByCases}
               id={'select-country'}
               width={'auto'}
             />
@@ -226,15 +225,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 label={'Select region'}
                 handleChange={selectRegion}
                 selectedValue={selectedRegion}
-                possibleValues={sort(
-                  dataStore.getPossibleRegionsByCountry(selectedCountry),
-                  (a, b) => {
-                    return (
-                      dataStore.getRegionData(b)?.confirmed[last(dataStore.datesConverted)] -
-                      dataStore.getRegionData(a)?.confirmed[last(dataStore.datesConverted)]
-                    );
-                  }
-                )}
+                possibleValues={possibleRegionsForSelectedCountry}
                 id={'select-region'}
                 width={'auto'}
               />
@@ -263,10 +254,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sort(
-                      dataStore.getPossibleRegionsByCountry(selectedCountry),
-                      (a, b) => getRegionCases(b) - getRegionCases(a)
-                    ).map((region) => {
+                    {possibleRegionsForSelectedCountry.map((region) => {
                       return (
                         <TableRow
                           key={region}
@@ -371,12 +359,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           </>
         )}
       </Grid>
-      {/* Recent Orders */}
-      {/* <Grid item xs={12}>
-    <Paper className={classes.paper}>
-      <Orders />
-    </Paper>
-  </Grid> */}
     </Dashboard>
   );
 });

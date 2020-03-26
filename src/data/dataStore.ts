@@ -12,6 +12,7 @@ import stateNames from 'data/stateNames.json';
 import { US_NAME, SOUTH_KOREA } from '../utils/consts';
 import { showInfoSnackBar } from '../components/Snackbar';
 import last from 'utils/last';
+import sort from '../utils/sort';
 
 const USE_LOCAL_DATA = true;
 
@@ -291,6 +292,11 @@ export class DataStore {
     });
   }
 
+  public getLastRegionCases = (region) =>
+    this.getRegionData(region)?.confirmed[last(this.datesConverted)];
+  public getLastRegionDeaths = (region) =>
+    this.getRegionData(region)?.dead[last(this.datesConverted)];
+
   public getRegionData = (region: string) => {
     if (
       !this.confirmedByRegionOld ||
@@ -300,20 +306,14 @@ export class DataStore {
     ) {
       return;
     }
-    if (Object.keys(this.confirmedByRegion).includes(region)) {
-      return {
-        confirmed: this.confirmedByRegion[region],
-        dead: this.deadByRegion[region],
-      };
-    }
     return {
-      confirmed: this.confirmedByRegionOld[region],
-      dead: this.deadByRegionOld[region],
+      confirmed: this.confirmedByRegion[region],
+      dead: this.deadByRegion[region],
     };
   };
 
-  public getPossibleRegionsByCountry = (country: string) => {
-    return this.possibleRegions.filter((region) => {
+  public getPossibleRegionsByCountry = (country: string, sorted: boolean = false) => {
+    const possibleRegions = this.possibleRegions.filter((region) => {
       if (country === US_NAME) {
         if (!Object.values(stateNames).includes(region)) {
           return false;
@@ -321,6 +321,15 @@ export class DataStore {
       }
       return this.getRegionData(region)?.confirmed[COUNTRY_KEY] === country;
     });
+
+    if (sorted) {
+      return sort(
+        possibleRegions,
+        (a: string, b: string) => this.getLastRegionCases(b) - this.getLastRegionCases(a)
+      );
+    }
+
+    return possibleRegions;
   };
 
   public getCountryData = (country: string) => {
@@ -340,6 +349,16 @@ export class DataStore {
     return [];
   }
 
+  @computed get possibleCountriesSortedByCases() {
+    let ret = [];
+    const lastCases = last(this.confirmedCasesArray);
+    if (this.ready && this.confirmedByCountry) {
+      ret = Object.keys(this.confirmedByCountry).sort();
+    }
+    ret.sort((a: string, b: string) => lastCases[b] - lastCases[a]);
+    return ret;
+  }
+
   @computed get countriesWithOver100Cases() {
     if (this.ready && this.confirmedByCountry) {
       return Object.keys(this.confirmedByCountry)
@@ -350,10 +369,13 @@ export class DataStore {
   }
 
   @computed get possibleRegions() {
-    if (this.ready && this.confirmedByRegionOld) {
-      return Object.keys(this.confirmedByRegionOld).sort();
+    let ret = [];
+    if (this.ready && this.confirmedByRegion) {
+      ret = Object.keys(this.confirmedByRegion);
     }
-    return [];
+    ret.sort();
+
+    return ret;
   }
 
   @computed get regionDates() {
