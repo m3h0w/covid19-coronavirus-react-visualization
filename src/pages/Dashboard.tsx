@@ -140,12 +140,24 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     if (possibleCountries.includes(country)) {
       setSelectedCountry(country);
       setSelectedRegion(null);
+
+      if (!shownUsInfoSnack && selectedCountry === US_NAME) {
+        showInfoSnackBar(
+          `The state-wise data for United States has been last updated on the 22nd of March. We're working on it 🙂`
+        );
+        setShownUsInfoSnack(true);
+      }
     }
   };
 
   const selectRegion = (region: string) => {
     if (dataStore.possibleRegions.includes(region) || region === null) {
       setSelectedRegion(region);
+      // if (region) {
+      //   showInfoSnackBar(
+      //     `Last updated ${region} on ${last(dataStore.regionDates).format('MMMM Do')}`
+      //   );
+      // }
     }
   };
 
@@ -157,15 +169,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
     }
   }, [selectedCountry, selectedRegion]);
-
-  useEffect(() => {
-    if (!shownUsInfoSnack && selectedCountry === US_NAME) {
-      showInfoSnackBar(
-        `The state-wise data for United States has been last updated on the 22nd of March. We're working on it 🙂`
-      );
-      setShownUsInfoSnack(true);
-    }
-  }, [shownUsInfoSnack, selectedCountry]);
 
   useEffect(() => {
     let countryFromUrl = props.match.params.country;

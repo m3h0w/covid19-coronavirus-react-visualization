@@ -10,6 +10,8 @@ import fetchCsv from 'utils/downloadCsv';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
 import { US_NAME, SOUTH_KOREA } from '../utils/consts';
+import { showInfoSnackBar } from '../components/Snackbar';
+import last from 'utils/last';
 
 const USE_LOCAL_DATA = true;
 
@@ -37,6 +39,14 @@ const swapName = (name: string): string => {
 function groupBy(arr: any[], key: string) {
   let reducer = (grouped: object, item: object) => {
     let group_value = item[key];
+    if (
+      item[STATE_KEY] === 'Recovered' ||
+      item[STATE_KEY] === 'Confirmed' ||
+      item[STATE_KEY] === 'Deaths'
+    ) {
+      return grouped;
+    }
+
     if (Object.keys(namesMap).includes(group_value)) {
       group_value = swapName(group_value);
     }
@@ -76,7 +86,9 @@ export const STATE_KEY = 'Province/State';
 
 export class DataStore {
   @observable public confirmedByRegion: GroupedData | undefined = undefined;
+  @observable public confirmedByRegionOld: GroupedData | undefined = undefined;
   @observable public deadByRegion: GroupedData | undefined = undefined;
+  @observable public deadByRegionOld: GroupedData | undefined = undefined;
   @observable public confirmedByCountry: GroupedData | undefined = undefined;
   @observable public deadByCountry: GroupedData | undefined = undefined;
 
@@ -84,7 +96,7 @@ export class DataStore {
     if (USE_LOCAL_DATA) {
       csv(confirmedCsvUrl, (err, data: any) => {
         if (data) {
-          this.confirmedByRegion = groupBy(data, STATE_KEY);
+          this.confirmedByRegionOld = groupBy(data, STATE_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -92,7 +104,7 @@ export class DataStore {
 
       csv(deathsCsvUrl, (err, data: any) => {
         if (data) {
-          this.deadByRegion = groupBy(data, STATE_KEY);
+          this.deadByRegionOld = groupBy(data, STATE_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -101,6 +113,7 @@ export class DataStore {
       csv(confirmedGlobalCsvUrl, (err, data: any) => {
         if (data) {
           this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
+          this.confirmedByRegion = groupBy(data, STATE_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -109,29 +122,31 @@ export class DataStore {
       csv(deathsGlobalCsvUrl, (err, data: any) => {
         if (data) {
           this.deadByCountry = groupBy(data, COUNTRY_KEY);
-        } else {
-          throw new Error(`Data wasn't loaded correctly`);
-        }
-      });
-    } else {
-      fetchCsv('confirmed', (data: Row[]) => {
-        if (data) {
-          this.confirmedByRegion = groupBy(data, STATE_KEY);
-          this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
-        } else {
-          throw new Error(`Data wasn't loaded correctly`);
-        }
-      });
-
-      fetchCsv('dead', (data: Row[]) => {
-        if (data) {
           this.deadByRegion = groupBy(data, STATE_KEY);
-          this.deadByCountry = groupBy(data, COUNTRY_KEY);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
       });
     }
+    // } else {
+    //   fetchCsv('confirmed', (data: Row[]) => {
+    //     if (data) {
+    //       this.confirmedByRegion = groupBy(data, STATE_KEY);
+    //       this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
+    //     } else {
+    //       throw new Error(`Data wasn't loaded correctly`);
+    //     }
+    //   });
+
+    //   fetchCsv('dead', (data: Row[]) => {
+    //     if (data) {
+    //       this.deadByRegion = groupBy(data, STATE_KEY);
+    //       this.deadByCountry = groupBy(data, COUNTRY_KEY);
+    //     } else {
+    //       throw new Error(`Data wasn't loaded correctly`);
+    //     }
+    //   });
+    // }
   }
 
   @computed get totalConfirmedCasesArray():
@@ -269,12 +284,23 @@ export class DataStore {
   }
 
   public getRegionData = (region: string) => {
-    if (!this.confirmedByRegion || !this.deadByRegion) {
+    if (
+      !this.confirmedByRegionOld ||
+      !this.deadByRegionOld ||
+      !this.confirmedByRegion ||
+      !this.deadByRegion
+    ) {
       return;
     }
+    if (Object.keys(this.confirmedByRegion).includes(region)) {
+      return {
+        confirmed: this.confirmedByRegion[region],
+        dead: this.deadByRegion[region],
+      };
+    }
     return {
-      confirmed: this.confirmedByRegion[region],
-      dead: this.deadByRegion[region],
+      confirmed: this.confirmedByRegionOld[region],
+      dead: this.deadByRegionOld[region],
     };
   };
 
@@ -316,16 +342,16 @@ export class DataStore {
   }
 
   @computed get possibleRegions() {
-    if (this.ready && this.confirmedByRegion) {
-      return Object.keys(this.confirmedByRegion).sort();
+    if (this.ready && this.confirmedByRegionOld) {
+      return Object.keys(this.confirmedByRegionOld).sort();
     }
     return [];
   }
 
   @computed get regionDates() {
-    if (this.ready && this.confirmedByRegion) {
-      for (const countryName of Object.keys(this.confirmedByRegion)) {
-        const row = this.confirmedByRegion[countryName];
+    if (this.ready && this.confirmedByRegionOld) {
+      for (const countryName of Object.keys(this.confirmedByRegionOld)) {
+        const row = this.confirmedByRegionOld[countryName];
         const dates = getDatesFromDataRow(row);
         if (dates) {
           return dates;
