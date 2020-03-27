@@ -121,13 +121,13 @@ export class WhoDataStore {
     if (dataType === 'confirmed') {
       return this.casesDataArrayWithTime?.slice(
         0,
-        length ? length : this.casesDataArrayWithTime.length
+        length ? length + 1 : this.casesDataArrayWithTime.length + 1
       );
     }
     if (dataType === 'dead') {
       return this.deathsDataArrayWithTime?.slice(
         0,
-        length ? length : this.deathsDataArrayWithTime.length
+        length ? length + 1 : this.deathsDataArrayWithTime.length + 1
       );
     }
     return;
