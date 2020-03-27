@@ -3,6 +3,8 @@ import { observable, computed } from 'mobx';
 import { Row } from '../components/Dashboard/MultiChart';
 import { csv } from 'd3-request';
 import whoData from '../data/who_report.csv';
+import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
+import deathsGlobalCsvUrl from '../data/deaths_global.csv';
 import fetchCsv from 'utils/downloadCsv';
 import {
   getDatesFromDataRow,
@@ -13,6 +15,9 @@ import stateNames from 'data/stateNames.json';
 import { US_NAME } from '../utils/consts';
 import { Moment } from 'moment';
 import { getDatesFromDataRowWho } from '../utils/getDatesFromDataRow';
+import continentArray from './continentsArray.json';
+import { swapName, namesMap } from './utils';
+import { DataType } from '../pages/Map';
 
 const USE_LOCAL_DATA = true;
 
@@ -30,28 +35,28 @@ const excludedProviceStateValues = ['Confirmed', 'Deaths', 'Case on an internati
 const excludedWhoRegions = ['Territories', ''];
 
 // _.groupBy
-function groupBy(arr, key) {
+function groupByContinent(arr) {
   let reducer = (grouped, item) => {
-    let group_value = item[key];
-
-    if (item[COUNTRY_KEY] === 'China') {
-      if (item[STATE_KEY]) {
-        return grouped;
-      }
-    } else {
-      if (excludedProviceStateValues.includes(item[STATE_KEY])) {
-        return grouped;
-      }
-      if (excludedCountryRegionValues.includes(item[COUNTRY_KEY]) || !item[COUNTRY_KEY]) {
-        return grouped;
-      }
-      if (excludedWhoRegions.includes(item[WHO_REGION_KEY]) || !item[WHO_REGION_KEY]) {
-        return grouped;
-      }
+    // if (item[COUNTRY_KEY] === 'China') {
+    //   if (item[STATE_KEY]) {
+    //     return grouped;
+    //   }
+    // } else {
+    //   if (excludedProviceStateValues.includes(item[STATE_KEY])) {
+    //     return grouped;
+    //   }
+    //   if (excludedCountryRegionValues.includes(item[COUNTRY_KEY]) || !item[COUNTRY_KEY]) {
+    //     return grouped;
+    //   }
+    // }
+    let country = item[COUNTRY_KEY];
+    if (Object.keys(namesMap).includes(country)) {
+      country = swapName(country.replace('*', ''));
     }
-
-    if (group_value === 'US') {
-      group_value = US_NAME;
+    let group_value = continentArray.find((v) => v.country === country.replace('*', ''))?.continent;
+    if (!group_value) {
+      // group_value = 'Other';
+      return grouped;
     }
     if (!grouped[group_value]) {
       grouped[group_value] = {};
@@ -68,8 +73,8 @@ function groupBy(arr, key) {
       if (v && isNumber(v)) {
         grouped[group_value][rowKey] += parseFloat(v);
       } else {
-        if (v === 'US') {
-          v = US_NAME;
+        if (Object.keys(namesMap).includes(v)) {
+          v = swapName(v);
         }
         grouped[group_value][rowKey] = v;
       }
@@ -87,13 +92,21 @@ const STATE_KEY = 'Province/States';
 const WHO_REGION_KEY = 'WHO region';
 
 export class WhoDataStore {
-  @observable public whoData: any | undefined = undefined;
+  @observable public whoCasesData: any | undefined = undefined;
+  @observable public whoDeathsData: any | undefined = undefined;
 
   constructor() {
     if (USE_LOCAL_DATA) {
-      csv(whoData, (err, data: any) => {
+      csv(confirmedGlobalCsvUrl, (err, data: any) => {
         if (data) {
-          this.whoData = groupBy(data, WHO_REGION_KEY);
+          this.whoCasesData = groupByContinent(data);
+        } else {
+          throw new Error(`Data wasn't loaded correctly`);
+        }
+      });
+      csv(deathsGlobalCsvUrl, (err, data: any) => {
+        if (data) {
+          this.whoDeathsData = groupByContinent(data);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -101,14 +114,47 @@ export class WhoDataStore {
     }
   }
 
-  @computed get getDataArrayWithTime() {
+  public getDataArrayWithTime(dataType: DataType, length?: number) {
+    if (!this.ready) {
+      return;
+    }
+    if (dataType === 'confirmed') {
+      return this.casesDataArrayWithTime?.slice(
+        0,
+        length ? length : this.casesDataArrayWithTime.length
+      );
+    }
+    if (dataType === 'dead') {
+      return this.deathsDataArrayWithTime?.slice(
+        0,
+        length ? length : this.deathsDataArrayWithTime.length
+      );
+    }
+    return;
+  }
+
+  @computed get deathsDataArrayWithTime() {
     return this.dates?.map((date: Moment, i: number) => {
       const d: { [key: string]: string | number } = {
         time: date.unix(),
         number: i,
       };
       this.possibleRegions?.forEach((region) => {
-        const value = this.whoData[region][momentToFormatLong(date)];
+        const value = this.whoDeathsData[region][momentToFormatLong(date)];
+        d[region] = value;
+      });
+      return d;
+    });
+  }
+
+  @computed get casesDataArrayWithTime() {
+    return this.dates?.map((date: Moment, i: number) => {
+      const d: { [key: string]: string | number } = {
+        time: date.unix(),
+        number: i,
+      };
+      this.possibleRegions?.forEach((region) => {
+        const value = this.whoCasesData[region][momentToFormatLong(date)];
         d[region] = value;
       });
       return d;
@@ -116,9 +162,9 @@ export class WhoDataStore {
   }
 
   @computed get dates() {
-    if (this.ready && this.whoData) {
-      for (const region of Object.keys(this.whoData)) {
-        const row = this.whoData[region];
+    if (this.ready && this.whoCasesData) {
+      for (const region of Object.keys(this.whoCasesData)) {
+        const row = this.whoCasesData[region];
         const dates = getDatesFromDataRowWho(row);
         if (dates) {
           return dates;
@@ -140,11 +186,11 @@ export class WhoDataStore {
     if (!this.ready) {
       return undefined;
     }
-    return Object.keys(this.whoData);
+    return Object.keys(this.whoCasesData);
   }
 
   @computed get ready() {
-    return Boolean(this.whoData);
+    return Boolean(this.whoCasesData);
   }
 }
 

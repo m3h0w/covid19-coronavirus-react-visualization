@@ -584,7 +584,7 @@ const MapPage = observer(() => {
                 height: '27px',
               }}
             >
-              <Title>Cases by continent</Title>
+              <Title>{dataType === 'confirmed' ? 'Cases' : 'Deaths'} by continent</Title>
               <Hidden xsDown>
                 <Button
                   style={{
@@ -627,7 +627,7 @@ const MapPage = observer(() => {
                 </IconButton>
               </Hidden>
             </div>
-            <WhoBarChart colors={colors} />
+            <WhoBarChart colors={colors} dataType={dataType} sliderValue={sliderValue} />
           </Paper>
         </Grow>
       </Grid>
@@ -635,29 +635,41 @@ const MapPage = observer(() => {
   );
 });
 
-const WhoBarChart = observer(({ colors }: { colors: string[] }) => {
-  const whoDataStore = useWhoDataStore();
-  return (
-    <ResponsiveContainer height={'100%'} maxHeight={'80vh'}>
-      <BarChart
-        data={whoDataStore?.getDataArrayWithTime}
-        margin={{
-          top: 20,
-        }}
-      >
-        <CartesianGrid strokeDasharray='1 6' />
-        <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
-        {getYAxis('Cases')}
-        <Tooltip labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')} />
-        <Legend />
-        {colors &&
-          whoDataStore?.possibleRegions?.map((region, i) => {
-            return <Bar dataKey={region} stackId={'a'} fill={colors[i]} key={i} />;
-          })}
-      </BarChart>
-    </ResponsiveContainer>
-  );
-});
+const WhoBarChart = observer(
+  ({
+    colors,
+    dataType,
+    sliderValue,
+  }: {
+    colors: string[];
+    dataType: DataType;
+    sliderValue: number;
+  }) => {
+    const whoDataStore = useWhoDataStore();
+    return (
+      <ResponsiveContainer height={'100%'} maxHeight={'80vh'}>
+        <BarChart
+          data={whoDataStore?.getDataArrayWithTime(dataType, sliderValue ? sliderValue : undefined)}
+          margin={{
+            top: 20,
+          }}
+        >
+          <CartesianGrid strokeDasharray='1 6' />
+          <XAxis dataKey='time' tickFormatter={formatXAxis} height={50} />
+          {getYAxis('Cases')}
+          <Tooltip
+            labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')}
+          />
+          <Legend />
+          {colors &&
+            whoDataStore?.possibleRegions?.map((region, i) => {
+              return <Bar dataKey={region} stackId={'a'} fill={colors[i]} key={i} />;
+            })}
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
+);
 
 const TIME_FORMAT = 'MMM Do';
 const formatXAxis: TickFormatterFunction = (tickItem: number) =>

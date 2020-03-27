@@ -13,6 +13,7 @@ import { US_NAME, SOUTH_KOREA } from '../utils/consts';
 import { showInfoSnackBar } from '../components/Snackbar';
 import last from 'utils/last';
 import sort from '../utils/sort';
+import { swapName, namesMap } from './utils';
 
 const USE_LOCAL_DATA = true;
 
@@ -24,17 +25,6 @@ interface ICountryData {
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 }
-
-const namesMap = {
-  US: US_NAME,
-  'Korea, South': SOUTH_KOREA,
-};
-const swapName = (name: string): string => {
-  if (!Object.keys(namesMap).includes(name)) {
-    throw new Error(`Tried to swap a country that doesn't exist in the namesMap`);
-  }
-  return namesMap[name];
-};
 
 // _.groupBy
 function groupBy(arr: any[], key: string) {
@@ -55,7 +45,7 @@ function groupBy(arr: any[], key: string) {
     }
 
     if (Object.keys(namesMap).includes(group_value)) {
-      group_value = swapName(group_value);
+      group_value = swapName(group_value.replace('*', ''));
     }
     if (!grouped[group_value]) {
       grouped[group_value] = {};
@@ -74,10 +64,10 @@ function groupBy(arr: any[], key: string) {
         }
         grouped[group_value][rowKey] += parseFloat(v);
       } else {
-        if (v === 'US') {
-          v = US_NAME;
-        }
         if (v && (typeof v === 'string' || v instanceof String)) {
+          if (Object.keys(namesMap).includes(v)) {
+            v = swapName(v);
+          }
           grouped[group_value][rowKey] = v;
         }
       }
