@@ -134,7 +134,12 @@ let colorsHelper = new Colors();
 const useMemoryStateA = createPersistedState();
 const useMemoryStateB = createPersistedState();
 
-const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((props) => {
+const ComparisonPage: FC<RouteComponentProps<{ country: string }> & {
+  setSliderValue: (v) => void;
+  sliderValue: number;
+  playing: boolean;
+}> = observer((props) => {
+  const { sliderValue, setSliderValue, playing } = props;
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -351,6 +356,9 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               colors={colors}
               syncId={'compariso1n'}
               logScale={logScale}
+              sliderValue={sliderValue}
+              setSliderValue={setSliderValue}
+              playing={playing}
             />
           </Paper>
         </Grow>
@@ -366,6 +374,9 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               colors={colors}
               syncId={'comparison'}
               logScale={logScale}
+              sliderValue={sliderValue}
+              setSliderValue={setSliderValue}
+              playing={playing}
             />
           </Paper>
         </Grow>

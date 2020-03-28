@@ -8,7 +8,7 @@ const newColorScheme = () => {
   scheme
     .from_hue(getRandomFromRange(0, 100))
     .scheme('tetrade')
-    .distance(0.6)
+    .distance(0.7)
     .variation('hard');
   var colors = shuffleArray(scheme.colors());
   return colors;

@@ -42,10 +42,24 @@ interface IProps {
 }
 
 const MultiChart: FC<IProps> = observer(
-  ({ title, yLabel, countries, dataType, colors, syncId, logScale }) => {
+  ({
+    title,
+    yLabel,
+    countries,
+    dataType,
+    colors,
+    syncId,
+    logScale,
+    sliderValue,
+    setSliderValue,
+    playing,
+  }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
     const data = dataStore.dataForAfter100Cases(dataType, countries);
+    // if (data && !data.length) {
+    //   setSliderValue(sliderValue + 1);
+    // }
 
     const CustomizedDot = (props) => {
       const { cx, cy, stroke, payload, value, lastX, country } = props;
@@ -96,6 +110,7 @@ const MultiChart: FC<IProps> = observer(
         return (
           <Line
             animationDuration={500}
+            isAnimationActive={playing ? false : true}
             key={i}
             type='monotone'
             dataKey={country}
@@ -166,6 +181,7 @@ const MultiChart: FC<IProps> = observer(
                 }}
                 // height={30}
                 type={'number'}
+                allowDecimals={false}
               />
               {getYAxis(yLabel, logScale)}
               {getFormattedLine(true)}

@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     paddingTop: (props) => (props.paddingTop ? theme.spacing(2) : 0),
-    paddingBottom: theme.spacing(4),
+    paddingBottom: theme.spacing(8),
   },
   paper: {
     opacity: `${GLOBAL_PAPER_OPACITY} !important`,

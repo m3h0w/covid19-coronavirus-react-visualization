@@ -8,7 +8,7 @@ export const momentToFormat = (m: Moment): string => m.format('M/D/YYYY');
 
 export const momentToFormatLong = (m: Moment) => m.format('M/D/YYYY');
 
-export const getDatesFromDataRow = (data: Row | undefined) => {
+export const getDatesFromDataRow = (data: Row | undefined, maxIndex?: number) => {
   if (!data) {
     return;
   }
@@ -16,7 +16,7 @@ export const getDatesFromDataRow = (data: Row | undefined) => {
   const nowM = moment();
   const days = nowM.diff(firstDateM, 'days');
   const dates: Moment[] = [];
-  for (let i = 0; i < days + 1; i = i + 1) {
+  for (let i = 0; i < (maxIndex ? maxIndex + 1 : days + 1); i = i + 1) {
     const newDate = moment(FIRST_DATE).add(i, 'days');
     if (momentToFormat(newDate) in data) {
       dates.push(newDate);

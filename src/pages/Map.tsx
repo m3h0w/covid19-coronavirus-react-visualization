@@ -331,22 +331,18 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   );
 });
 
-const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
-
-const MapPage = observer(() => {
+const MapPage = observer(({ sliderValue }) => {
   const classes = useStyles();
   const dataStore = useDataStore();
-  const [sliderValue, setSliderValue] = useState<number>();
+  // const [sliderValue, setSliderValue] = useState<number>();
   const [date, setDate] = useState<string>();
   const [tooltipContent, setTooltipContent] = useState();
-  const [maxSliderValue, setMaxSliderValue] = useState();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(
     false,
     'shownMapSliderSnackbar'
   );
-  const [playing, setPlaying] = useState(false);
   const [dataType, setDataType] = useState<DataType>('confirmed');
-  const [colors, setColors] = useState();
+  const [colors, setColors] = useState<string[]>([]);
   const whoDataStore = useWhoDataStore();
 
   useEffect(() => {
@@ -356,43 +352,10 @@ const MapPage = observer(() => {
   }, [whoDataStore.possibleRegions]);
 
   useEffect(() => {
-    const checkKey = (e) => {
-      e = e || window.event;
-      if (e.keyCode === '37') {
-        setSliderValue((prev) => Math.max(prev - 1, 0));
-      } else if (e.keyCode === '39') {
-        setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
-      }
-    };
-    document.addEventListener('onkeydown', checkKey);
-
-    return () => document.removeEventListener('onkeydown', checkKey);
-  }, [maxSliderValue]);
-
-  useEffect(() => {
-    if (dataStore && dataStore.datesConverted) {
-      setMaxSliderValue(dataStore.datesConverted.length - 1);
-      setSliderValue(dataStore.datesConverted.length - 1);
-    }
-  }, [dataStore, dataStore.datesConverted]);
-
-  useEffect(() => {
     if (sliderValue && dataStore && dataStore.datesConverted) {
       setDate(dataStore.datesConverted[sliderValue]);
     }
   }, [sliderValue, dataStore, dataStore.datesConverted]);
-
-  useEffect(() => {
-    if (playing) {
-      if (sliderValue === maxSliderValue) {
-        setPlaying(false);
-      } else {
-        setTimeout(() => {
-          setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
-        }, 350);
-      }
-    }
-  }, [playing, sliderValue, maxSliderValue]);
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
@@ -489,39 +452,6 @@ const MapPage = observer(() => {
                 <MapChart date={date} setTooltipContent={setTooltipContent} dataType={dataType} />
                 <ReactTooltip>{tooltipContent}</ReactTooltip>
               </>
-            ) : null}
-          </div>
-          <div className={classes.sliderWrapper}>
-            {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-              <div className={classes.slider}>
-                <Typography style={{ marginTop: '-1px' }}>Play</Typography>
-                <IconButton
-                  onClick={() => {
-                    if (playing) {
-                      setSliderValue(maxSliderValue);
-                    } else {
-                      setSliderValue(0);
-                    }
-                    setPlaying(!playing);
-                  }}
-                >
-                  {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
-                </IconButton>
-                <IOSSlider
-                  valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-                  getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-                  aria-labelledby='dates-map-slider'
-                  valueLabelDisplay='auto'
-                  onChange={(event: any, newValue: number | number[]) => {
-                    setSliderValue(newValue as number);
-                  }}
-                  value={sliderValue}
-                  step={1}
-                  marks
-                  min={0}
-                  max={maxSliderValue}
-                />
-              </div>
             ) : null}
           </div>
         </Card>

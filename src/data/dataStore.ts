@@ -90,6 +90,7 @@ export class DataStore {
   @observable public deadByRegionOld: GroupedData | undefined = undefined;
   @observable public confirmedByCountry: GroupedData | undefined = undefined;
   @observable public deadByCountry: GroupedData | undefined = undefined;
+  @observable public sliderValue: number | undefined = undefined;
 
   constructor() {
     if (USE_LOCAL_DATA) {
@@ -196,38 +197,40 @@ export class DataStore {
     if (!this.ready) {
       return undefined;
     }
-    return this.dates
-      ?.map((_, i: number) => {
-        const d = {
-          time: i,
-        };
-        this.possibleCountries.forEach((country) => {
-          const dayOf100Cases = this.dayOf100CasesByCountry[country];
-          if (dayOf100Cases === undefined) {
-            return;
-          }
-          const index = dayOf100Cases + i;
-          if (index <= this.dates.length - 1) {
-            const date = this.dates[index];
-            if (countries.includes(country)) {
-              let value = this.getCountryData(country)[type][momentToFormat(date)];
-              if (value === 0) {
-                value = null;
-              }
-              d[country] = value;
+    const a = this.dates?.map((date, i: number) => {
+      const d = {
+        time: i,
+      };
+      this.possibleCountries.forEach((country) => {
+        const dayOf100Cases = this.dayOf100CasesByCountry[country];
+        if (dayOf100Cases === undefined) {
+          return;
+        }
+        const index = dayOf100Cases + i;
+        if (index <= this.dates.length - 1) {
+          const date = this.dates[index];
+          if (countries.includes(country)) {
+            let value = this.getCountryData(country)[type][momentToFormat(date)];
+            if (value === 0) {
+              value = null;
             }
+            d[country] = value;
           }
-        });
-        return d;
+        }
+      });
+      return d;
+    });
+    if (!a) {
+      return a;
+    }
+    return a.filter((el) =>
+      Object.keys(el).some((k) => {
+        if (k === 'time') {
+          return undefined;
+        }
+        return el[k];
       })
-      .filter((el) =>
-        Object.keys(el).some((k) => {
-          if (k === 'time') {
-            return undefined;
-          }
-          return el[k];
-        })
-      );
+    );
   }
 
   @computed get confirmedCasesArray() {
@@ -385,7 +388,7 @@ export class DataStore {
     if (this.ready && this.confirmedByRegionOld) {
       for (const countryName of Object.keys(this.confirmedByRegionOld)) {
         const row = this.confirmedByRegionOld[countryName];
-        const dates = getDatesFromDataRow(row);
+        const dates = getDatesFromDataRow(row, this.sliderValue);
         if (dates) {
           return dates;
         }
@@ -406,7 +409,7 @@ export class DataStore {
     if (this.ready && this.confirmedByCountry) {
       for (const countryName of Object.keys(this.confirmedByCountry)) {
         const row = this.confirmedByCountry[countryName];
-        const dates = getDatesFromDataRow(row);
+        const dates = getDatesFromDataRow(row, this.sliderValue);
         if (dates) {
           return dates;
         }
