@@ -28,7 +28,7 @@ import { Row } from './Chart';
 import useDataStore from '../../data/dataStore';
 import { Hidden, Grow, Fade } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
-import { GLOBAL_PAPER_OPACITY, animationTime } from '../../utils/consts';
+import { GLOBAL_PAPER_OPACITY, animationTime, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 
 const drawerWidth = 240;
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    width: theme.spacing(7),
+    width: SIDEBAR_WIDTH,
     // [theme.breakpoints.up('sm')]: {
     //   width: theme.spacing(7),
     // },

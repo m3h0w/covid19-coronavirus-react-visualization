@@ -34,7 +34,7 @@ import Paper from '@material-ui/core/Paper';
 import last from '../utils/last';
 import Title from 'components/Dashboard/Title';
 import NumberWithTitle from '../components/NumberWithTitle';
-import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
+import { animationTime, GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../utils/consts';
 import {
   BarChart,
   CartesianGrid,
@@ -64,20 +64,22 @@ import generateNewColors from '../utils/generateNewColors';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
-    position: 'absolute',
-    width: '100%',
-    margin: '0 auto',
+    position: 'fixed',
+    width: `calc(100vw - ${SIDEBAR_WIDTH}px)`,
+    marginLeft: SIDEBAR_WIDTH,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
-    [theme.breakpoints.up('sm')]: {
-      bottom: '10vh',
-    },
-    [theme.breakpoints.down('xs')]: {
-      bottom: '1vh',
-    },
+    bottom: 0,
+    left: 0,
+  },
+  sliderPaper: {
+    borderRadius: 0,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
   },
   slider: {
     width: '70%',
@@ -491,39 +493,6 @@ const MapPage = observer(() => {
               </>
             ) : null}
           </div>
-          <div className={classes.sliderWrapper}>
-            {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-              <div className={classes.slider}>
-                <Typography style={{ marginTop: '-1px' }}>Play</Typography>
-                <IconButton
-                  onClick={() => {
-                    if (playing) {
-                      setSliderValue(maxSliderValue);
-                    } else {
-                      setSliderValue(0);
-                    }
-                    setPlaying(!playing);
-                  }}
-                >
-                  {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
-                </IconButton>
-                <IOSSlider
-                  valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-                  getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-                  aria-labelledby='dates-map-slider'
-                  valueLabelDisplay='auto'
-                  onChange={(event: any, newValue: number | number[]) => {
-                    setSliderValue(newValue as number);
-                  }}
-                  value={sliderValue}
-                  step={1}
-                  marks
-                  min={0}
-                  max={maxSliderValue}
-                />
-              </div>
-            ) : null}
-          </div>
         </Card>
         {/* </Grow> */}
       </Grid>
@@ -534,7 +503,7 @@ const MapPage = observer(() => {
         <Grow in={whoDataStore.ready}>
           <Paper
             className={classes.paper}
-            style={{ height: '550px', maxHeight: '90vh', width: '100%' }}
+            style={{ height: '550px', maxHeight: '90vh', width: '100%', marginBottom: 50 }}
           >
             <div
               style={{
@@ -591,6 +560,41 @@ const MapPage = observer(() => {
           </Paper>
         </Grow>
       </Grid>
+      <div className={classes.sliderWrapper}>
+        {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
+          <Paper className={classes.sliderPaper}>
+            <div className={classes.slider}>
+              <Typography style={{ marginTop: '-1px' }}>Play</Typography>
+              <IconButton
+                onClick={() => {
+                  if (playing) {
+                    setSliderValue(maxSliderValue);
+                  } else {
+                    setSliderValue(0);
+                  }
+                  setPlaying(!playing);
+                }}
+              >
+                {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
+              </IconButton>
+              <IOSSlider
+                valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+                getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+                aria-labelledby='dates-map-slider'
+                valueLabelDisplay='auto'
+                onChange={(event: any, newValue: number | number[]) => {
+                  setSliderValue(newValue as number);
+                }}
+                value={sliderValue}
+                step={1}
+                marks
+                min={0}
+                max={maxSliderValue}
+              />
+            </div>
+          </Paper>
+        ) : null}
+      </div>
     </Dashboard>
   );
 });
