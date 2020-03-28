@@ -8,6 +8,8 @@ import {
   ResponsiveContainer,
   TickFormatterFunction,
   CartesianGrid,
+  Bar,
+  BarChart,
 } from 'recharts';
 import Title from './Title';
 import moment, { Moment } from 'moment';
@@ -106,7 +108,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
         />
       </Title>
       <ResponsiveContainer width={'100%'}>
-        <LineChart
+        <BarChart
           data={data}
           margin={{
             top: 16,
@@ -123,10 +125,18 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             tickFormatter={formatXAxis}
           />
           {getYAxis('No. of cases & deaths')}
-          {lines}
+          {/* {lines} */}
+          <Bar
+            dataKey={'confirmedCases'}
+            name={'Confirmed cases'}
+            stackId={'a'}
+            fill={theme.palette.primary.main}
+            key={0}
+          />
+          <Bar dataKey={'deaths'} name={'Deaths'} stackId={'a'} fill={'#000'} key={1} />
           {brush}
           {getTooltip(formatXAxis)}
-        </LineChart>
+        </BarChart>
       </ResponsiveContainer>
     </>
   );
