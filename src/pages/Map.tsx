@@ -47,7 +47,6 @@ import {
 } from 'recharts';
 import useWhoDataStore from '../data/whoDataStore';
 import { mdUp, xsDown } from '../utils/breakpoints';
-import Colors from '../utils/colors';
 import getYAxis from '../components/Dashboard/YAxis';
 import moment from 'moment';
 import shuffleArray from '../utils/shuffleArray';

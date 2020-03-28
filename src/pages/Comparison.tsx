@@ -118,6 +118,11 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '100%',
     flexWrap: 'wrap',
   },
+  logScaleSwitch: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 8,
+    },
+  },
 }));
 
 interface IRowData {
@@ -190,16 +195,17 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
         size='small'
         color='primary'
         aria-label='add'
+        className={classes.logScaleSwitch}
       >
         {logScale ? (
           <>
             {/* <LocalHospitalIcon /> */}
-            Scale: LOG
+            Scale: LOG.
           </>
         ) : (
           <>
             {/* <AirlineSeatFlatIcon /> */}
-            Scale: LINNEAR
+            Scale: LIN.
           </>
         )}
       </Fab>

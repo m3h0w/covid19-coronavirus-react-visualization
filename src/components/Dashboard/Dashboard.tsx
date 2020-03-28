@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 16,
     [theme.breakpoints.down('xs')]: {
       paddingLeft: 6,
+      paddingRight: 6,
     },
     color: 'white',
     minHeight: toolbarHeight,
@@ -122,6 +123,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     height: '100vh',
     overflow: 'auto',
+    overflowX: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.palette.grey[100],

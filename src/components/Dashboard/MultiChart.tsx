@@ -23,6 +23,7 @@ import { momentToFormat } from '../../utils/getDatesFromDataRow';
 import getYAxis from './YAxis';
 import getTooltip from './Tooltip';
 import { animationTime } from '../../utils/consts';
+import { xsDown } from '../../utils/breakpoints';
 
 export type Row = {
   [key in Column]: string;
@@ -135,7 +136,7 @@ const MultiChart: FC<IProps> = observer(
           }}
         >
           <Title>
-            {title} {logScale ? '(logarithmic scale)' : null}
+            {title} {logScale ? (xsDown() ? '(log)' : '(logarithmic scale)') : null}
           </Title>
         </div>
         <ResponsiveContainer width={'100%'}>
