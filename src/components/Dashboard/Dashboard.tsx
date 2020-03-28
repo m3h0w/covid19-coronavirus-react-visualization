@@ -33,12 +33,15 @@ import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
 import {
   FacebookShareButton,
-  FacebookIcon,
+  // FacebookIcon,
   LinkedinShareButton,
-  LinkedinIcon,
+  // LinkedinIcon,
   WhatsappShareButton,
-  WhatsappIcon,
+  // WhatsappIcon,
 } from 'react-share';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import WhatsappIcon from '@material-ui/icons/WhatsApp';
+import LinkedinIcon from '@material-ui/icons/LinkedIn';
 
 const drawerWidth = 240;
 const toolbarHeight = 48;
@@ -160,10 +163,10 @@ const useStyles = makeStyles((theme) => ({
   facebookShareButton: {
     display: 'flex',
     marginTop: '2px',
-    marginRight: '5px',
-    opacity: 0.9,
+    marginRight: '10px',
+    opacity: 1,
     '&:hover': {
-      opacity: 1,
+      color: `${theme.palette.secondary.main} !important`,
     },
   },
 }));
@@ -245,19 +248,22 @@ const Dashboard: FC<IProps> = ({
               {title}
             </Typography>
             <Icon />
-            <Divider
-              className={open && classes.hidden}
-              orientation='vertical'
-              flexItem={true}
-              light={true}
-            />
+
             <Hidden xsDown implementation='css'>
+              <Divider orientation='vertical' flexItem={true} light={true} />
               <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                 <FacebookShareButton
                   url={`https://covid19.pink${location.pathname}`}
                   className={classes.facebookShareButton}
                 >
-                  <FacebookIcon size={32} round={true} iconFillColor={'#fff'} />
+                  <FacebookIcon
+                    size={32}
+                    round={true}
+                    iconFillColor={'#fff'}
+                    bgStyle={{
+                      backgroundColor: '#FFF',
+                    }}
+                  />
                 </FacebookShareButton>
                 <LinkedinShareButton
                   url={`https://covid19.pink${location.pathname}`}
@@ -269,7 +275,14 @@ const Dashboard: FC<IProps> = ({
                   url={`https://covid19.pink${location.pathname}`}
                   className={classes.facebookShareButton}
                 >
-                  <WhatsappIcon size={32} round={true} iconFillColor={'#fff'} />
+                  <WhatsappIcon
+                    size={32}
+                    round={true}
+                    iconFillColor={'#fff'}
+                    bgStyle={{
+                      backgroundColor: '#FFF',
+                    }}
+                  />
                 </WhatsappShareButton>
               </div>
             </Hidden>
