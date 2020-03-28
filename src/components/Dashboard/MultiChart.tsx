@@ -63,14 +63,19 @@ const MultiChart: FC<IProps> = observer(
               />
             </svg>
             <svg
-              x={cx - 30}
+              x={cx - 25}
               y={cy - 28}
               width={100}
               height={50}
               fill={stroke}
-              viewBox='500 -400 1024 1024'
+              viewBox='-200 -400 1024 1024'
             >
-              <text fill={stroke} style={{ fontSize: '200px' }}>
+              <text
+                fill={stroke}
+                style={{ fontSize: '200px' }}
+                dominantBaseline='middle'
+                textAnchor='middle'
+              >
                 {country}
               </text>
             </svg>

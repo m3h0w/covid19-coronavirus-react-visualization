@@ -8,7 +8,7 @@ const newColorScheme = () => {
   scheme
     .from_hue(getRandomFromRange(0, 100))
     .scheme('tetrade')
-    .distance(0.6)
+    .distance(0.8)
     .variation('hard');
   var colors = shuffleArray(scheme.colors());
   return colors;
@@ -22,27 +22,30 @@ const generateNewColors = (length: number): string[] => {
   let mainCounter = 0;
   let moduloCounter = 0;
   let colors = newColorScheme();
-  while (array.length <= length && mainCounter < length * 10) {
-    moduloCounter = mainCounter % length;
+  while (colors.length && array.length < length && mainCounter < length * 10) {
+    moduloCounter = mainCounter % colors.length;
     if (moduloCounter === 0) {
       colors = shuffleArray(colors);
     }
     const colorHex = `#${colors[moduloCounter]}`;
     const [h, s, l] = rgbToHsl(colorHex);
-    if (mainCounter < colors.length * 2) {
-      if (l < 0.7) {
+    if (mainCounter < colors.length * 4) {
+      if (l < 0.9) {
         array.push(colorHex);
         colors.splice(moduloCounter, 1);
       }
     } else {
-      array.push(colorHex);
-      colors.splice(moduloCounter, 1);
+      colors = newColorScheme();
     }
     mainCounter += 1;
   }
 
   if (mainCounter >= length * 10) {
     throw new Error(`Failed generating colors for length: ${length}`);
+  }
+
+  if (array.length !== length) {
+    console.error('Didnt generate enough colors', array.length, length);
   }
 
   return array;
