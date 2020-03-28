@@ -198,7 +198,7 @@ const Dashboard: FC<IProps> = ({
     setOpen(false);
   };
 
-  console.log(`https://covid19.pink${location.pathname}`);
+  // console.log(`https://covid19.pink${location.pathname}`);
 
   return (
     <div className={classes.root}>
@@ -222,7 +222,7 @@ const Dashboard: FC<IProps> = ({
                 textDecoration: 'inherit',
                 display: 'flex',
                 alignItems: 'center',
-                marginRight: '3px',
+                // marginRight: '3px',
               }}
             >
               <img src={logo} height={40} style={{ marginRight: 1 }} />
@@ -248,50 +248,56 @@ const Dashboard: FC<IProps> = ({
               {title}
             </Typography>
             <Icon />
-
-            <Hidden xsDown implementation='css'>
-              <Divider orientation='vertical' flexItem={true} light={true} />
-              <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
-                <FacebookShareButton
-                  url={`https://covid19.pink${location.pathname}`}
-                  className={classes.facebookShareButton}
-                >
-                  <FacebookIcon
-                    size={32}
-                    round={true}
-                    iconFillColor={'#fff'}
-                    bgStyle={{
-                      backgroundColor: '#FFF',
-                    }}
-                  />
-                </FacebookShareButton>
-                <LinkedinShareButton
-                  url={`https://covid19.pink${location.pathname}`}
-                  className={classes.facebookShareButton}
-                >
-                  <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
-                </LinkedinShareButton>
-                <WhatsappShareButton
-                  url={`https://covid19.pink${location.pathname}`}
-                  className={classes.facebookShareButton}
-                >
-                  <WhatsappIcon
-                    size={32}
-                    round={true}
-                    iconFillColor={'#fff'}
-                    bgStyle={{
-                      backgroundColor: '#FFF',
-                    }}
-                  />
-                </WhatsappShareButton>
-              </div>
-            </Hidden>
           </div>
-          {/* <IconButton color='inherit'>
-            <Badge badgeContent={4} color='secondary'>
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
+
+          <Hidden xsDown implementation='css'>
+            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+              <Hidden smDown implementation='css'>
+                <Typography style={{ marginRight: 10 }}>Like it? Share it:</Typography>
+              </Hidden>
+              <Hidden xsDown mdUp implementation='css'>
+                <Typography style={{ marginRight: 5 }}>Share:</Typography>
+              </Hidden>
+              <FacebookShareButton
+                url={`https://covid19.pink${location.pathname}`}
+                className={classes.facebookShareButton}
+              >
+                <FacebookIcon
+                  size={32}
+                  round={true}
+                  iconFillColor={'#fff'}
+                  bgStyle={{
+                    backgroundColor: '#FFF',
+                  }}
+                />
+              </FacebookShareButton>
+              <LinkedinShareButton
+                url={`https://covid19.pink${location.pathname}`}
+                className={classes.facebookShareButton}
+              >
+                <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
+              </LinkedinShareButton>
+              <WhatsappShareButton
+                url={`https://covid19.pink${location.pathname}`}
+                className={classes.facebookShareButton}
+              >
+                <WhatsappIcon
+                  size={32}
+                  round={true}
+                  iconFillColor={'#fff'}
+                  bgStyle={{
+                    backgroundColor: '#FFF',
+                  }}
+                />
+              </WhatsappShareButton>
+              <Divider
+                orientation='vertical'
+                flexItem={true}
+                light={true}
+                style={{ marginRight: '10px' }}
+              />
+            </div>
+          </Hidden>
           <Hidden xsDown mdUp implementation='css'>
             {dataStore.ready && (
               <Typography style={{ fontSize: '0.5rem' }}>

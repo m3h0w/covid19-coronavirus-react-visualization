@@ -143,7 +143,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
 
-  console.log({ colors });
+  // console.log({ colors });
 
   const getNewColors = useCallback(() => {
     const newColors = generateNewColors(countries.length);
