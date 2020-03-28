@@ -30,6 +30,15 @@ import { Hidden, Grow, Fade } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
 import { GLOBAL_PAPER_OPACITY, animationTime, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
+import { useLocation } from 'react-router-dom';
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  LinkedinShareButton,
+  LinkedinIcon,
+  WhatsappShareButton,
+  WhatsappIcon,
+} from 'react-share';
 
 const drawerWidth = 240;
 const toolbarHeight = 48;
@@ -89,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
 
-    '& *': {
+    '& > *': {
       marginRight: 10,
     },
   },
@@ -148,6 +157,15 @@ const useStyles = makeStyles((theme) => ({
   hidden: {
     display: 'none',
   },
+  facebookShareButton: {
+    display: 'flex',
+    marginTop: '2px',
+    marginRight: '5px',
+    opacity: 0.9,
+    '&:hover': {
+      opacity: 1,
+    },
+  },
 }));
 
 interface IProps {
@@ -168,6 +186,7 @@ const Dashboard: FC<IProps> = ({
   const classes = useStyles({ paddingTop });
   const [open, setOpen] = useState(startOpen);
   const dataStore = useDataStore();
+  const location = useLocation();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -175,6 +194,8 @@ const Dashboard: FC<IProps> = ({
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  console.log(`https://covid19.pink${location.pathname}`);
 
   return (
     <div className={classes.root}>
@@ -224,6 +245,34 @@ const Dashboard: FC<IProps> = ({
               {title}
             </Typography>
             <Icon />
+            <Divider
+              className={open && classes.hidden}
+              orientation='vertical'
+              flexItem={true}
+              light={true}
+            />
+            <Hidden xsDown implementation='css'>
+              <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+                <FacebookShareButton
+                  url={`https://covid19.pink${location.pathname}`}
+                  className={classes.facebookShareButton}
+                >
+                  <FacebookIcon size={32} round={true} iconFillColor={'#fff'} />
+                </FacebookShareButton>
+                <LinkedinShareButton
+                  url={`https://covid19.pink${location.pathname}`}
+                  className={classes.facebookShareButton}
+                >
+                  <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
+                </LinkedinShareButton>
+                <WhatsappShareButton
+                  url={`https://covid19.pink${location.pathname}`}
+                  className={classes.facebookShareButton}
+                >
+                  <WhatsappIcon size={32} round={true} iconFillColor={'#fff'} />
+                </WhatsappShareButton>
+              </div>
+            </Hidden>
           </div>
           {/* <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>

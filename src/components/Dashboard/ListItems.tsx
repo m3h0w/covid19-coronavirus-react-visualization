@@ -21,6 +21,7 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import PublicIcon from '@material-ui/icons/Public';
+import { FacebookShareButton, FacebookIcon } from 'react-share';
 
 const StyledListItemIcon = withStyles((theme) => ({
   root: { minWidth: '45px' },
