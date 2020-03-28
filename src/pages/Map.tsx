@@ -50,7 +50,6 @@ import { mdUp, xsDown } from '../utils/breakpoints';
 import Colors from '../utils/colors';
 import getYAxis from '../components/Dashboard/YAxis';
 import moment from 'moment';
-import ColorScheme from 'color-scheme';
 import shuffleArray from '../utils/shuffleArray';
 import rgbToHsl from '../utils/rgbToHsl';
 import getRandomFromRange from '../utils/getRandomFromRange';
@@ -62,6 +61,7 @@ import { useHistory } from 'react-router';
 import Collapsable from '../components/Collapsable';
 import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
+import generateNewColors from '../utils/generateNewColors';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -333,45 +333,6 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
 });
 
 const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[value];
-
-const newColorScheme = () => {
-  var scheme = new ColorScheme();
-  scheme
-    .from_hue(getRandomFromRange(0, 100))
-    .scheme('tetrade')
-    .distance(0.6)
-    .variation('hard');
-  var colors = shuffleArray(scheme.colors());
-  return colors;
-};
-
-const generateNewColors = (length: number) => {
-  if (!length) {
-    return;
-  }
-  const array = [];
-  let counter = 0;
-  let colors = newColorScheme();
-  while (array.length < length) {
-    if (counter > colors.length - 1) {
-      colors = shuffleArray(scheme.colors());
-    }
-    counter = counter % (length - 1);
-    const colorHex = `#${colors[counter]}`;
-    const [h, s, l] = rgbToHsl(colorHex);
-    if (counter < colors.length - 1) {
-      if (l < 0.8) {
-        array.push(colorHex);
-        colors.splice(counter, 1);
-      }
-    } else {
-      array.push(colorHex);
-      colors.splice(counter, 1);
-    }
-    counter += 1;
-  }
-  return array;
-};
 
 const MapPage = observer(() => {
   const classes = useStyles();

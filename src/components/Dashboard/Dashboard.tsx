@@ -200,7 +200,7 @@ const Dashboard: FC<IProps> = ({
               }}
             >
               <img src={logo} height={40} style={{ marginRight: 1 }} />
-              <Hidden xsDown>
+              <Hidden smDown>
                 <Typography
                   className={open && classes.hidden}
                   component='h1'
@@ -259,7 +259,7 @@ const Dashboard: FC<IProps> = ({
         <Divider />
         <MainListItems />
       </Drawer>
-      <Fade in={dataStore.ready} animationTime={animationTime}>
+      <Fade in={dataStore.ready}>
         <main className={classes.content}>
           {grid ? (
             <>

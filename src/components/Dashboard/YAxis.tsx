@@ -1,7 +1,7 @@
 import React from 'react';
 import { LabelProps, YAxis } from 'recharts';
 
-const getYAxis = (yLabel: string) => {
+const getYAxis = (yLabel: string, logScale: boolean = false, hide: boolean = false) => {
   const isSmall = window.innerWidth < 600;
 
   const yaxisDefaults = {
@@ -24,11 +24,13 @@ const getYAxis = (yLabel: string) => {
   };
   return (
     <YAxis
+      hide={hide}
+      scale={logScale ? 'log' : undefined}
       label={!isSmall ? getYLabelConfig(yLabel) : undefined}
       tick={{ dx: !isSmall ? 17 : 0, fontSize: isSmall ? 12 : 15 }}
       // tickFormatter={format}
       {...yaxisDefaults}
-      domain={[0, 'auto']}
+      domain={logScale ? ['10', (dataMax) => dataMax * 2] : ['0', 'auto']}
     />
   );
 };

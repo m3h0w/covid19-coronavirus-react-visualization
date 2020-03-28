@@ -22,6 +22,7 @@ import { observer } from 'mobx-react-lite';
 import { momentToFormat } from '../../utils/getDatesFromDataRow';
 import getYAxis from './YAxis';
 import getTooltip from './Tooltip';
+import { animationTime } from '../../utils/consts';
 
 export type Row = {
   [key in Column]: string;
@@ -34,39 +35,52 @@ interface IProps {
   yLabel: string;
   countries: string[];
   colors: { [country: string]: string };
-  generateNewColors: () => void;
   syncId: string;
   dataType: 'confirmed' | 'dead';
+  logScale: boolean;
 }
 
 const MultiChart: FC<IProps> = observer(
-  ({ title, yLabel, countries, dataType, colors, syncId }) => {
+  ({ title, yLabel, countries, dataType, colors, syncId, logScale }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
     const data = dataStore.dataForAfter100Cases(dataType, countries);
 
-    const getFormattedLine = (dot: boolean = false) => {
-      const CustomizedDot = (props) => {
-        const { cx, cy, stroke, payload, value, lastX } = props;
-
-        if (payload.time === lastX) {
-          return (
+    const CustomizedDot = (props) => {
+      const { cx, cy, stroke, payload, value, lastX, country } = props;
+      if (payload.time === lastX) {
+        return (
+          <>
             <svg x={cx - 5} y={cy - 5} width={50} height={50} fill={stroke} viewBox='0 0 1024 1024'>
               <path
                 d='
-                 M 100, 100
-                 m -75, 0
-                 a 75,75 0 1,0 150,0
-                 a 75,75 0 1,0 -150,0
-                 '
+               M 100, 100
+               m -75, 0
+               a 75,75 0 1,0 150,0
+               a 75,75 0 1,0 -150,0
+               '
               />
             </svg>
-          );
-        }
+            <svg
+              x={cx - 30}
+              y={cy - 28}
+              width={100}
+              height={50}
+              fill={stroke}
+              viewBox='500 -400 1024 1024'
+            >
+              <text fill={stroke} style={{ fontSize: '200px' }}>
+                {country}
+              </text>
+            </svg>
+          </>
+        );
+      }
 
-        return <div></div>;
-      };
+      return <div></div>;
+    };
 
+    const getFormattedLine = (dot: boolean = false) => {
       if (!data) {
         return null;
       }
@@ -80,12 +94,13 @@ const MultiChart: FC<IProps> = observer(
         );
         return (
           <Line
+            animationDuration={500}
             key={i}
             type='monotone'
             dataKey={country}
             name={country}
             stroke={colors[country]}
-            dot={<CustomizedDot lastX={Math.max(...maxIndices)} />}
+            dot={<CustomizedDot lastX={Math.max(...maxIndices)} country={country} />}
             strokeWidth={1.5}
             opacity={0.8}
           />
@@ -93,17 +108,20 @@ const MultiChart: FC<IProps> = observer(
       });
     };
 
-    const brush = getBrush({
-      data: data,
-      color: theme.palette.text.secondary,
-      dataKey: 'time',
-      children: (
-        <LineChart>
-          <YAxis hide domain={[0, 'auto']} />
-          {getFormattedLine()}
-        </LineChart>
-      ),
-    });
+    const brush =
+      Boolean(countries.length) &&
+      data &&
+      getBrush({
+        data: data,
+        color: theme.palette.text.secondary,
+        dataKey: 'time',
+        children: (
+          <LineChart>
+            {getYAxis(yLabel, logScale, true)}
+            {getFormattedLine()}
+          </LineChart>
+        ),
+      });
 
     return (
       <>
@@ -116,40 +134,46 @@ const MultiChart: FC<IProps> = observer(
             marginBottom: '10px',
           }}
         >
-          <Title>{title}</Title>
+          <Title>
+            {title} {logScale ? '(logarithmic scale)' : null}
+          </Title>
         </div>
         <ResponsiveContainer width={'100%'}>
-          <LineChart
-            data={data}
-            margin={{
-              top: 16,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-            syncId={syncId}
-          >
-            <CartesianGrid strokeDasharray='1 6' />
-            <XAxis
-              // angle={-15}
-              dataKey='time'
-              stroke={theme.palette.text.secondary}
-              // tickFormatter={formatXAxis}
-              domain={['auto', 'auto']}
-              label={{
-                fontSize: 10,
-                value: 'Days after a 100th case',
-                position: 'insideTopRight',
-                dy: -20,
+          {Boolean(countries.length) ? (
+            <LineChart
+              data={data}
+              margin={{
+                top: 16,
+                right: 0,
+                bottom: 0,
+                left: 0,
               }}
-              // height={30}
-              type={'number'}
-            />
-            {getYAxis(yLabel)}
-            {getFormattedLine(true)}
-            {brush}
-            {getTooltip()}
-          </LineChart>
+              syncId={syncId}
+            >
+              <CartesianGrid strokeDasharray='1 6' />
+              <XAxis
+                // angle={-15}
+                dataKey='time'
+                stroke={theme.palette.text.secondary}
+                // tickFormatter={formatXAxis}
+                domain={['auto', 'dataMax + 0.5']}
+                label={{
+                  fontSize: 10,
+                  value: 'Days after a 100th case',
+                  position: 'insideTopRight',
+                  dy: -20,
+                }}
+                // height={30}
+                type={'number'}
+              />
+              {getYAxis(yLabel, logScale)}
+              {getFormattedLine(true)}
+              {brush}
+              {getTooltip()}
+            </LineChart>
+          ) : (
+            <div></div>
+          )}
         </ResponsiveContainer>
       </>
     );

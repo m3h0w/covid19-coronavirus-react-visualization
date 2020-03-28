@@ -12,7 +12,7 @@ import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
 import MultiChart from '../components/Dashboard/MultiChart';
-import { Chip, Button, createStyles, Grow, Slide } from '@material-ui/core';
+import { Chip, Button, createStyles, Grow, Slide, Fab } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
@@ -27,6 +27,7 @@ import sort from '../utils/sort';
 import last from '../utils/last';
 import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
+import generateNewColors from '../utils/generateNewColors';
 
 const drawerWidth = 240;
 
@@ -137,27 +138,28 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
 
-  const generateNewColors = useCallback(() => {
-    if (countries.length) {
-      colorsHelper = new Colors();
-      const newColors = {};
-      countries.forEach((key) => {
-        newColors[key] = colorsHelper.getRandomColor();
-      });
-      setColors(newColors);
-    }
+  const getNewColors = useCallback(() => {
+    const newColors = generateNewColors(countries.length);
+    setColors(
+      newColors.reduce((colorsObj, color, index) => {
+        colorsObj[countries[index]] = color;
+        return colorsObj;
+      }, {})
+    );
   }, [setColors, countries]);
 
+  useEffect(() => {
+    getNewColors();
+  }, [getNewColors, countries]);
+
   const addCountries = (newCountries: string[]) => {
+    setTimeout(() => {
+      setLogScale(false);
+      setTimeout(() => {
+        setLogScale(true);
+      }, 10);
+    }, 1);
     setCountries([...new Set([...newCountries, ...countries])]);
-    const newColors = {
-      ...colors,
-    };
-    newCountries.forEach((country: string) => {
-      newColors[country] = colorsHelper.getRandomColor();
-    });
-    // setColors({ ...colors, [country]: colorsHelper.getRandomColor() });
-    setColors(newColors);
   };
 
   useEffect(() => {
@@ -177,8 +179,55 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     history.push(`/dashboard/${country}`);
   };
 
+  const [logScale, setLogScale] = useState(true);
+  const LogScaleSwitch = () => {
+    return (
+      <Fab
+        onClick={() => {
+          setLogScale(!logScale);
+        }}
+        variant='extended'
+        size='small'
+        color='primary'
+        aria-label='add'
+      >
+        {logScale ? (
+          <>
+            {/* <LocalHospitalIcon /> */}
+            Scale: LOG
+          </>
+        ) : (
+          <>
+            {/* <AirlineSeatFlatIcon /> */}
+            Scale: LINNEAR
+          </>
+        )}
+      </Fab>
+    );
+  };
+
+  const addMostCasesCountries = () => {
+    setTimeout(() => {
+      setLogScale(false);
+      setTimeout(() => {
+        setLogScale(true);
+      }, 10);
+    }, 1);
+    setCountries(dataStore.possibleCountriesSortedByCases.slice(0, 8));
+  };
+
+  const addMostDeathsCountries = () => {
+    setTimeout(() => {
+      setLogScale(false);
+      setTimeout(() => {
+        setLogScale(true);
+      }, 10);
+    }, 1);
+    setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
+  };
+
   return (
-    <Dashboard title='Infection trajectories'>
+    <Dashboard title='Infection trajectories' Icon={LogScaleSwitch}>
       <Grid item xs={12} sm={5} md={3}>
         <Slide
           direction='down'
@@ -212,10 +261,32 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               color='secondary'
               size={'small'}
               onClick={() => {
-                generateNewColors();
+                getNewColors();
               }}
             >
               New colors
+            </Button>
+            <Button
+              style={{ maxWidth: 300, marginBottom: 10 }}
+              variant='outlined'
+              color='primary'
+              size={'small'}
+              onClick={() => {
+                addMostCasesCountries();
+              }}
+            >
+              Most cases
+            </Button>
+            <Button
+              style={{ maxWidth: 300, marginBottom: 10 }}
+              variant='outlined'
+              color='initial'
+              size={'small'}
+              onClick={() => {
+                addMostDeathsCountries();
+              }}
+            >
+              Most deaths
             </Button>
           </Paper>
         </Slide>
@@ -246,6 +317,19 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
                     backgroundColor={colors[country]}
                   />
                 ))}
+              {Boolean(countries.length) && (
+                <CustomChip
+                  backgroundColor={'#000'}
+                  label={'Remove all'}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    setCountries([]);
+                  }}
+                  handleDelete={() => {
+                    setCountries([]);
+                  }}
+                />
+              )}
             </div>
           </Paper>
         </Grow>
@@ -257,12 +341,10 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               title={'Cases trajectory'}
               yLabel={'No. cases'}
               countries={countries}
-              // dataByCountry={extractKeyFromNestedObj(data, 'confirmed')}
-              // dates={dataStore.dates}
               dataType={'confirmed'}
               colors={colors}
-              generateNewColors={generateNewColors}
-              syncId={'comparison'}
+              syncId={'compariso1n'}
+              logScale={logScale}
             />
           </Paper>
         </Grow>
@@ -276,39 +358,12 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               countries={countries}
               dataType={'dead'}
               colors={colors}
-              generateNewColors={generateNewColors}
               syncId={'comparison'}
+              logScale={logScale}
             />
           </Paper>
         </Grow>
       </Grid>
-      {/* <Grid item xs={12} md={4} lg={3}>
-        <Paper className={fixedHeightPaper}>
-          {rowData &&
-            rowData[selectedCountry] &&
-            rowData[selectedCountry].confirmed &&
-            rowData[selectedCountry].dead && (
-              <CurrentCount
-                confirmedCases={
-                  Object.values(rowData[selectedCountry].confirmed)[
-                    Object.values(rowData[selectedCountry].confirmed).length - 1
-                  ]
-                }
-                deaths={
-                  Object.values(rowData[selectedCountry].dead)[
-                    Object.values(rowData[selectedCountry].dead).length - 1
-                  ]
-                }
-              />
-            )}
-        </Paper>
-      </Grid> */}
-      {/* Recent Orders */}
-      {/* <Grid item xs={12}>
-    <Paper className={classes.paper}>
-      <Orders />
-    </Paper>
-  </Grid> */}
     </Dashboard>
   );
 });

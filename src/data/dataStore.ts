@@ -210,7 +210,10 @@ export class DataStore {
           if (index <= this.dates.length - 1) {
             const date = this.dates[index];
             if (countries.includes(country)) {
-              const value = this.getCountryData(country)[type][momentToFormat(date)];
+              let value = this.getCountryData(country)[type][momentToFormat(date)];
+              if (value === 0) {
+                value = null;
+              }
               d[country] = value;
             }
           }
@@ -344,6 +347,16 @@ export class DataStore {
     const lastCases = last(this.confirmedCasesArray);
     if (this.ready && this.confirmedByCountry) {
       ret = Object.keys(this.confirmedByCountry).sort();
+    }
+    ret.sort((a: string, b: string) => lastCases[b] - lastCases[a]);
+    return ret;
+  }
+
+  @computed get possibleCountriesSortedByDeaths() {
+    let ret = [];
+    const lastCases = last(this.deathsArray);
+    if (this.ready && this.deadByCountry) {
+      ret = Object.keys(this.deadByCountry).sort();
     }
     ret.sort((a: string, b: string) => lastCases[b] - lastCases[a]);
     return ret;
