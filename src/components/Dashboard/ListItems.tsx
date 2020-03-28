@@ -12,7 +12,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, LinkProps as RouterLinkProps, useLocation } from 'react-router-dom';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
-import { SvgIconProps, withStyles, createStyles } from '@material-ui/core';
+import { SvgIconProps, withStyles, createStyles, Hidden } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
 import CallMadeIcon from '@material-ui/icons/CallMade';
@@ -21,7 +21,18 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import PublicIcon from '@material-ui/icons/Public';
-import { FacebookShareButton, FacebookIcon } from 'react-share';
+import {
+  FacebookShareButton,
+  // FacebookIcon,
+  LinkedinShareButton,
+  // LinkedinIcon,
+  WhatsappShareButton,
+  // WhatsappIcon,
+} from 'react-share';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import WhatsappIcon from '@material-ui/icons/WhatsApp';
+import LinkedinIcon from '@material-ui/icons/LinkedIn';
+import Typography from '@material-ui/core/Typography';
 
 const StyledListItemIcon = withStyles((theme) => ({
   root: { minWidth: '45px' },
@@ -36,7 +47,7 @@ interface ICustomListItemProps {
   style?: CSSProperties;
 }
 
-const useListItemStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: (props) => ({
       textDecoration: props.isSelected ? 'underline' : 'initial',
@@ -48,6 +59,15 @@ const useListItemStyles = makeStyles((theme) =>
       },
       ...props.style,
     }),
+    facebookShareButton: {
+      display: 'flex',
+      marginTop: '8px',
+      // marginRight: '10px',
+      opacity: 1,
+      '&:hover': {
+        color: `${theme.palette.secondary.main} !important`,
+      },
+    },
   })
 );
 
@@ -56,7 +76,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
   const theme = useTheme();
   let LinkElement = RouterLink;
   const isSelected = to ? location.pathname.split('/')[1] === to.split('/')[1] : false;
-  const classes = useListItemStyles({ isSelected, style });
+  const classes = useStyles({ isSelected, style });
 
   if (href) {
     LinkElement = Link;
@@ -85,6 +105,8 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 };
 
 export const MainListItems = () => {
+  const classes = useStyles();
+  const location = useLocation();
   return (
     <List style={{ height: '100%', padding: 0 }}>
       <CustomListItem to='/map' text='World Map' Icon={PublicIcon} />
@@ -95,6 +117,52 @@ export const MainListItems = () => {
         Icon={TrendingUpIcon}
       />
       <Divider />
+      <Hidden smUp implementation='css'>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+            paddingTop: '10px',
+          }}
+        >
+          <Typography style={{ fontWeight: 900 }}>SHARE</Typography>
+          <FacebookShareButton
+            url={`https://covid19.pink${location.pathname}`}
+            className={classes.facebookShareButton}
+          >
+            <FacebookIcon
+              size={32}
+              round={true}
+              iconFillColor={'#fff'}
+              bgStyle={{
+                backgroundColor: '#FFF',
+              }}
+            />
+          </FacebookShareButton>
+          <LinkedinShareButton
+            url={`https://covid19.pink${location.pathname}`}
+            className={classes.facebookShareButton}
+          >
+            <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
+          </LinkedinShareButton>
+          <WhatsappShareButton
+            url={`https://covid19.pink${location.pathname}`}
+            className={classes.facebookShareButton}
+          >
+            <WhatsappIcon
+              size={32}
+              round={true}
+              iconFillColor={'#fff'}
+              bgStyle={{
+                backgroundColor: '#FFF',
+              }}
+            />
+          </WhatsappShareButton>
+        </div>
+      </Hidden>
+      <Divider orientation='horizontal' flexItem={true} light={true} />
+
       <CustomListItem
         href='https://github.com/m3h0w/covid19-coronavirus-react-visualization'
         text={`GitHub repository`}
