@@ -28,7 +28,7 @@ import {
   Collapse,
   Divider,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import last from '../utils/last';
@@ -61,6 +61,8 @@ import Collapsable from '../components/Collapsable';
 import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -131,6 +133,7 @@ export type DataType = 'dead' | 'confirmed';
 const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType: DataType }) => {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
   const dataStore = useDataStore();
   if (!dataStore.ready) {
     return null;
@@ -139,7 +142,14 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   const confirmedCases = sliderValue
     ? dataStore.confirmedCasesArray[sliderValue]
     : last(dataStore.confirmedCasesArray);
+  const confirmedCasesYesterday = sliderValue
+    ? dataStore.confirmedCasesArray[sliderValue - 1]
+    : dataStore.confirmedCasesArray[dataStore.confirmedCasesArray.length - 2];
   const deaths = sliderValue ? dataStore.deathsArray[sliderValue] : last(dataStore.deathsArray);
+  const deathsYesterday = sliderValue
+    ? dataStore.deathsArray[sliderValue - 1]
+    : dataStore.deathsArray[dataStore.deathsArray.length - 2];
+
   const possibleCountries = dataStore.possibleCountries;
   const possibleCountriesByConfirmed = useMemo(
     () =>
@@ -175,8 +185,17 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   );
 
   const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
+  const totalCasesYesterday = dataStore.totalConfirmedCasesArray[sliderValue - 1]?.totalCases || '';
   const totalDeaths = dataStore.totalDeathsArray[sliderValue]?.totalDeaths || '';
-  let mortalityRate: number | string = '';
+  const totalDeathsYesterday = dataStore.totalDeathsArray[sliderValue - 1]?.totalDeaths || '';
+  const totalCasesChange = totalCasesYesterday
+    ? ((totalCases - totalCasesYesterday) / totalCasesYesterday) * 100
+    : '';
+  const totalDeathsChange = totalDeathsYesterday
+    ? ((totalDeaths - totalDeathsYesterday) / totalDeathsYesterday) * 100
+    : '';
+
+  let mortalityRate = '';
   if (totalCases && totalDeaths) {
     mortalityRate = totalDeaths / totalCases;
   }
@@ -190,6 +209,21 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
       <Grid item lg={4} xs={12}>
         {/* <Grow in={dataStore.ready}> */}
         <Paper className={classes.paper} style={{ padding: 0 }}>
+          {totalCasesChange && (
+            <Typography
+              style={{
+                marginTop: '15px',
+                marginBottom: '-15px',
+                textAlign: 'center',
+                color:
+                  totalDeathsChange > 1 ? theme.palette.primary.main : theme.palette.secondary.main,
+              }}
+            >
+              {totalCasesChange > 1 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
+              {totalCasesChange < -1 && <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />}
+              {`${totalCasesChange.toFixed(1)}%`}
+            </Typography>
+          )}
           <NumberWithTitle
             version='large'
             centered={true}
@@ -205,6 +239,11 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByConfirmed.map((country: string) => {
+                  const yesterdayChange = confirmedCasesYesterday[country]
+                    ? ((confirmedCases[country] - confirmedCasesYesterday[country]) /
+                        confirmedCasesYesterday[country]) *
+                      100
+                    : undefined;
                   return (
                     <TableRow key={country}>
                       <TableCell
@@ -216,12 +255,35 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                         scope='row'
                       >
                         <ReactCountryFlag
-                          style={{ marginTop: -4 }}
+                          style={{ marginTop: -4, marginRight: '3px' }}
                           countryCode={countryToCode(country)}
                           svg
-                        />{' '}
+                        />
                         {country}
                       </TableCell>
+                      {yesterdayChange ? (
+                        <TableCell
+                          align='right'
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            color:
+                              yesterdayChange > 1
+                                ? theme.palette.primary.main
+                                : theme.palette.secondary.main,
+                          }}
+                        >
+                          {yesterdayChange > 1 && (
+                            <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />
+                          )}
+                          {yesterdayChange < -1 && (
+                            <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
+                          )}
+                          {`${yesterdayChange.toFixed(1)}%`}
+                        </TableCell>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
                       <TableCell align='right'>{confirmedCases[country]}</TableCell>
                     </TableRow>
                   );
@@ -235,6 +297,21 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
       <Grid item lg={4} xs={12}>
         {/* <Grow in={dataStore.ready}> */}
         <Paper className={classes.paper} style={{ padding: 0 }}>
+          {totalDeathsChange && (
+            <Typography
+              style={{
+                marginTop: '15px',
+                marginBottom: '-15px',
+                textAlign: 'center',
+                color:
+                  totalDeathsChange > 1 ? theme.palette.primary.main : theme.palette.secondary.main,
+              }}
+            >
+              {totalDeathsChange > 1 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
+              {totalDeathsChange < -1 && <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />}
+              {`${totalDeathsChange.toFixed(1)}%`}
+            </Typography>
+          )}
           <NumberWithTitle
             version='large'
             centered={true}
@@ -250,6 +327,10 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             <Table size='small' aria-label='a dense table'>
               <TableBody>
                 {possibleCountriesByDeaths.map((country: string) => {
+                  const yesterdayChange = deathsYesterday[country]
+                    ? ((deaths[country] - deathsYesterday[country]) / deathsYesterday[country]) *
+                      100
+                    : undefined;
                   return (
                     <TableRow key={country}>
                       <TableCell
@@ -261,13 +342,36 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                         scope='row'
                       >
                         <ReactCountryFlag
-                          style={{ marginTop: -4 }}
+                          style={{ marginTop: -4, marginRight: '3px' }}
                           countryCode={countryToCode(country)}
                           svg
-                        />{' '}
+                        />
                         {country}
                       </TableCell>
-                      <TableCell align='right'>{deaths[country]}</TableCell>{' '}
+                      {yesterdayChange ? (
+                        <TableCell
+                          align='right'
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            color:
+                              yesterdayChange > 1
+                                ? theme.palette.primary.main
+                                : theme.palette.secondary.main,
+                          }}
+                        >
+                          {yesterdayChange > 1 && (
+                            <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />
+                          )}
+                          {yesterdayChange < -1 && (
+                            <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
+                          )}
+                          {`${yesterdayChange.toFixed(1)}%`}
+                        </TableCell>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
+                      <TableCell align='right'>{deaths[country]}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -303,10 +407,10 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                           scope='row'
                         >
                           <ReactCountryFlag
-                            style={{ marginTop: -4 }}
+                            style={{ marginTop: -4, marginRight: '3px' }}
                             countryCode={countryToCode(country)}
                             svg
-                          />{' '}
+                          />
                           {country}
                         </TableCell>
                         <TableCell align='right'>
@@ -432,6 +536,7 @@ const MapPage = observer(() => {
         size='small'
         color='primary'
         aria-label='add'
+        style={{ padding: '0 12px' }}
       >
         {dataType === 'confirmed' ? (
           <>
