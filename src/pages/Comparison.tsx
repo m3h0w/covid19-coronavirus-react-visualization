@@ -29,6 +29,8 @@ import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
 import { reaction } from 'mobx';
+import { useStateAndLocalStorage } from 'persistence-hooks';
+import { showInfoSnackBar } from '../components/Snackbar';
 
 const drawerWidth = 240;
 
@@ -143,8 +145,16 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
+  const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
 
-  // console.log({ colors });
+  useEffect(() => {
+    if (!shownSnackbar && dataStore.ready) {
+      showInfoSnackBar(
+        'Use the button on the top bar to switch between logarithmic and linear scales 🤓'
+      );
+      setShownSnackbar(true);
+    }
+  }, [shownSnackbar, dataStore.ready]);
 
   const getNewColors = useCallback(() => {
     const newColors = generateNewColors(countries.length);

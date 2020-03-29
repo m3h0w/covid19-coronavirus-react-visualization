@@ -196,8 +196,16 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
     : '';
 
   let mortalityRate = '';
-  if (totalCases && totalDeaths) {
+  if (totalCases) {
     mortalityRate = totalDeaths / totalCases;
+  }
+  let mortalityRateYesterday = '';
+  if (totalCasesYesterday) {
+    mortalityRateYesterday = totalDeathsYesterday / totalCasesYesterday;
+  }
+  let mortalityRateChange = '';
+  if (mortalityRate && mortalityRateYesterday) {
+    mortalityRateChange = mortalityRate - mortalityRateYesterday;
   }
 
   const routeChange = (country: string) => {
@@ -228,7 +236,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             version='large'
             centered={true}
             color={'primary'}
-            title={'Confirmed cases (world)'}
+            title={'Confirmed cases'}
             number={totalCases || ''}
             onClick={() => {
               setDataType('confirmed');
@@ -316,7 +324,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
             version='large'
             centered={true}
             color={'initial'}
-            title={'Deaths (world)'}
+            title={'Deaths'}
             number={totalDeaths || ''}
             onClick={() => {
               setDataType('dead');
@@ -384,11 +392,30 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
       <Grid item lg={4} xs={12}>
         <Grow in={dataStore.ready}>
           <Paper className={classes.paper} style={{ padding: 0 }}>
+            {mortalityRateChange && (
+              <Typography
+                style={{
+                  marginTop: '15px',
+                  marginBottom: '-15px',
+                  textAlign: 'center',
+                  color:
+                    mortalityRateChange > 0.01
+                      ? theme.palette.primary.main
+                      : theme.palette.secondary.main,
+                }}
+              >
+                {mortalityRateChange > 0.01 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
+                {mortalityRateChange < -0.01 && (
+                  <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
+                )}
+                {`${mortalityRateChange.toFixed(2)}%`}
+              </Typography>
+            )}
             <NumberWithTitle
               version='large'
               centered={true}
               color={'secondary'}
-              title={'Case fatality rate (world)'}
+              title={'Case fatality rate'}
               number={`${(mortalityRate * 100).toFixed(2)}%` || ''}
               style={{ padding: 16 }}
             />
