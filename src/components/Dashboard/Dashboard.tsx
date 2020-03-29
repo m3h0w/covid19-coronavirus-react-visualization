@@ -26,8 +26,9 @@ import CustomSelect from './Select';
 import { CustomAutocomplete } from './Select';
 import { Row } from './Chart';
 import useDataStore from '../../data/dataStore';
-import { Hidden, Grow, Fade } from '@material-ui/core';
+import { Hidden, Grow, Fade, CircularProgress } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
+import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
 import { GLOBAL_PAPER_OPACITY, animationTime, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
@@ -42,6 +43,7 @@ import {
 import FacebookIcon from '@material-ui/icons/Facebook';
 import WhatsappIcon from '@material-ui/icons/WhatsApp';
 import LinkedinIcon from '@material-ui/icons/LinkedIn';
+import useWindowWidth from '../../utils/useWindowWidth';
 
 const drawerWidth = 240;
 const toolbarHeight = 48;
@@ -139,7 +141,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.palette.grey[100],
-    backgroundImage: `url(${backgroundSmoke})`,
     backgroundSize: 'cover',
   },
   container: {
@@ -190,6 +191,7 @@ const Dashboard: FC<IProps> = ({
   const [open, setOpen] = useState(startOpen);
   const dataStore = useDataStore();
   const location = useLocation();
+  const backgroundUrl = useWindowWidth() >= 610 ? backgroundSmoke : backgroundSmokeMobile;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -329,25 +331,40 @@ const Dashboard: FC<IProps> = ({
         <Divider />
         <MainListItems />
       </Drawer>
-      <Fade in={dataStore.ready}>
-        <main className={classes.content}>
-          {grid ? (
-            <>
-              <div className={classes.appBarSpacer} />
-              <Container maxWidth='xl' className={classes.container}>
-                <Grid container spacing={3}>
-                  {children}
-                </Grid>
-              </Container>
-            </>
-          ) : (
-            <>
-              <div className={classes.appBarSpacer} />
-              {children}
-            </>
-          )}
-        </main>
-      </Fade>
+      <main className={classes.content} style={{ backgroundImage: `url(${backgroundUrl})` }}>
+        {!dataStore.ready && (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress />
+          </div>
+        )}
+        {grid
+          ? dataStore.ready && (
+              <>
+                <div className={classes.appBarSpacer} />
+                <Fade in={dataStore.ready}>
+                  <Container maxWidth='xl' className={classes.container}>
+                    <Grid container spacing={3}>
+                      {children}
+                    </Grid>
+                  </Container>
+                </Fade>
+              </>
+            )
+          : dataStore.ready && (
+              <>
+                <div className={classes.appBarSpacer} />
+                <Fade in={dataStore.ready}>{children}</Fade>
+              </>
+            )}
+      </main>
     </div>
   );
 };

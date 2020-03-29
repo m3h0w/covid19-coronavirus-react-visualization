@@ -1,7 +1,11 @@
 import countryCodes from '../data/countryCodes.json';
 
 const countryToCode = (country: string) => {
-  return countryCodes.find((v) => v.country_name === country.replace('*', ''))?.country_code;
+  let c = country;
+  if (country === 'Czechia') {
+    c = 'Czech Republic';
+  }
+  return countryCodes.find((v) => v.country_name === c.replace('*', ''))?.country_code;
 };
 
 export default countryToCode;

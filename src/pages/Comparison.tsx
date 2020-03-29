@@ -28,6 +28,7 @@ import last from '../utils/last';
 import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
+import { reaction } from 'mobx';
 
 const drawerWidth = 240;
 
@@ -170,16 +171,24 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   };
 
   useEffect(() => {
+    const r = reaction(
+      () => dataStore.ready,
+      () => {
+        addMostCasesCountries();
+      }
+    );
     if (props.match.params.country) {
       let countryFromUrl = props.match.params.country;
       if (countryFromUrl) {
         countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
         history.push(`/infection-trajectories`);
-        addCountries(['Italy', countryFromUrl]);
+        addMostCasesCountries();
+        addCountries([countryFromUrl, ...dataStore.possibleCountriesSortedByCases.slice(0, 5)]);
       }
     } else {
-      addCountries(['Italy', 'Germany']);
+      addMostCasesCountries();
     }
+    return r;
   }, []);
 
   const routeChange = (country: string) => {

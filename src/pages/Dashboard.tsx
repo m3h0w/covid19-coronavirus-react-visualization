@@ -23,6 +23,7 @@ import {
   TableRow,
   TableCell,
   TableHead,
+  CircularProgress,
 } from '@material-ui/core';
 import { animationTime, US_NAME, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
