@@ -190,9 +190,9 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const mortalityRate = cases ? deaths / cases : undefined;
   const isUs = selectedCountry === US_NAME;
 
-  const getRegionCases = (region) =>
+  const getRegionCases = (region: string) =>
     dataStore.getRegionData(region)?.confirmed[last(dataStore.datesConverted)];
-  const getRegionDeaths = (region) =>
+  const getRegionDeaths = (region: string) =>
     dataStore.getRegionData(region)?.dead[last(dataStore.datesConverted)];
   const possibleRegionsForSelectedCountry = dataStore.getPossibleRegionsByCountry(
     selectedCountry,

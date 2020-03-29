@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   slider: {
-    width: '70%',
+    width: '90%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',

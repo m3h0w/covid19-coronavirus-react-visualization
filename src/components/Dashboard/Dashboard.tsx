@@ -146,6 +146,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: (props) => (props.paddingTop ? theme.spacing(2) : 0),
     paddingBottom: theme.spacing(4),
+    [theme.breakpoints.down('xs')]: { paddingRight: '5px', paddingLeft: '5px' },
   },
   paper: {
     opacity: `${GLOBAL_PAPER_OPACITY} !important`,
