@@ -191,7 +191,7 @@ const Dashboard: FC<IProps> = ({
   const [open, setOpen] = useState(startOpen);
   const dataStore = useDataStore();
   const location = useLocation();
-  const backgroundUrl = useWindowWidth() >= 610 ? backgroundSmoke : backgroundSmokeMobile;
+  const backgroundUrl = useWindowWidth() >= 650 ? backgroundSmoke : backgroundSmokeMobile;
 
   const handleDrawerOpen = () => {
     setOpen(true);
