@@ -109,7 +109,7 @@ export const MainListItems = () => {
   const location = useLocation();
   return (
     <List style={{ height: '100%', padding: 0 }}>
-      <CustomListItem to='/map' text='World Map' Icon={PublicIcon} />
+      <CustomListItem to='/world' text='World' Icon={PublicIcon} />
       <CustomListItem to='/dashboard' text='Country dashboard' Icon={DashboardIcon} />
       <CustomListItem
         to='/infection-trajectories'
