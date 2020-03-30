@@ -126,6 +126,12 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.secondary.main,
     },
   },
+  numberTableCell: {
+    minWidth: '65px',
+    padding: '6px 6px',
+
+    [theme.breakpoints.down('xs')]: {},
+  },
 }));
 
 export type DataType = 'dead' | 'confirmed';
@@ -212,6 +218,49 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
     history.push(`/dashboard/${country}`);
   };
 
+  const CountryCell = ({ country }) => {
+    return (
+      <TableCell
+        onClick={() => {
+          routeChange(country);
+        }}
+        className={classes.countryTableCell}
+        component='th'
+        scope='row'
+      >
+        <ReactCountryFlag
+          style={{ marginTop: -4, marginRight: '3px' }}
+          countryCode={countryToCode(country)}
+          svg
+        />
+        {country}
+      </TableCell>
+    );
+  };
+
+  const ChangeCell = ({ yesterdayChange }) => {
+    if (!yesterdayChange) {
+      return (
+        <TableCell className={classes.numberTableCell} align='right'>
+          —
+        </TableCell>
+      );
+    }
+    return (
+      <TableCell
+        className={classes.numberTableCell}
+        align='right'
+        style={{
+          color: yesterdayChange > 1 ? theme.palette.primary.main : theme.palette.secondary.main,
+        }}
+      >
+        {yesterdayChange > 1 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
+        {yesterdayChange < -1 && <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />}
+        {`${yesterdayChange.toFixed(1)}%`}
+      </TableCell>
+    );
+  };
+
   return (
     <>
       <Grid item lg={4} xs={12}>
@@ -254,45 +303,11 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                     : undefined;
                   return (
                     <TableRow key={country}>
-                      <TableCell
-                        onClick={() => {
-                          routeChange(country);
-                        }}
-                        className={classes.countryTableCell}
-                        component='th'
-                        scope='row'
-                      >
-                        <ReactCountryFlag
-                          style={{ marginTop: -4, marginRight: '3px' }}
-                          countryCode={countryToCode(country)}
-                          svg
-                        />
-                        {country}
+                      <CountryCell country={country} />
+                      <ChangeCell yesterdayChange={yesterdayChange} />
+                      <TableCell className={classes.numberTableCell} align='right'>
+                        {confirmedCases[country]}
                       </TableCell>
-                      {yesterdayChange ? (
-                        <TableCell
-                          align='right'
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            color:
-                              yesterdayChange > 1
-                                ? theme.palette.primary.main
-                                : theme.palette.secondary.main,
-                          }}
-                        >
-                          {yesterdayChange > 1 && (
-                            <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />
-                          )}
-                          {yesterdayChange < -1 && (
-                            <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
-                          )}
-                          {`${yesterdayChange.toFixed(1)}%`}
-                        </TableCell>
-                      ) : (
-                        <TableCell></TableCell>
-                      )}
-                      <TableCell align='right'>{confirmedCases[country]}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -341,45 +356,11 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                     : undefined;
                   return (
                     <TableRow key={country}>
-                      <TableCell
-                        onClick={() => {
-                          routeChange(country);
-                        }}
-                        className={classes.countryTableCell}
-                        component='th'
-                        scope='row'
-                      >
-                        <ReactCountryFlag
-                          style={{ marginTop: -4, marginRight: '3px' }}
-                          countryCode={countryToCode(country)}
-                          svg
-                        />
-                        {country}
+                      <CountryCell country={country} />
+                      <ChangeCell yesterdayChange={yesterdayChange} />
+                      <TableCell className={classes.numberTableCell} align='right'>
+                        {deaths[country]}
                       </TableCell>
-                      {yesterdayChange ? (
-                        <TableCell
-                          align='right'
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            color:
-                              yesterdayChange > 1
-                                ? theme.palette.primary.main
-                                : theme.palette.secondary.main,
-                          }}
-                        >
-                          {yesterdayChange > 1 && (
-                            <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />
-                          )}
-                          {yesterdayChange < -1 && (
-                            <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
-                          )}
-                          {`${yesterdayChange.toFixed(1)}%`}
-                        </TableCell>
-                      ) : (
-                        <TableCell></TableCell>
-                      )}
-                      <TableCell align='right'>{deaths[country]}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -399,16 +380,16 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                   marginBottom: '-15px',
                   textAlign: 'center',
                   color:
-                    mortalityRateChange > 0.01
+                    mortalityRateChange > 0.0001
                       ? theme.palette.primary.main
                       : theme.palette.secondary.main,
                 }}
               >
-                {mortalityRateChange > 0.01 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
-                {mortalityRateChange < -0.01 && (
+                {mortalityRateChange > 0.0001 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
+                {mortalityRateChange < -0.0001 && (
                   <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />
                 )}
-                {`${mortalityRateChange.toFixed(2)}%`}
+                {`${(mortalityRateChange * 100).toFixed(2)}%`}
               </Typography>
             )}
             <NumberWithTitle
@@ -425,22 +406,8 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                   {possibleCountriesByMortality.map((country: string) => {
                     return (
                       <TableRow key={country}>
-                        <TableCell
-                          onClick={() => {
-                            routeChange(country);
-                          }}
-                          className={classes.countryTableCell}
-                          component='th'
-                          scope='row'
-                        >
-                          <ReactCountryFlag
-                            style={{ marginTop: -4, marginRight: '3px' }}
-                            countryCode={countryToCode(country)}
-                            svg
-                          />
-                          {country}
-                        </TableCell>
-                        <TableCell align='right'>
+                        <CountryCell country={country} />
+                        <TableCell className={classes.numberTableCell} align='right'>
                           {confirmedCases[country]
                             ? `${((deaths[country] / confirmedCases[country]) * 100).toFixed(2)}%`
                             : '-'}
@@ -454,12 +421,6 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           </Paper>
         </Grow>
       </Grid>
-      {/* <Grid item lg={3} sm={6} xs={12}>
-  <Paper className={classes.paper}>100</Paper>
-</Grid>
-<Grid item lg={3} sm={6} xs={12}>
-  <Paper className={classes.paper}>100</Paper>
-</Grid> */}
     </>
   );
 });
@@ -468,6 +429,7 @@ const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[val
 
 const MapPage = observer(() => {
   const classes = useStyles();
+  const theme = useTheme();
   const dataStore = useDataStore();
   const [sliderValue, setSliderValue] = useState<number>();
   const [date, setDate] = useState<string>();
@@ -516,15 +478,17 @@ const MapPage = observer(() => {
   }, [sliderValue, dataStore, dataStore.datesConverted]);
 
   useEffect(() => {
+    let s;
     if (playing) {
       if (sliderValue === maxSliderValue) {
         setPlaying(false);
       } else {
-        setTimeout(() => {
+        s = setTimeout(() => {
           setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
         }, 350);
       }
     }
+    return () => clearTimeout(s);
   }, [playing, sliderValue, maxSliderValue]);
 
   useEffect(() => {
@@ -696,12 +660,19 @@ const MapPage = observer(() => {
         {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
           <Paper className={classes.sliderPaper}>
             <div className={classes.slider}>
-              <Typography style={{ marginTop: '-1px' }}>Play</Typography>
+              {/* <Typography
+                style={{
+                  marginTop: '-1px',
+                  lineHeight: 0.9,
+                  color: theme.palette.secondary.main,
+                  fontWeight: 600,
+                }}
+              >
+                Time travel
+              </Typography> */}
               <IconButton
                 onClick={() => {
-                  if (playing) {
-                    setSliderValue(maxSliderValue);
-                  } else {
+                  if (sliderValue === maxSliderValue) {
                     setSliderValue(0);
                   }
                   setPlaying(!playing);

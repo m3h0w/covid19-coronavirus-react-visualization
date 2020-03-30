@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment';
-import { Row } from '../components/Dashboard/MultiChart';
+import { Row } from '../components/MultiChart';
 
 export const FIRST_DATE = '1/22/2020';
 export const FIRST_DATE_WHO = '1/21/2020';

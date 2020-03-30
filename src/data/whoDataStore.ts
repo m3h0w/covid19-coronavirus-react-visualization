@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { observable, computed } from 'mobx';
-import { Row } from '../components/Dashboard/MultiChart';
+import { Row } from '../components/MultiChart';
 import { csv } from 'd3-request';
 import whoData from '../data/who_report.csv';
 import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';

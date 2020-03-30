@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { observable, computed } from 'mobx';
-import { Row } from '../components/Dashboard/MultiChart';
+import { Row } from '../components/MultiChart';
 import { csv } from 'd3-request';
 import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
@@ -127,25 +127,6 @@ export class DataStore {
         }
       });
     }
-    // } else {
-    //   fetchCsv('confirmed', (data: Row[]) => {
-    //     if (data) {
-    //       this.confirmedByRegion = groupBy(data, STATE_KEY);
-    //       this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
-    //     } else {
-    //       throw new Error(`Data wasn't loaded correctly`);
-    //     }
-    //   });
-
-    //   fetchCsv('dead', (data: Row[]) => {
-    //     if (data) {
-    //       this.deadByRegion = groupBy(data, STATE_KEY);
-    //       this.deadByCountry = groupBy(data, COUNTRY_KEY);
-    //     } else {
-    //       throw new Error(`Data wasn't loaded correctly`);
-    //     }
-    //   });
-    // }
   }
 
   @computed get totalConfirmedCasesArray():

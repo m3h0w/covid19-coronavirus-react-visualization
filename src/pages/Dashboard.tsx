@@ -17,13 +17,11 @@ import {
   ButtonBase,
   Slide,
   Grow,
-  Fade,
   Table,
   TableBody,
   TableRow,
   TableCell,
   TableHead,
-  CircularProgress,
 } from '@material-ui/core';
 import { animationTime, US_NAME, GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import UsaMapChart from '../components/UsaMapChart';
@@ -31,7 +29,7 @@ import last from '../utils/last';
 import ReactTooltip from 'react-tooltip';
 import { showInfoSnackBar } from '../components/Snackbar';
 import Collapsable from '../components/Collapsable';
-import sort from '../utils/sort';
+import { Hidden } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -121,21 +119,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const useMemoryState = createPersistedState();
-const useMemoryState2 = createPersistedState();
-const useMemoryState3 = createPersistedState();
 
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useState(props.match.params.country || US_NAME);
-  const [selectedRegion, setSelectedRegion] = useMemoryState2('');
+  const [selectedRegion, setSelectedRegion] = useMemoryState('');
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const history = useHistory();
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
-  const [shownUsInfoSnack, setShownUsInfoSnack] = useMemoryState3(false);
-  // const [dataType, setDataType] = useState<'dead' | 'confirmed'>('confirmed');
 
   const selectCountry = (country: string) => {
     if (possibleCountries.includes(country)) {
@@ -147,11 +141,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const selectRegion = (region: string) => {
     if (dataStore.possibleRegions.includes(region) || region === null) {
       setSelectedRegion(region);
-      // if (region) {
-      //   showInfoSnackBar(
-      //     `Last updated ${region} on ${last(dataStore.regionDates).format('MMMM Do')}`
-      //   );
-      // }
     }
   };
 
@@ -190,10 +179,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const mortalityRate = cases ? deaths / cases : undefined;
   const isUs = selectedCountry === US_NAME;
 
-  const getRegionCases = (region: string) =>
-    dataStore.getRegionData(region)?.confirmed[last(dataStore.datesConverted)];
-  const getRegionDeaths = (region: string) =>
-    dataStore.getRegionData(region)?.dead[last(dataStore.datesConverted)];
   const possibleRegionsForSelectedCountry = dataStore.getPossibleRegionsByCountry(
     selectedCountry,
     true
@@ -233,7 +218,12 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             ) : null}
           </Paper>
         </Slide>
-        <div style={{ height: 31 }} />
+        <Hidden smDown>
+          <div style={{ height: 31 }} />
+        </Hidden>
+        <Hidden mdUp>
+          <div style={{ height: 15 }} />
+        </Hidden>
         <Grow in={dataStore.ready} timeout={animationTime}>
           <Paper className={classes.paper} style={{ padding: 0 }}>
             {rowData && rowData.confirmed && rowData.dead && (
@@ -267,8 +257,12 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                           <TableCell component='th' scope='row'>
                             {region}
                           </TableCell>
-                          <TableCell align='right'>{getRegionCases(region)}</TableCell>
-                          <TableCell align='right'>{getRegionDeaths(region)}</TableCell>
+                          <TableCell align='right'>
+                            {dataStore.getLastRegionCases(region)}
+                          </TableCell>
+                          <TableCell align='right'>
+                            {dataStore.getLastRegionDeaths(region)}
+                          </TableCell>
                         </TableRow>
                       );
                     })}

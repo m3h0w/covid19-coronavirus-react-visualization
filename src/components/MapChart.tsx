@@ -101,7 +101,7 @@ const MapChart = observer(
                           setTooltipContent(`${NAME} — 0 ${dataType}`);
                         }
 
-                        if (!shownSnackbar) {
+                        if (!shownSnackbar && smUp()) {
                           showInfoSnackBar(
                             'Click on a country to go directly to its dashboard 💨',
                             3000

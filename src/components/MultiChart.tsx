@@ -10,20 +10,20 @@ import {
   CartesianGrid,
   Dot,
 } from 'recharts';
-import Title from './Title';
+import Title from './Dashboard/Title';
 
 import moment, { Moment } from 'moment';
 import { FaBrush } from 'react-icons/fa';
-import getBrush from './Brush';
-import Colors from '../../utils/colors';
+import getBrush from './Dashboard/Brush';
+import Colors from '../utils/colors';
 import { Button } from '@material-ui/core';
-import useDataStore from '../../data/dataStore';
+import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
-import { momentToFormat } from '../../utils/getDatesFromDataRow';
-import getYAxis from './YAxis';
-import getTooltip from './Tooltip';
-import { animationTime } from '../../utils/consts';
-import { xsDown } from '../../utils/breakpoints';
+import { momentToFormat } from '../utils/getDatesFromDataRow';
+import getYAxis from './Dashboard/YAxis';
+import getTooltip from './Dashboard/Tooltip';
+import { animationTime } from '../utils/consts';
+import { xsDown } from '../utils/breakpoints';
 
 export type Row = {
   [key in Column]: string;
@@ -86,7 +86,7 @@ const MultiChart: FC<IProps> = observer(
       return <div></div>;
     };
 
-    const getFormattedLine = (dot: boolean = false) => {
+    const getFormattedLine = (dot: boolean = true) => {
       if (!data) {
         return null;
       }
@@ -106,7 +106,7 @@ const MultiChart: FC<IProps> = observer(
             dataKey={country}
             name={country}
             stroke={colors[country]}
-            dot={<CustomizedDot lastX={Math.max(...maxIndices)} country={country} />}
+            dot={dot && <CustomizedDot lastX={Math.max(...maxIndices)} country={country} />}
             strokeWidth={1.5}
             opacity={0.8}
           />
@@ -124,7 +124,7 @@ const MultiChart: FC<IProps> = observer(
         children: (
           <LineChart>
             {getYAxis(yLabel, logScale, true)}
-            {getFormattedLine()}
+            {getFormattedLine(false)}
           </LineChart>
         ),
       });

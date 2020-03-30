@@ -79,16 +79,27 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     getFormattedLine('deaths', 'Deaths', '#000'),
   ];
 
+  const bars = [
+    <Bar
+      dataKey={'confirmedCases'}
+      name={'Confirmed cases'}
+      stackId={'a'}
+      fill={theme.palette.primary.main}
+      key={0}
+    />,
+    <Bar dataKey={'deaths'} name={'Deaths'} stackId={'a'} fill={'#000'} key={1} />,
+  ];
+
   const brush = getBrush({
     data,
     color: theme.palette.text.secondary,
     tickFormatter: formatXAxis,
     dataKey: 'time',
     children: (
-      <LineChart>
+      <BarChart>
         <YAxis hide domain={[0, 'auto']} />
-        {lines}
-      </LineChart>
+        {bars}
+      </BarChart>
     ),
   });
 
@@ -126,14 +137,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           />
           {getYAxis('No. of cases & deaths')}
           {/* {lines} */}
-          <Bar
-            dataKey={'confirmedCases'}
-            name={'Confirmed cases'}
-            stackId={'a'}
-            fill={theme.palette.primary.main}
-            key={0}
-          />
-          <Bar dataKey={'deaths'} name={'Deaths'} stackId={'a'} fill={'#000'} key={1} />
+          {bars}
           {brush}
           {getTooltip(formatXAxis)}
         </BarChart>

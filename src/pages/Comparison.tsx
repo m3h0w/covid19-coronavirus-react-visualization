@@ -11,7 +11,7 @@ import { csv } from 'd3-request';
 import confirmedCsvUrl from '../data/confirmed.csv';
 import deathsCsvUrl from '../data/deaths.csv';
 import { Row } from '../components/Dashboard/Chart';
-import MultiChart from '../components/Dashboard/MultiChart';
+import MultiChart from '../components/MultiChart';
 import { Chip, Button, createStyles, Grow, Slide, Fab } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import useDataStore from '../data/dataStore';
