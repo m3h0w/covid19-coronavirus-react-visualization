@@ -256,7 +256,7 @@ const Dashboard: FC<IProps> = ({
           <Hidden xsDown implementation='css'>
             <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
               <Hidden smDown implementation='css'>
-                <Typography style={{ marginRight: 10 }}>Like it? Share it:</Typography>
+                <Typography style={{ marginRight: 10 }}>Share:</Typography>
               </Hidden>
               <Hidden xsDown mdUp implementation='css'>
                 <Typography style={{ marginRight: 5 }}>Share:</Typography>
