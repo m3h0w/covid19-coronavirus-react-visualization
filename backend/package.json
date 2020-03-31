@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "name": "covid-19-data-synchronizer",
+  "scripts": {
+    "build": "webpack-cli",
+    "clean": "rimraf .aws-sam .vscode",
+    "prebuild": "npm run clean",
+    "prewatch": "npm run clean",
+    "watch": "webpack-cli -w"
+  },
+  "dependencies": {
+    "@octokit/rest": "^17.1.2",
+    "aws-sdk": "^2.647.0",
+    "axios": "^0.19.2",
+    "octokit-create-pull-request": "^1.4.2",
+    "source-map-support": "^0.5.16"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.46",
+    "@types/node": "^13.9.5",
+    "aws-sam-webpack-plugin": "^0.6.0",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}
