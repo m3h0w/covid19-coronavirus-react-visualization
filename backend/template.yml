@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Backend application for providing COVID-19 data
+Parameters:
+  GithubAccessToken:
+    Type: String
+Resources:
+  SynchronizeData:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/synchronize-data
+      Handler: app.handler
+      Runtime: nodejs12.x
+      Timeout: 180
+      MemorySize: 128
+      Environment:
+        Variables:
+          GITHUB_ACCESS_TOKEN: !Ref GithubAccessToken
+      Events:
+        SynchronizationSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 5 * * ? *)
