@@ -12,3 +12,5 @@ Reach out if you'd like to contribute.
 
 
 Data source: [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data)
+
+Tech stack: React, TypeScript, [now.sh](https://zeit.co/), Recharts, Material UI, [React Simple Maps](https://www.react-simple-maps.io/)
