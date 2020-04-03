@@ -1,24 +1,24 @@
-import React, { useEffect, useState, FC } from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import moment, { Moment } from 'moment';
+import React, { FC, useEffect, useState } from 'react';
+import ReactCountryFlag from 'react-country-flag';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  TickFormatterFunction,
-  CartesianGrid,
   Bar,
   BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  TickFormatterFunction,
+  XAxis,
+  YAxis,
 } from 'recharts';
-import Title from './Title';
-import moment, { Moment } from 'moment';
-import getBrush from './Brush';
-import { momentToFormat, FIRST_DATE } from '../../utils/getDatesFromDataRow';
-import getYAxis from './YAxis';
-import getTooltip from './Tooltip';
-import ReactCountryFlag from 'react-country-flag';
+
+import { useTheme } from '@material-ui/core/styles';
+
 import countryToCode from '../../utils/countryToCode';
+import { FIRST_DATE, momentToFormat } from '../../utils/getDatesFromDataRow';
+import getBrush from './Brush';
+import Title from './Title';
+import getTooltip from './Tooltip';
+import getYAxis from './YAxis';
 
 export type Row = {
   [key in Column]: string;
@@ -34,7 +34,7 @@ interface IProps {
 
 const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
   const theme = useTheme();
-  const [firstCaseDate, setFirstCaseDate] = useState();
+  // const [firstCaseDate, setFirstCaseDate] = useState();
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -59,25 +59,25 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           return moment(el.time * 1000).isAfter(lastZeroDay);
         });
       setData(d);
-      setFirstCaseDate(lastZeroDay);
+      // setFirstCaseDate(lastZeroDay);
     }
-  }, [rowData]);
+  }, [rowData, dates]);
 
-  const getFormattedLine = (dataKey, name, stroke?: string) => (
-    <Line
-      type='monotone'
-      dataKey={dataKey}
-      name={name}
-      stroke={stroke || theme.palette.primary.main}
-      dot={true}
-      strokeWidth={2}
-    />
-  );
+  // const getFormattedLine = (dataKey, name, stroke?: string) => (
+  //   <Line
+  //     type='monotone'
+  //     dataKey={dataKey}
+  //     name={name}
+  //     stroke={stroke || theme.palette.primary.main}
+  //     dot={true}
+  //     strokeWidth={2}
+  //   />
+  // );
 
-  const lines = [
-    getFormattedLine('confirmedCases', 'Confirmed cases'),
-    getFormattedLine('deaths', 'Deaths', '#000'),
-  ];
+  // const lines = [
+  //   getFormattedLine('confirmedCases', 'Confirmed cases'),
+  //   getFormattedLine('deaths', 'Deaths', '#000'),
+  // ];
 
   const bars = [
     <Bar

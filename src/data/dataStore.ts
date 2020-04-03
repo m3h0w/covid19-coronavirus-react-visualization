@@ -1,19 +1,18 @@
-import { createContext, useContext } from 'react';
-import { observable, computed } from 'mobx';
-import { Row } from '../components/MultiChart';
 import { csv } from 'd3-request';
-import confirmedCsvUrl from '../data/confirmed.csv';
-import deathsCsvUrl from '../data/deaths.csv';
-import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
-import deathsGlobalCsvUrl from '../data/deaths_global.csv';
-import fetchCsv from 'utils/downloadCsv';
-import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import stateNames from 'data/stateNames.json';
-import { US_NAME, SOUTH_KOREA } from '../utils/consts';
-import { showInfoSnackBar } from '../components/Snackbar';
+import { computed, observable } from 'mobx';
+import { createContext, useContext } from 'react';
 import last from 'utils/last';
+
+import { Row } from '../components/MultiChart';
+import confirmedCsvUrl from '../data/confirmed.csv';
+import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
+import deathsCsvUrl from '../data/deaths.csv';
+import deathsGlobalCsvUrl from '../data/deaths_global.csv';
+import { US_NAME } from '../utils/consts';
+import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import sort from '../utils/sort';
-import { swapName, namesMap } from './utils';
+import { namesMap, swapName } from './utils';
 
 const USE_LOCAL_DATA = true;
 

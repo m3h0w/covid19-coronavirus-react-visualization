@@ -1,23 +1,15 @@
-import { createContext, useContext } from 'react';
-import { observable, computed } from 'mobx';
-import { Row } from '../components/MultiChart';
 import { csv } from 'd3-request';
-import whoData from '../data/who_report.csv';
+import { computed, observable } from 'mobx';
+import { Moment } from 'moment';
+import { createContext, useContext } from 'react';
+
+import { Row } from '../components/MultiChart';
 import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
 import deathsGlobalCsvUrl from '../data/deaths_global.csv';
-import fetchCsv from 'utils/downloadCsv';
-import {
-  getDatesFromDataRow,
-  momentToFormat,
-  momentToFormatLong,
-} from '../utils/getDatesFromDataRow';
-import stateNames from 'data/stateNames.json';
-import { US_NAME } from '../utils/consts';
-import { Moment } from 'moment';
-import { getDatesFromDataRowWho } from '../utils/getDatesFromDataRow';
-import continentArray from './continentsArray.json';
-import { swapName, namesMap } from './utils';
 import { DataType } from '../pages/Map';
+import { getDatesFromDataRowWho, momentToFormatLong } from '../utils/getDatesFromDataRow';
+import continentArray from './continentsArray.json';
+import { namesMap, swapName } from './utils';
 
 const USE_LOCAL_DATA = true;
 
@@ -29,10 +21,6 @@ interface ICountryData {
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 }
-
-const excludedCountryRegionValues = ['Globally', 'Outisde of China', 'Other', ''];
-const excludedProviceStateValues = ['Confirmed', 'Deaths', 'Case on an international conveyance'];
-const excludedWhoRegions = ['Territories', ''];
 
 // _.groupBy
 function groupByContinent(arr) {
@@ -88,8 +76,8 @@ function groupByContinent(arr) {
 type GroupedData = { [countryName: string]: Row };
 
 const COUNTRY_KEY = 'Country/Region';
-const STATE_KEY = 'Province/States';
-const WHO_REGION_KEY = 'WHO region';
+// const STATE_KEY = 'Province/States';
+// const WHO_REGION_KEY = 'WHO region';
 
 export class WhoDataStore {
   @observable public whoCasesData: any | undefined = undefined;

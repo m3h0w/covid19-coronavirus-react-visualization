@@ -28,9 +28,12 @@ const generateNewColors = (length: number): string[] => {
       colors = shuffleArray(colors);
     }
     const colorHex = `#${colors[moduloCounter]}`;
-    const [h, s, l] = rgbToHsl(colorHex);
-    if (mainCounter < colors.length * 4) {
-      if (l < 0.9) {
+    const l = rgbToHsl(colorHex)[2];
+    if (!l) {
+      continue;
+    }
+    if (mainCounter < colors.length * 3) {
+      if (l < 0.5) {
         array.push(colorHex);
         colors.splice(moduloCounter, 1);
       }
@@ -40,7 +43,7 @@ const generateNewColors = (length: number): string[] => {
     mainCounter += 1;
   }
 
-  if (mainCounter >= length * 10) {
+  if (mainCounter >= length * 50) {
     throw new Error(`Failed generating colors for length: ${length}`);
   }
 

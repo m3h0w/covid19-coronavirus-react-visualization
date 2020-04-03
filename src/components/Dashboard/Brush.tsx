@@ -5,7 +5,7 @@ interface IProps {
   color: string;
   tickFormatter?: TickFormatterFunction;
   data: any;
-  children: () => JSX.Element;
+  children: JSX.Element;
   dataKey?: string;
 }
 

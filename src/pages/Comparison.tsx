@@ -1,36 +1,29 @@
-import React, { useState, useEffect, useCallback, FC } from 'react';
+import clsx from 'clsx';
 import Dashboard from 'components/Dashboard/Dashboard';
+import { reaction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useStateAndLocalStorage } from 'persistence-hooks';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import ReactCountryFlag from 'react-country-flag';
+import { RouteComponentProps, useHistory } from 'react-router';
+
+import { Button, Fab, Grow, Slide } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { CustomAutocomplete } from '../components/Dashboard/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import Chart from '../components/Dashboard/Chart';
-import CurrentCount from '../components/Dashboard/CurrentCount';
-import clsx from 'clsx';
-import { csv } from 'd3-request';
-import confirmedCsvUrl from '../data/confirmed.csv';
-import deathsCsvUrl from '../data/deaths.csv';
-import { Row } from '../components/Dashboard/Chart';
-import MultiChart from '../components/MultiChart';
-import { Chip, Button, createStyles, Grow, Slide, Fab } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import useDataStore from '../data/dataStore';
-import { observer } from 'mobx-react-lite';
-import Colors from '../utils/colors';
-import createPersistedState from '../utils/memoryState';
-import { useHistory, RouteComponentProps } from 'react-router';
-import extractKeyFromNestedObj from '../utils/extractKeyFromNestedObj';
-import { getContrastYIQ } from '../utils/colors';
+
 import CustomChip from '../components/CustomChip';
+import { Row } from '../components/Dashboard/Chart';
+import { CustomAutocomplete } from '../components/Dashboard/Select';
+import MultiChart from '../components/MultiChart';
+import { showInfoSnackBar } from '../components/Snackbar';
+import useDataStore from '../data/dataStore';
 import { animationTime, GLOBAL_PAPER_OPACITY } from '../utils/consts';
-import sort from '../utils/sort';
-import last from '../utils/last';
-import ReactCountryFlag from 'react-country-flag';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
-import { reaction } from 'mobx';
-import { useStateAndLocalStorage } from 'persistence-hooks';
-import { showInfoSnackBar } from '../components/Snackbar';
+import last from '../utils/last';
+import createPersistedState from '../utils/memoryState';
+import sort from '../utils/sort';
 
 const drawerWidth = 240;
 
@@ -132,8 +125,6 @@ interface IRowData {
   confirmed: Row | undefined;
   dead: Row | undefined;
 }
-
-let colorsHelper = new Colors();
 const useMemoryStateA = createPersistedState();
 const useMemoryStateB = createPersistedState();
 
@@ -146,6 +137,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
+  const [logScale, setLogScale] = useState(true);
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
@@ -154,7 +146,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
       );
       setShownSnackbar(true);
     }
-  }, [shownSnackbar, dataStore.ready]);
+  }, [shownSnackbar, dataStore.ready, setShownSnackbar]);
 
   const getNewColors = useCallback(() => {
     const newColors = generateNewColors(countries.length);
@@ -170,15 +162,47 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     getNewColors();
   }, [getNewColors, countries]);
 
-  const addCountries = (newCountries: string[]) => {
+  const addCountries = useCallback(
+    (newCountries: string[]) => {
+      setTimeout(() => {
+        setLogScale((prev) => !prev);
+        setTimeout(() => {
+          setLogScale((prev) => !prev);
+        }, 10);
+      }, 1);
+      setCountries((prevCountries: string[]) => [...new Set([...newCountries, ...prevCountries])]);
+    },
+    [setLogScale, setCountries]
+  );
+
+  const addMostCasesCountries = useCallback(
+    (additionalCountry: string | undefined = undefined) => {
+      setTimeout(() => {
+        setLogScale(false);
+        setTimeout(() => {
+          setLogScale(true);
+        }, 10);
+      }, 1);
+      if (additionalCountry) {
+        setCountries([
+          ...new Set([additionalCountry, ...dataStore.possibleCountriesSortedByCases.slice(0, 8)]),
+        ]);
+      } else {
+        setCountries(dataStore.possibleCountriesSortedByCases.slice(0, 8));
+      }
+    },
+    [setCountries, setLogScale, dataStore.possibleCountriesSortedByCases]
+  );
+
+  const addMostDeathsCountries = useCallback(() => {
     setTimeout(() => {
       setLogScale(false);
       setTimeout(() => {
         setLogScale(true);
       }, 10);
     }, 1);
-    setCountries([...new Set([...newCountries, ...countries])]);
-  };
+    setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
+  }, [setCountries, setLogScale, dataStore.possibleCountriesSortedByDeaths]);
 
   useEffect(() => {
     const r = reaction(
@@ -192,20 +216,18 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
       if (countryFromUrl) {
         countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
         history.push(`/infection-trajectories`);
-        addMostCasesCountries();
-        addCountries([countryFromUrl, ...dataStore.possibleCountriesSortedByCases.slice(0, 5)]);
+        addMostCasesCountries(countryFromUrl);
       }
     } else {
       addMostCasesCountries();
     }
     return r;
-  }, []);
+  }, [addCountries, addMostCasesCountries, dataStore.ready, history, props.match.params.country]);
 
   const routeChange = (country: string) => {
     history.push(`/dashboard/${country}`);
   };
 
-  const [logScale, setLogScale] = useState(true);
   const LogScaleSwitch = () => {
     return (
       <Fab
@@ -231,26 +253,6 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
         )}
       </Fab>
     );
-  };
-
-  const addMostCasesCountries = () => {
-    setTimeout(() => {
-      setLogScale(false);
-      setTimeout(() => {
-        setLogScale(true);
-      }, 10);
-    }, 1);
-    setCountries(dataStore.possibleCountriesSortedByCases.slice(0, 8));
-  };
-
-  const addMostDeathsCountries = () => {
-    setTimeout(() => {
-      setLogScale(false);
-      setTimeout(() => {
-        setLogScale(true);
-      }, 10);
-    }, 1);
-    setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
   };
 
   return (

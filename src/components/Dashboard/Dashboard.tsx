@@ -1,45 +1,26 @@
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, FC } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems, MainListItems } from './ListItems';
-import Chart from './Chart';
-import CurrentCount from './CurrentCount';
-import Orders from './Orders';
-import CustomSelect from './Select';
-import { CustomAutocomplete } from './Select';
-import { Row } from './Chart';
+import { MainListItems } from './ListItems';
 import useDataStore from '../../data/dataStore';
-import { Hidden, Grow, Fade, CircularProgress } from '@material-ui/core';
+import { Hidden, Fade, CircularProgress } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
 import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
-import { GLOBAL_PAPER_OPACITY, animationTime, SIDEBAR_WIDTH } from '../../utils/consts';
+import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
-import {
-  FacebookShareButton,
-  // FacebookIcon,
-  LinkedinShareButton,
-  // LinkedinIcon,
-  WhatsappShareButton,
-  // WhatsappIcon,
-} from 'react-share';
+import { FacebookShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import WhatsappIcon from '@material-ui/icons/WhatsApp';
 import LinkedinIcon from '@material-ui/icons/LinkedIn';
@@ -177,6 +158,7 @@ interface IProps {
   title: string;
   icon: FC;
   grid?: boolean;
+  startOpen: boolean;
   paddingTop?: boolean;
 }
 
@@ -228,7 +210,7 @@ const Dashboard: FC<IProps> = ({
                 // marginRight: '3px',
               }}
             >
-              <img src={logo} height={40} style={{ marginRight: 1 }} />
+              <img src={logo} height={40} style={{ marginRight: 1 }} alt='covid19.pink logo' />
               <Hidden smDown>
                 <Typography
                   className={open && classes.hidden}

@@ -1,27 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { csv } from 'd3-request';
 import { scaleLog } from 'd3-scale';
-import pink from '@material-ui/core/colors/pink';
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Sphere,
-  Graticule,
-  ZoomableGroup,
-} from 'react-simple-maps';
-import dataCsvUrl from '../data/vulnerability.csv';
-import { useTheme } from '@material-ui/core/styles';
-import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
-import { Moment } from 'moment';
-import geoUrl from '../data/worldMap.json';
-import { useHistory } from 'react-router';
-import { showInfoSnackBar } from './Snackbar';
 import { useStateAndLocalStorage } from 'persistence-hooks';
+import React from 'react';
+import { useHistory } from 'react-router';
+import { ComposableMap, Geographies, Geography, Graticule, ZoomableGroup } from 'react-simple-maps';
+
 import { Fade, Theme } from '@material-ui/core';
-import { DataStore } from '../data/dataStore';
-import { mdUp, smUp } from '../utils/breakpoints';
+import { useTheme } from '@material-ui/core/styles';
+
+import useDataStore, { DataStore } from '../data/dataStore';
+import geoUrl from '../data/worldMap.json';
+import { smUp } from '../utils/breakpoints';
+import { showInfoSnackBar } from './Snackbar';
+import { DataType } from '../pages/Map';
+import numberWithCommas from 'utils/numberWithCommas';
 
 const getMatchingCountryKey = (dataStore: DataStore, geo) => {
   for (const key of Object.keys(geo.properties)) {
@@ -33,7 +25,7 @@ const getMatchingCountryKey = (dataStore: DataStore, geo) => {
   return undefined;
 };
 
-export const getColorsScale = (dataType, theme: Theme) => {
+export const getColorsScale = (dataType: DataType, theme: Theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()
@@ -68,15 +60,15 @@ const MapChart = observer(
       history.push(`/dashboard/${country}`);
     };
 
-    const getScale = () => {
-      if (window.innerWidth < 400) {
-        return 90;
-      }
-      if (window.innerHeight < 400) {
-        return 120;
-      }
-      return 150;
-    };
+    // const getScale = () => {
+    //   if (window.innerWidth < 400) {
+    //     return 90;
+    //   }
+    //   if (window.innerHeight < 400) {
+    //     return 120;
+    //   }
+    //   return 150;
+    // };
 
     return (
       <ComposableMap data-tip=''>
@@ -94,9 +86,10 @@ const MapChart = observer(
                       key={geo.rsmKey}
                       geography={geo}
                       onMouseEnter={() => {
-                        const { NAME, POP_EST } = geo.properties;
+                        // const { NAME, POP_EST } = geo.properties;
+                        const { NAME } = geo.properties;
                         if (d && d[dataType] && d[dataType][date]) {
-                          setTooltipContent(`${NAME} — ${d[dataType][date]} ${dataType}`);
+                          setTooltipContent(`${NAME} — ${numberWithCommas(d[dataType][date])}`);
                         } else {
                           setTooltipContent(`${NAME} — 0 ${dataType}`);
                         }

@@ -1,16 +1,16 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Title from './Title';
-import theme from 'theme';
 import NumberWithTitle from '../NumberWithTitle';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 export default function CurrentCount({ style, confirmedCases, deaths, mortalityRate }) {
   return (
     <div style={style}>
-      <NumberWithTitle color={'primary'} title={'Confirmed cases'} number={confirmedCases} />
-      <NumberWithTitle color={'initial'} title={'Deaths'} number={deaths} />
+      <NumberWithTitle
+        color={'primary'}
+        title={'Confirmed cases'}
+        number={numberWithCommas(confirmedCases)}
+      />
+      <NumberWithTitle color={'initial'} title={'Deaths'} number={numberWithCommas(deaths)} />
       {mortalityRate ? (
         <NumberWithTitle
           color={'secondary'}

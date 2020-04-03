@@ -1,35 +1,37 @@
-import React, { useState, useEffect, FC } from 'react';
-import Dashboard from 'components/Dashboard/Dashboard';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { CustomAutocomplete } from '../components/Dashboard/Select';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Chart from '../components/Dashboard/Chart';
-import CurrentCount from '../components/Dashboard/CurrentCount';
 import clsx from 'clsx';
-import createPersistedState from '../utils/memoryState';
-import useDataStore from '../data/dataStore';
+import Dashboard from 'components/Dashboard/Dashboard';
 import { observer } from 'mobx-react-lite';
-import { useHistory, RouteComponentProps } from 'react-router';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { RouteComponentProps, useHistory } from 'react-router';
+import ReactTooltip from 'react-tooltip';
+
 import {
-  Typography,
-  Card,
   ButtonBase,
-  Slide,
+  Card,
   Grow,
+  Hidden,
+  Slide,
   Table,
   TableBody,
-  TableRow,
   TableCell,
   TableHead,
+  TableRow,
+  Typography,
 } from '@material-ui/core';
-import { animationTime, US_NAME, GLOBAL_PAPER_OPACITY } from '../utils/consts';
-import UsaMapChart from '../components/UsaMapChart';
-import last from '../utils/last';
-import ReactTooltip from 'react-tooltip';
-import { showInfoSnackBar } from '../components/Snackbar';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 import Collapsable from '../components/Collapsable';
-import { Hidden } from '@material-ui/core';
+import Chart from '../components/Dashboard/Chart';
+import CurrentCount from '../components/Dashboard/CurrentCount';
+import { CustomAutocomplete } from '../components/Dashboard/Select';
+import UsaMapChart from '../components/UsaMapChart';
+import useDataStore from '../data/dataStore';
+import { animationTime, GLOBAL_PAPER_OPACITY, US_NAME } from '../utils/consts';
+import last from '../utils/last';
+import createPersistedState from '../utils/memoryState';
+import numberWithCommas from '../utils/numberWithCommas';
 
 const drawerWidth = 240;
 
@@ -131,12 +133,15 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
 
-  const selectCountry = (country: string) => {
-    if (possibleCountries.includes(country)) {
-      setSelectedCountry(country);
-      setSelectedRegion(null);
-    }
-  };
+  const selectCountry = useCallback(
+    (country: string) => {
+      if (possibleCountries.includes(country)) {
+        setSelectedCountry(country);
+        setSelectedRegion(null);
+      }
+    },
+    [setSelectedRegion, setSelectedCountry, possibleCountries]
+  );
 
   const selectRegion = (region: string) => {
     if (dataStore.possibleRegions.includes(region) || region === null) {
@@ -151,7 +156,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     if (selectedCountry && selectedRegion) {
       history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
     }
-  }, [selectedCountry, selectedRegion]);
+  }, [selectedCountry, selectedRegion, history]);
 
   useEffect(() => {
     let countryFromUrl = props.match.params.country;
@@ -159,7 +164,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
       selectCountry(countryFromUrl);
     }
-  }, [props.match.params.country, history, setSelectedCountry]);
+  }, [props.match.params.country, history, setSelectedCountry, selectCountry]);
 
   let rowData = dataStore.getCountryData(selectedCountry);
   if (selectedRegion) {
@@ -258,10 +263,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                             {region}
                           </TableCell>
                           <TableCell align='right'>
-                            {dataStore.getLastRegionCases(region)}
+                            {numberWithCommas(dataStore.getLastRegionCases(region))}
                           </TableCell>
                           <TableCell align='right'>
-                            {dataStore.getLastRegionDeaths(region)}
+                            {numberWithCommas(dataStore.getLastRegionDeaths(region))}
                           </TableCell>
                         </TableRow>
                       );

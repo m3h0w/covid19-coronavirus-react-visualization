@@ -1,68 +1,61 @@
-import React, { FC, useState, useEffect, useCallback, useMemo } from 'react';
-import MapChart from 'components/MapChart';
 import Dashboard from 'components/Dashboard/Dashboard';
-import useDataStore from '../data/dataStore';
+import Title from 'components/Dashboard/Title';
+import MapChart from 'components/MapChart';
 import { observer } from 'mobx-react-lite';
-import IOSSlider from '../components/IOSSlider';
-import ReactTooltip from 'react-tooltip';
-import createPersistedState from '../utils/memoryState';
-import { showInfoSnackBar } from '../components/Snackbar';
+import moment from 'moment';
 import { useStateAndLocalStorage } from 'persistence-hooks';
-import Typography from '@material-ui/core/Typography';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import IconButton from '@material-ui/core/IconButton';
-import StopIcon from '@material-ui/icons/Stop';
-import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
-import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
+import React, { useEffect, useMemo, useState } from 'react';
+import ReactCountryFlag from 'react-country-flag';
+import { useHistory } from 'react-router';
+import ReactTooltip from 'react-tooltip';
 import {
-  Fab,
-  Card,
-  Grow,
-  Slide,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+} from 'recharts';
+
+import {
   Button,
+  Card,
+  Fab,
+  Grow,
   Hidden,
   Table,
   TableBody,
-  TableRow,
   TableCell,
-  Collapse,
-  Divider,
+  TableRow,
 } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
-import last from '../utils/last';
-import Title from 'components/Dashboard/Title';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import StopIcon from '@material-ui/icons/Stop';
+
+import Collapsable from '../components/Collapsable';
+import getYAxis from '../components/Dashboard/YAxis';
+import IOSSlider from '../components/IOSSlider';
 import NumberWithTitle from '../components/NumberWithTitle';
-import { animationTime, GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../utils/consts';
-import {
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-  ResponsiveContainer,
-} from 'recharts';
+import { showInfoSnackBar } from '../components/Snackbar';
+import useDataStore from '../data/dataStore';
 import useWhoDataStore from '../data/whoDataStore';
 import { mdUp, xsDown } from '../utils/breakpoints';
-import getYAxis from '../components/Dashboard/YAxis';
-import moment from 'moment';
-import shuffleArray from '../utils/shuffleArray';
-import rgbToHsl from '../utils/rgbToHsl';
-import getRandomFromRange from '../utils/getRandomFromRange';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import sort from '../utils/sort';
-import { useHistory } from 'react-router';
-import Collapsable from '../components/Collapsable';
-import ReactCountryFlag from 'react-country-flag';
+import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../utils/consts';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import last from '../utils/last';
+import sort from '../utils/sort';
+import numberWithCommas from '../utils/numberWithCommas';
 
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
@@ -157,18 +150,8 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
     : dataStore.deathsArray[dataStore.deathsArray.length - 2];
 
   const possibleCountries = dataStore.possibleCountries;
-  const possibleCountriesByConfirmed = useMemo(
-    () =>
-      sort(
-        possibleCountries,
-        (countryA, countryB) => confirmedCases[countryB] - confirmedCases[countryA]
-      ),
-    [possibleCountries, sliderValue]
-  );
-  const possibleCountriesByDeaths = useMemo(
-    () => sort(possibleCountries, (countryA, countryB) => deaths[countryB] - deaths[countryA]),
-    [possibleCountries, sliderValue]
-  );
+  const possibleCountriesByConfirmed = dataStore.possibleCountriesSortedByCases;
+  const possibleCountriesByDeaths = dataStore.possibleCountriesSortedByDeaths;
   const possibleCountriesByMortality = useMemo(
     () =>
       sort(possibleCountries, (countryA, countryB) => {
@@ -187,7 +170,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           );
         }
       }),
-    [possibleCountries, sliderValue]
+    [possibleCountries, confirmedCases, deaths]
   );
 
   const totalCases = dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases || '';
@@ -218,7 +201,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
     history.push(`/dashboard/${country}`);
   };
 
-  const CountryCell = ({ country }) => {
+  const CountryCell = ({ country }: { country: string }) => {
     return (
       <TableCell
         onClick={() => {
@@ -238,7 +221,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
     );
   };
 
-  const ChangeCell = ({ yesterdayChange }) => {
+  const ChangeCell = ({ yesterdayChange }: { yesterdayChange: number }) => {
     if (!yesterdayChange) {
       return (
         <TableCell className={classes.numberTableCell} align='right'>
@@ -257,6 +240,14 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
         {yesterdayChange > 1 && <ArrowUpwardIcon style={{ fontSize: '0.7rem' }} />}
         {yesterdayChange < -1 && <ArrowDownwardIcon style={{ fontSize: '0.7rem' }} />}
         {`${yesterdayChange.toFixed(1)}%`}
+      </TableCell>
+    );
+  };
+
+  const NumberCell = ({ number }: { number: number }) => {
+    return (
+      <TableCell className={classes.numberTableCell} align='right'>
+        {number ? numberWithCommas(number) : '-'}
       </TableCell>
     );
   };
@@ -305,9 +296,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                     <TableRow key={country}>
                       <CountryCell country={country} />
                       <ChangeCell yesterdayChange={yesterdayChange} />
-                      <TableCell className={classes.numberTableCell} align='right'>
-                        {confirmedCases[country]}
-                      </TableCell>
+                      <NumberCell number={confirmedCases[country]} />
                     </TableRow>
                   );
                 })}
@@ -358,9 +347,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                     <TableRow key={country}>
                       <CountryCell country={country} />
                       <ChangeCell yesterdayChange={yesterdayChange} />
-                      <TableCell className={classes.numberTableCell} align='right'>
-                        {deaths[country]}
-                      </TableCell>
+                      <NumberCell number={deaths[country]} />
                     </TableRow>
                   );
                 })}
@@ -407,11 +394,13 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
                     return (
                       <TableRow key={country}>
                         <CountryCell country={country} />
-                        <TableCell className={classes.numberTableCell} align='right'>
-                          {confirmedCases[country]
-                            ? `${((deaths[country] / confirmedCases[country]) * 100).toFixed(2)}%`
-                            : '-'}
-                        </TableCell>
+                        <NumberCell
+                          number={
+                            confirmedCases[country]
+                              ? `${((deaths[country] / confirmedCases[country]) * 100).toFixed(2)}%`
+                              : undefined
+                          }
+                        />
                       </TableRow>
                     );
                   })}
@@ -429,7 +418,6 @@ const getSliderValueTextFunc = (dates: string[]) => (value: number) => dates[val
 
 const MapPage = observer(() => {
   const classes = useStyles();
-  const theme = useTheme();
   const dataStore = useDataStore();
   const [sliderValue, setSliderValue] = useState<number>();
   const [date, setDate] = useState<string>();
@@ -511,7 +499,7 @@ const MapPage = observer(() => {
         }, 2000);
       }
     }
-  }, [whoDataStore.ready]);
+  }, [whoDataStore.ready, whoDataStore.possibleRegions]);
 
   const DashboardSwitch = () => {
     return (
@@ -554,31 +542,24 @@ const MapPage = observer(() => {
           maxWidth: '100%',
           height: '100%',
           maxHeight: '100vh',
-          // paddingTop: 0,
         }}
       >
-        {/* <Grow in={dataStore.ready} timeout={animationTime}> */}
         <Card className={classes.mapCard}>
           {dataStore.ready && (
             <div className={classes.bigNumberContainer}>
               <Typography className={classes.bigNumber} component='span' variant='body1'>
                 {dataType === 'confirmed'
-                  ? dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases
-                  : dataStore.totalDeathsArray[sliderValue]?.totalDeaths}
+                  ? numberWithCommas(dataStore.totalConfirmedCasesArray[sliderValue]?.totalCases)
+                  : numberWithCommas(dataStore.totalDeathsArray[sliderValue]?.totalDeaths)}
               </Typography>
             </div>
           )}
           <div
             style={{
               maxWidth: '1000px',
-              // height: '500px',
               position: 'relative',
               margin: '0 auto',
               zIndex: 1,
-              // height: '80%',
-              // maxHeight: '105vh',
-              // overflow: 'auto',
-              // padding: '30px',
               marginTop: '-2%',
             }}
           >
@@ -726,6 +707,7 @@ const WhoBarChart = observer(
           {getYAxis('Cases')}
           <Tooltip
             labelFormatter={(tickItem: number) => moment(tickItem * 1000).format('MMMM Do')}
+            formatter={numberWithCommas}
           />
           <Legend />
           {colors &&

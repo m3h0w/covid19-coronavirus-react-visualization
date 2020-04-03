@@ -13,7 +13,7 @@ function rgbToHsl(rgbcode: string) {
     s,
     l = (max + min) / 2;
 
-  if (max == min) {
+  if (max === min) {
     h = s = 0; // achromatic
   } else {
     var d = max - min;

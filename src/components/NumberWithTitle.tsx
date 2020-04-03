@@ -3,6 +3,7 @@ import Title from 'components/Dashboard/Title';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import numberWithCommas from '../utils/numberWithCommas';
 
 const useStyles = makeStyles((theme) => ({
   typo: { marginTop: '-11px', marginBottom: '2px' },
@@ -41,7 +42,7 @@ const NumberWithTitle: FC<IProps> = ({
           variant='h2'
           className={classes.typo}
         >
-          {number}
+          {numberWithCommas(number)}
         </Typography>
       </div>
     );

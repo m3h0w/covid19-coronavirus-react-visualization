@@ -1,29 +1,15 @@
-import React, { useEffect, useState, FC, useCallback } from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  TickFormatterFunction,
-  CartesianGrid,
-  Dot,
-} from 'recharts';
-import Title from './Dashboard/Title';
-
-import moment, { Moment } from 'moment';
-import { FaBrush } from 'react-icons/fa';
-import getBrush from './Dashboard/Brush';
-import Colors from '../utils/colors';
-import { Button } from '@material-ui/core';
-import useDataStore from '../data/dataStore';
 import { observer } from 'mobx-react-lite';
-import { momentToFormat } from '../utils/getDatesFromDataRow';
-import getYAxis from './Dashboard/YAxis';
-import getTooltip from './Dashboard/Tooltip';
-import { animationTime } from '../utils/consts';
+import React, { FC } from 'react';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis } from 'recharts';
+
+import { useTheme } from '@material-ui/core/styles';
+
 import { xsDown } from '../utils/breakpoints';
+import getBrush from './Dashboard/Brush';
+import Title from './Dashboard/Title';
+import getTooltip from './Dashboard/Tooltip';
+import getYAxis from './Dashboard/YAxis';
+import useDataStore from '../data/dataStore';
 
 export type Row = {
   [key in Column]: string;
@@ -47,8 +33,8 @@ const MultiChart: FC<IProps> = observer(
     const dataStore = useDataStore();
     const data = dataStore.dataForAfter100Cases(dataType, countries);
 
-    const CustomizedDot = (props) => {
-      const { cx, cy, stroke, payload, value, lastX, country } = props;
+    const CustomizedDot = (props: any) => {
+      const { cx, cy, stroke, payload, lastX, country } = props;
       if (payload.time === lastX) {
         return (
           <>
@@ -186,8 +172,8 @@ const MultiChart: FC<IProps> = observer(
   }
 );
 
-const TIME_FORMAT = 'MMM Do';
-const formatXAxis: TickFormatterFunction = (tickItem: number) =>
-  moment(tickItem * 1000).format(TIME_FORMAT);
+// const TIME_FORMAT = 'MMM Do';
+// const formatXAxis: TickFormatterFunction = (tickItem: number) =>
+//   moment(tickItem * 1000).format(TIME_FORMAT);
 
 export default MultiChart;
