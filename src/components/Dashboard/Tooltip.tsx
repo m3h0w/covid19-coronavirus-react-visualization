@@ -1,12 +1,12 @@
 import React from 'react';
-import { LabelFormatter, Tooltip } from 'recharts';
+import { LabelFormatter, Tooltip, TooltipFormatter } from 'recharts';
 import numberWithCommas from '../../utils/numberWithCommas';
 
-const getTooltip = (labelFormatter?: LabelFormatter) => (
+const getTooltip = (labelFormatter?: LabelFormatter, formatter?: TooltipFormatter) => (
   <Tooltip
     offset={-120}
     labelFormatter={labelFormatter}
-    formatter={numberWithCommas}
+    formatter={!formatter ? numberWithCommas : formatter}
     allowEscapeViewBox={{ x: true, y: true }}
   />
 );

@@ -157,6 +157,7 @@ const useStyles = makeStyles((theme) => ({
 interface IProps {
   title: string;
   icon: FC;
+  Icon: () => null;
   grid?: boolean;
   startOpen: boolean;
   paddingTop?: boolean;

@@ -1,14 +1,15 @@
 import moment, { Moment } from 'moment';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, ReactText } from 'react';
 import ReactCountryFlag from 'react-country-flag';
 import {
   Bar,
-  BarChart,
+  Line,
   CartesianGrid,
   ResponsiveContainer,
   TickFormatterFunction,
   XAxis,
   YAxis,
+  ComposedChart,
 } from 'recharts';
 
 import { useTheme } from '@material-ui/core/styles';
@@ -19,6 +20,7 @@ import getBrush from './Brush';
 import Title from './Title';
 import getTooltip from './Tooltip';
 import getYAxis from './YAxis';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 export type Row = {
   [key in Column]: string;
@@ -43,7 +45,18 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
       const d = dates
         .map((date) => {
           const confirmedCases = Number(rowData.confirmed[momentToFormat(date)]);
-          const deaths = Number(rowData.dead[momentToFormat(date)]);
+          let deaths = Number(rowData.dead[momentToFormat(date)]);
+          if (deaths === undefined || deaths === null) {
+            deaths = 0;
+          }
+          let fatalityRate;
+          if (deaths === 0) {
+            fatalityRate = 0;
+          } else {
+            fatalityRate = confirmedCases
+              ? ((deaths / confirmedCases) * 100).toFixed(2)
+              : undefined;
+          }
 
           if (lastZeroDay?.isSame(moment(FIRST_DATE)) && confirmedCases > 0) {
             lastZeroDay = date.clone();
@@ -52,6 +65,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           return {
             confirmedCases,
             deaths,
+            fatalityRate,
             time: date.unix(),
           };
         })
@@ -63,16 +77,23 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     }
   }, [rowData, dates]);
 
-  // const getFormattedLine = (dataKey, name, stroke?: string) => (
-  //   <Line
-  //     type='monotone'
-  //     dataKey={dataKey}
-  //     name={name}
-  //     stroke={stroke || theme.palette.primary.main}
-  //     dot={true}
-  //     strokeWidth={2}
-  //   />
-  // );
+  const getFormattedLine = (
+    dataKey,
+    name,
+    stroke?: string,
+    dot: boolean = true,
+    yAxisId: 'left' | 'right' = 'left'
+  ) => (
+    <Line
+      type='monotone'
+      dataKey={dataKey}
+      name={name}
+      stroke={stroke || theme.palette.primary.main}
+      dot={dot}
+      strokeWidth={2}
+      yAxisId={yAxisId}
+    />
+  );
 
   // const lines = [
   //   getFormattedLine('confirmedCases', 'Confirmed cases'),
@@ -96,10 +117,10 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     tickFormatter: formatXAxis,
     dataKey: 'time',
     children: (
-      <BarChart>
+      <ComposedChart>
         <YAxis hide domain={[0, 'auto']} />
         {bars}
-      </BarChart>
+      </ComposedChart>
     ),
   });
 
@@ -119,7 +140,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
         />
       </Title>
       <ResponsiveContainer width={'100%'}>
-        <BarChart
+        <ComposedChart
           data={data}
           margin={{
             top: 16,
@@ -135,12 +156,31 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             stroke={theme.palette.text.secondary}
             tickFormatter={formatXAxis}
           />
-          {getYAxis('No. of cases & deaths')}
+          {getYAxis('No. of cases & deaths', undefined, undefined, undefined, undefined, false)}
+          {getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
+            0,
+            (v) => Math.round(v * 1.3),
+          ])}
           {/* {lines} */}
           {bars}
+          {getFormattedLine(
+            'fatalityRate',
+            'Case fatality rate',
+            theme.palette.secondary.main,
+            false,
+            'right'
+          )}
           {brush}
-          {getTooltip(formatXAxis)}
-        </BarChart>
+          {getTooltip(formatXAxis, (value: string | number | ReactText[], name: string) => {
+            if (value === undefined || value === null) {
+              return '-';
+            }
+            if (name === 'Case fatality rate') {
+              return `${value}%`;
+            }
+            return numberWithCommas(value);
+          })}
+        </ComposedChart>
       </ResponsiveContainer>
     </>
   );

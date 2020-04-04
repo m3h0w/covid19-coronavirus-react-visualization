@@ -1,15 +1,21 @@
 import React from 'react';
 import { LabelProps, YAxis } from 'recharts';
 
-const getYAxis = (yLabel: string, logScale: boolean = false, hide: boolean = false) => {
+const getYAxis = (
+  yLabel: string,
+  logScale: boolean = false,
+  hide: boolean = false,
+  orientation?: 'left' | 'right' | undefined,
+  mirror: boolean = true,
+  allowDecimals: boolean = true,
+  domain?: [any, any]
+) => {
   const isSmall = window.innerWidth < 600;
 
   const yaxisDefaults = {
     allowDataOverflow: true,
     axisLine: false,
     tickLine: false,
-    allowDecimals: true,
-    mirror: true,
     type: 'number' as 'number' | 'category' | undefined,
   };
 
@@ -28,9 +34,18 @@ const getYAxis = (yLabel: string, logScale: boolean = false, hide: boolean = fal
       scale={logScale ? 'log' : undefined}
       label={!isSmall ? getYLabelConfig(yLabel) : undefined}
       tick={{ dx: !isSmall ? 17 : 0, fontSize: isSmall ? 12 : 15 }}
-      // tickFormatter={format}
+      yAxisId={orientation}
+      orientation={orientation}
+      mirror={mirror}
+      allowDecimals={allowDecimals}
+      domain={
+        !domain
+          ? logScale
+            ? ['10', (dataMax) => dataMax * 2]
+            : [0, (dataMax) => Math.ceil(dataMax * 1.1)]
+          : domain
+      }
       {...yaxisDefaults}
-      domain={logScale ? ['10', (dataMax) => dataMax * 2] : ['0', 'auto']}
     />
   );
 };
