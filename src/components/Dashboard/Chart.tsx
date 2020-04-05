@@ -159,7 +159,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           {getYAxis('No. of cases & deaths', undefined, undefined, undefined, undefined, false)}
           {getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
             0,
-            (v) => Math.round(v * 1.3),
+            (v) => Math.ceil(v * 1.25),
           ])}
           {/* {lines} */}
           {bars}
