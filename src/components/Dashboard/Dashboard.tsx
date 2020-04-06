@@ -20,6 +20,7 @@ import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
 import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
+import BottomNavigation from 'components/BottomNavigationBar';
 import { FacebookShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import WhatsappIcon from '@material-ui/icons/WhatsApp';
@@ -300,21 +301,23 @@ const Dashboard: FC<IProps> = ({
           </Hidden>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant='permanent'
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <MainListItems />
-      </Drawer>
+      <Hidden xsDown>
+        <Drawer
+          variant='permanent'
+          classes={{
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <MainListItems />
+        </Drawer>
+      </Hidden>
       <main className={classes.content} style={{ backgroundImage: `url(${backgroundUrl})` }}>
         {!dataStore.ready && (
           <div
@@ -338,6 +341,9 @@ const Dashboard: FC<IProps> = ({
                     <Grid container spacing={3}>
                       {children}
                     </Grid>
+                    <Hidden smUp>
+                      <BottomNavigation />
+                    </Hidden>
                   </Container>
                 </Fade>
               </>
