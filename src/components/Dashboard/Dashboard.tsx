@@ -287,14 +287,22 @@ const Dashboard: FC<IProps> = ({
           <Hidden xsDown mdUp implementation='css'>
             {dataStore.ready && (
               <Typography style={{ fontSize: '0.5rem' }}>
-                Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
+                Last updated:{' '}
+                {dataStore.dates[dataStore.dates.length - 1]
+                  .clone()
+                  .add(1, 'day')
+                  .format('MMMM Do')}
               </Typography>
             )}
           </Hidden>
           <Hidden smDown implementation='css'>
             {dataStore.ready && (
               <Typography>
-                Last updated: {dataStore.dates[dataStore.dates.length - 1].format('MMMM Do')}
+                Last updated:{' '}
+                {dataStore.dates[dataStore.dates.length - 1]
+                  .clone()
+                  .add(1, 'day')
+                  .format('MMMM Do')}
               </Typography>
             )}
           </Hidden>
