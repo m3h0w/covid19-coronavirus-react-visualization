@@ -29,12 +29,10 @@ export const getColorsScale = (dataType: DataType, theme: Theme) => {
   switch (dataType) {
     case 'confirmed':
       return scaleLog()
-        .domain([1, 30000, 200000])
-        .range(['#F2EAEA', '#FA4590', '#000000']);
+        .domain([1, 30000, 300000, 400000])
+        .range(['#F2EAEA', '#FA4590', '#611835', '#000000']);
     case 'dead':
-      return scaleLog()
-        .domain([1, 10000, 15000])
-        .range(['#F2EAEA', '#222', '#000000']);
+      return scaleLog().domain([1, 30000, 60000]).range(['#F2EAEA', '#222', '#000000']);
   }
 };
 
