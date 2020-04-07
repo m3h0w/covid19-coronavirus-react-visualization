@@ -59,7 +59,7 @@ const Share = () => {
         <Paper
           className={classes.paper}
           style={{
-            height: '100px',
+            height: '110px',
             maxHeight: '90vh',
             width: '100%',
             justifyContent: 'space-between',
@@ -73,7 +73,7 @@ const Share = () => {
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <FacebookIcon size={48} round />
+                <FacebookIcon size={32} round />
               </FacebookShareButton>
             </Grid>
             <Divider orientation='vertical' flexItem={true} light={true} />
@@ -82,7 +82,7 @@ const Share = () => {
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <LinkedinIcon size={48} round />
+                <LinkedinIcon size={32} round />
               </LinkedinShareButton>
             </Grid>
             <Divider orientation='vertical' flexItem={true} light={true} />
@@ -91,7 +91,7 @@ const Share = () => {
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <WhatsappIcon size={48} round />
+                <WhatsappIcon size={32} round />
               </WhatsappShareButton>
             </Grid>
           </div>
