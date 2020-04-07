@@ -348,10 +348,12 @@ const Dashboard: FC<IProps> = ({
                   <Container maxWidth='xl' className={classes.container}>
                     <Grid container spacing={3}>
                       {children}
+                      <Hidden smUp>
+                        <Grid item xs={12}>
+                          <BottomNavigation />
+                        </Grid>
+                      </Hidden>
                     </Grid>
-                    <Hidden smUp>
-                      <BottomNavigation />
-                    </Hidden>
                   </Container>
                 </Fade>
               </>

@@ -59,14 +59,13 @@ import numberWithCommas from '../utils/numberWithCommas';
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
     position: 'fixed',
-    width: '100vw',
-    //marginLeft: SIDEBAR_WIDTH,
+    width: `100vw`,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
-    top: '6vh',
+    bottom: 0,
     left: 0,
   },
   sliderPaper: {
@@ -636,11 +635,12 @@ const MapPage = observer(() => {
           </Paper>
         </Grow>
       </Grid>
-      <div className={classes.sliderWrapper}>
-        {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-          <Paper className={classes.sliderPaper}>
-            <div className={classes.slider}>
-              {/* <Typography
+      <Hidden smDown>
+        <div className={classes.sliderWrapper}>
+          {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
+            <Paper className={classes.sliderPaper}>
+              <div className={classes.slider}>
+                {/* <Typography
                 style={{
                   marginTop: '-1px',
                   lineHeight: 0.9,
@@ -650,34 +650,35 @@ const MapPage = observer(() => {
               >
                 Time travel
               </Typography> */}
-              <IconButton
-                onClick={() => {
-                  if (sliderValue === maxSliderValue) {
-                    setSliderValue(0);
-                  }
-                  setPlaying(!playing);
-                }}
-              >
-                {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
-              </IconButton>
-              <IOSSlider
-                valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-                getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-                aria-labelledby='dates-map-slider'
-                valueLabelDisplay='auto'
-                onChange={(event: any, newValue: number | number[]) => {
-                  setSliderValue(newValue as number);
-                }}
-                value={sliderValue}
-                step={1}
-                marks
-                min={0}
-                max={maxSliderValue}
-              />
-            </div>
-          </Paper>
-        ) : null}
-      </div>
+                <IconButton
+                  onClick={() => {
+                    if (sliderValue === maxSliderValue) {
+                      setSliderValue(0);
+                    }
+                    setPlaying(!playing);
+                  }}
+                >
+                  {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
+                </IconButton>
+                <IOSSlider
+                  valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+                  getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+                  aria-labelledby='dates-map-slider'
+                  valueLabelDisplay='auto'
+                  onChange={(event: any, newValue: number | number[]) => {
+                    setSliderValue(newValue as number);
+                  }}
+                  value={sliderValue}
+                  step={1}
+                  marks
+                  min={0}
+                  max={maxSliderValue}
+                />
+              </div>
+            </Paper>
+          ) : null}
+        </div>
+      </Hidden>
     </Dashboard>
   );
 });
