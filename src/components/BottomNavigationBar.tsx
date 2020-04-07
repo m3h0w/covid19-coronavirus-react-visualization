@@ -53,7 +53,7 @@ const BottomNavigationBar = () => {
   }
 
   return (
-    <div style={{ marginTop: 10 }}>
+    <div>
       <Share />
       <div className={classes.navWrapper}>
         <BottomNavigation

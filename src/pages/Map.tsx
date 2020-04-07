@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     maxHeight: '80vh',
   },
-  mapCard: { opacity: GLOBAL_PAPER_OPACITY, maxHeight: '90vh', marginTop: '5vh' },
+  mapCard: { opacity: GLOBAL_PAPER_OPACITY, maxHeight: '90vh' },
   bigNumberContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -578,7 +578,7 @@ const MapPage = observer(() => {
         <Grow in={whoDataStore.ready}>
           <Paper
             className={classes.paper}
-            style={{ height: '550px', maxHeight: '90vh', width: '100%', marginBottom: 10 }}
+            style={{ height: '550px', maxHeight: '90vh', width: '100%' }}
           >
             <div
               style={{

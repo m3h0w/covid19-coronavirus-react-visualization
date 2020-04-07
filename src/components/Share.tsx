@@ -8,14 +8,20 @@ import Grow from '@material-ui/core/Grow';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useDataStore from '../data/dataStore';
-import { GLOBAL_PAPER_OPACITY } from '../utils/consts';
-import { FacebookShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
-import { useLocation } from 'react-router-dom';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import WhatsappIcon from '@material-ui/icons/WhatsApp';
-import LinkedinIcon from '@material-ui/icons/LinkedIn';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Divider from '@material-ui/core/Divider';
+import clsx from 'clsx';
+import { GLOBAL_PAPER_OPACITY } from '../utils/consts';
+import { useLocation } from 'react-router-dom';
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  LinkedinShareButton,
+  LinkedinIcon,
+  WhatsappShareButton,
+  WhatsappIcon,
+} from 'react-share';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -24,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     overflow: 'visible',
     flexDirection: 'column',
+    '&.btn': {
+      flexDirection: 'row-reverse',
+      justifyContent: 'space-around',
+      padding: '16px 180px',
+    },
   },
   shareButton: {
     opacity: 1,
@@ -50,35 +61,36 @@ const Share = () => {
             height: '100px',
             maxHeight: '90vh',
             width: '100%',
-            marginBottom: 10,
             justifyContent: 'space-between',
             padding: 10,
           }}
         >
-          <Title style={{ textAlign: 'center' }}>SHARE</Title>
+          <Title style={{ textAlign: 'center' }}>Share:</Title>
           <div style={{ display: 'flex', textAlign: 'center' }}>
             <Grid item xs={4}>
               <FacebookShareButton
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <FacebookIcon fontSize='large' />
+                <FacebookIcon size={48} round />
               </FacebookShareButton>
             </Grid>
+            <Divider orientation='vertical' flexItem={true} light={true} />
             <Grid item xs={4}>
               <LinkedinShareButton
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <LinkedinIcon fontSize='large' />
+                <LinkedinIcon size={48} round />
               </LinkedinShareButton>
             </Grid>
+            <Divider orientation='vertical' flexItem={true} light={true} />
             <Grid item xs={4}>
               <WhatsappShareButton
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.shareButton}
               >
-                <WhatsappIcon fontSize='large' />
+                <WhatsappIcon size={48} round />
               </WhatsappShareButton>
             </Grid>
           </div>
@@ -88,15 +100,11 @@ const Share = () => {
       <Grid item xs={12}>
         <Card style={{ width: '100%' }}>
           <ButtonBase
-            className={classes.paper}
+            className={clsx(classes.paper, 'btn')}
             style={{
               backgroundColor: theme.palette.secondary.main,
               cursor: 'pointer',
               width: '100%',
-              // maxHeight: '90vh',
-              // display: 'flex',
-              // justifyContent: 'space-evenly',
-              // padding: '0px 25%',
             }}
             onClick={() => {
               window.location.assign(
