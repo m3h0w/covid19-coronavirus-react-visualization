@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     paddingTop: (props) => (props.paddingTop ? theme.spacing(2) : 0),
-    paddingBottom: theme.spacing(4),
+    paddingBottom: theme.spacing(8),
     [theme.breakpoints.down('xs')]: { paddingRight: '5px', paddingLeft: '5px' },
   },
   paper: {
@@ -288,7 +288,7 @@ const Dashboard: FC<IProps> = ({
           <Hidden xsDown mdUp implementation='css'>
             {dataStore.ready && (
               <Typography style={{ fontSize: '0.5rem' }}>
-                Last updated:{' '}
+                Last updated:
                 {dataStore.dates[dataStore.dates.length - 1]
                   .clone()
                   .add(1, 'day')
@@ -299,7 +299,7 @@ const Dashboard: FC<IProps> = ({
           <Hidden smDown implementation='css'>
             {dataStore.ready && (
               <Typography>
-                Last updated:{' '}
+                Last updated:
                 {dataStore.dates[dataStore.dates.length - 1]
                   .clone()
                   .add(1, 'day')
