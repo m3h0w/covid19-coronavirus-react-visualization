@@ -137,7 +137,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const [countries, setCountries] = useMemoryStateB<string[]>([]);
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
-  const [logScale, setLogScale] = useState(true);
+  const [logScale, setLogScale] = useState(false);
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
