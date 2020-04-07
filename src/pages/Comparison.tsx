@@ -162,14 +162,18 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     getNewColors();
   }, [getNewColors, countries]);
 
-  const addCountries = useCallback(
-    (newCountries: string[]) => {
+  const resetGraph = () => {
+    setTimeout(() => {
+      setLogScale((prev) => !prev);
       setTimeout(() => {
         setLogScale((prev) => !prev);
-        setTimeout(() => {
-          setLogScale((prev) => !prev);
-        }, 10);
-      }, 1);
+      }, 10);
+    }, 1);
+  };
+
+  const addCountries = useCallback(
+    (newCountries: string[]) => {
+      resetGraph();
       setCountries((prevCountries: string[]) => [...new Set([...newCountries, ...prevCountries])]);
     },
     [setLogScale, setCountries]
@@ -177,12 +181,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
 
   const addMostCasesCountries = useCallback(
     (additionalCountry: string | undefined = undefined) => {
-      setTimeout(() => {
-        setLogScale(false);
-        setTimeout(() => {
-          setLogScale(true);
-        }, 10);
-      }, 1);
+      resetGraph();
       if (additionalCountry) {
         setCountries([
           ...new Set([additionalCountry, ...dataStore.possibleCountriesSortedByCases.slice(0, 8)]),
@@ -195,12 +194,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   );
 
   const addMostDeathsCountries = useCallback(() => {
-    setTimeout(() => {
-      setLogScale(false);
-      setTimeout(() => {
-        setLogScale(true);
-      }, 10);
-    }, 1);
+    resetGraph();
     setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
   }, [setCountries, setLogScale, dataStore.possibleCountriesSortedByDeaths]);
 
