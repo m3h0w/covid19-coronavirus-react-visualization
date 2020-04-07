@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
     '&.btn': {
       flexDirection: 'row-reverse',
       justifyContent: 'space-around',
-      padding: '16px 180px',
+      paddingLeft: '25%',
+      paddingRight: '25%',
     },
   },
   shareButton: {

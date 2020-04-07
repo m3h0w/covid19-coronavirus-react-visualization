@@ -635,7 +635,7 @@ const MapPage = observer(() => {
           </Paper>
         </Grow>
       </Grid>
-      <Hidden smDown>
+      <Hidden xsDown>
         <div className={classes.sliderWrapper}>
           {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
             <Paper className={classes.sliderPaper}>
