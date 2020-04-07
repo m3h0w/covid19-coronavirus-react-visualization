@@ -50,18 +50,16 @@ import { showInfoSnackBar } from '../components/Snackbar';
 import useDataStore from '../data/dataStore';
 import useWhoDataStore from '../data/whoDataStore';
 import { mdUp, xsDown } from '../utils/breakpoints';
-import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../utils/consts';
+import { GLOBAL_PAPER_OPACITY } from '../utils/consts';
 import countryToCode from '../utils/countryToCode';
 import generateNewColors from '../utils/generateNewColors';
 import last from '../utils/last';
 import sort from '../utils/sort';
 import numberWithCommas from '../utils/numberWithCommas';
-
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
     position: 'fixed',
-    width: `calc(100vw - ${SIDEBAR_WIDTH}px)`,
-    marginLeft: SIDEBAR_WIDTH,
+    width: `100vw`,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -580,7 +578,7 @@ const MapPage = observer(() => {
         <Grow in={whoDataStore.ready}>
           <Paper
             className={classes.paper}
-            style={{ height: '550px', maxHeight: '90vh', width: '100%', marginBottom: 50 }}
+            style={{ height: '550px', maxHeight: '90vh', width: '100%' }}
           >
             <div
               style={{
@@ -637,11 +635,12 @@ const MapPage = observer(() => {
           </Paper>
         </Grow>
       </Grid>
-      <div className={classes.sliderWrapper}>
-        {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
-          <Paper className={classes.sliderPaper}>
-            <div className={classes.slider}>
-              {/* <Typography
+      <Hidden xsDown>
+        <div className={classes.sliderWrapper}>
+          {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
+            <Paper className={classes.sliderPaper}>
+              <div className={classes.slider}>
+                {/* <Typography
                 style={{
                   marginTop: '-1px',
                   lineHeight: 0.9,
@@ -651,34 +650,35 @@ const MapPage = observer(() => {
               >
                 Time travel
               </Typography> */}
-              <IconButton
-                onClick={() => {
-                  if (sliderValue === maxSliderValue) {
-                    setSliderValue(0);
-                  }
-                  setPlaying(!playing);
-                }}
-              >
-                {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
-              </IconButton>
-              <IOSSlider
-                valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
-                getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
-                aria-labelledby='dates-map-slider'
-                valueLabelDisplay='auto'
-                onChange={(event: any, newValue: number | number[]) => {
-                  setSliderValue(newValue as number);
-                }}
-                value={sliderValue}
-                step={1}
-                marks
-                min={0}
-                max={maxSliderValue}
-              />
-            </div>
-          </Paper>
-        ) : null}
-      </div>
+                <IconButton
+                  onClick={() => {
+                    if (sliderValue === maxSliderValue) {
+                      setSliderValue(0);
+                    }
+                    setPlaying(!playing);
+                  }}
+                >
+                  {!playing ? <PlayCircleFilledIcon /> : <StopIcon />}
+                </IconButton>
+                <IOSSlider
+                  valueLabelFormat={getSliderValueTextFunc(dataStore.datesConverted)}
+                  getAriaValueText={getSliderValueTextFunc(dataStore.datesConverted)}
+                  aria-labelledby='dates-map-slider'
+                  valueLabelDisplay='auto'
+                  onChange={(event: any, newValue: number | number[]) => {
+                    setSliderValue(newValue as number);
+                  }}
+                  value={sliderValue}
+                  step={1}
+                  marks
+                  min={0}
+                  max={maxSliderValue}
+                />
+              </div>
+            </Paper>
+          ) : null}
+        </div>
+      </Hidden>
     </Dashboard>
   );
 });
