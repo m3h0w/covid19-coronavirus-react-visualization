@@ -288,7 +288,7 @@ const Dashboard: FC<IProps> = ({
           <Hidden xsDown mdUp implementation='css'>
             {dataStore.ready && (
               <Typography style={{ fontSize: '0.5rem' }}>
-                Last updated:
+                Last updated:{' '}
                 {dataStore.dates[dataStore.dates.length - 1]
                   .clone()
                   .add(1, 'day')
@@ -299,7 +299,7 @@ const Dashboard: FC<IProps> = ({
           <Hidden smDown implementation='css'>
             {dataStore.ready && (
               <Typography>
-                Last updated:
+                Last updated:{' '}
                 {dataStore.dates[dataStore.dates.length - 1]
                   .clone()
                   .add(1, 'day')
