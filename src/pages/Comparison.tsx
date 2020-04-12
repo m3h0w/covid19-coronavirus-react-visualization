@@ -176,7 +176,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
       resetGraph();
       setCountries((prevCountries: string[]) => [...new Set([...newCountries, ...prevCountries])]);
     },
-    [setLogScale, setCountries]
+    [setCountries]
   );
 
   const addMostCasesCountries = useCallback(
@@ -190,13 +190,13 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
         setCountries(dataStore.possibleCountriesSortedByCases.slice(0, 8));
       }
     },
-    [setCountries, setLogScale, dataStore.possibleCountriesSortedByCases]
+    [setCountries, dataStore.possibleCountriesSortedByCases]
   );
 
   const addMostDeathsCountries = useCallback(() => {
     resetGraph();
     setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
-  }, [setCountries, setLogScale, dataStore.possibleCountriesSortedByDeaths]);
+  }, [setCountries, dataStore.possibleCountriesSortedByDeaths]);
 
   useEffect(() => {
     const r = reaction(

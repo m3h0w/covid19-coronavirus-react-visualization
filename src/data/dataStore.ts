@@ -5,9 +5,7 @@ import { createContext, useContext } from 'react';
 import last from 'utils/last';
 
 import { Row } from '../components/MultiChart';
-import confirmedCsvUrl from '../data/confirmed.csv';
 import confirmedGlobalCsvUrl from '../data/confirmed_global.csv';
-import deathsCsvUrl from '../data/deaths.csv';
 import deathsGlobalCsvUrl from '../data/deaths_global.csv';
 import { US_NAME } from '../utils/consts';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
@@ -84,30 +82,12 @@ export const STATE_KEY = 'Province/State';
 
 export class DataStore {
   @observable public confirmedByRegion: GroupedData | undefined = undefined;
-  @observable public confirmedByRegionOld: GroupedData | undefined = undefined;
   @observable public deadByRegion: GroupedData | undefined = undefined;
-  @observable public deadByRegionOld: GroupedData | undefined = undefined;
   @observable public confirmedByCountry: GroupedData | undefined = undefined;
   @observable public deadByCountry: GroupedData | undefined = undefined;
 
   constructor() {
     if (USE_LOCAL_DATA) {
-      csv(confirmedCsvUrl, (err, data: any) => {
-        if (data) {
-          this.confirmedByRegionOld = groupBy(data, STATE_KEY);
-        } else {
-          throw new Error(`Data wasn't loaded correctly`);
-        }
-      });
-
-      csv(deathsCsvUrl, (err, data: any) => {
-        if (data) {
-          this.deadByRegionOld = groupBy(data, STATE_KEY);
-        } else {
-          throw new Error(`Data wasn't loaded correctly`);
-        }
-      });
-
       csv(confirmedGlobalCsvUrl, (err, data: any) => {
         if (data) {
           this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
@@ -271,12 +251,7 @@ export class DataStore {
     this.getRegionData(region)?.dead[last(this.datesConverted)];
 
   public getRegionData = (region: string) => {
-    if (
-      !this.confirmedByRegionOld ||
-      !this.deadByRegionOld ||
-      !this.confirmedByRegion ||
-      !this.deadByRegion
-    ) {
+    if (!this.confirmedByRegion || !this.deadByRegion) {
       return;
     }
     return {
@@ -359,27 +334,6 @@ export class DataStore {
     ret.sort();
 
     return ret;
-  }
-
-  @computed get regionDates() {
-    if (this.ready && this.confirmedByRegionOld) {
-      for (const countryName of Object.keys(this.confirmedByRegionOld)) {
-        const row = this.confirmedByRegionOld[countryName];
-        const dates = getDatesFromDataRow(row);
-        if (dates) {
-          return dates;
-        }
-      }
-    }
-    return undefined;
-  }
-
-  @computed get regionDatesConverted() {
-    if (this.regionDates) {
-      return this.regionDates.map(momentToFormat);
-    }
-
-    return undefined;
   }
 
   @computed get dates() {
