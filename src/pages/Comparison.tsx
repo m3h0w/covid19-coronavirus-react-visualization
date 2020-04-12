@@ -335,6 +335,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
                     key={i}
                     handleDelete={() => {
                       setCountries(countries.filter((c) => c !== country));
+                      resetGraph();
                     }}
                     label={country}
                     backgroundColor={colors[country]}
