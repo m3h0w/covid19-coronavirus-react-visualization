@@ -5,11 +5,7 @@ import rgbToHsl from './rgbToHsl';
 
 const newColorScheme = () => {
   var scheme = new ColorScheme();
-  scheme
-    .from_hue(getRandomFromRange(0, 100))
-    .scheme('tetrade')
-    .distance(0.8)
-    .variation('hard');
+  scheme.from_hue(getRandomFromRange(0, 100)).scheme('tetrade').distance(0.8).variation('hard');
   var colors = shuffleArray(scheme.colors());
   return colors;
 };
@@ -39,6 +35,7 @@ const generateNewColors = (length: number): string[] => {
       }
     } else {
       colors = newColorScheme();
+      mainCounter = 0;
     }
     mainCounter += 1;
   }

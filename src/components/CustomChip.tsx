@@ -8,11 +8,16 @@ const useStyles = makeStyles((theme) =>
     chip: {
       margin: 5,
       backgroundColor: (props: { backgroundColor: string }) => props.backgroundColor,
+      opacity: 0.9,
       color: (props: { backgroundColor: string }) =>
         props.backgroundColor ? getContrastYIQ(props.backgroundColor) : 'inherit',
       '& *': {
         color: (props: { backgroundColor: string }) =>
           props.backgroundColor ? getContrastYIQ(props.backgroundColor) : 'inherit',
+      },
+      '&:focus,&:hover,&$active': {
+        backgroundColor: (props: { backgroundColor: string }) => props.backgroundColor,
+        opacity: 1.0,
       },
     },
   })

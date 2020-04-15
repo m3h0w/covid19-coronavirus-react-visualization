@@ -79,11 +79,6 @@ const MultiChart: FC<IProps> = observer(
 
       return countries.map((country: string, i: number) => {
         const values = Object.values(data.map((el) => el[country])).filter((v) => v !== undefined);
-        const maxValue = Math.max(...values);
-        const maxIndices = values.reduce(
-          (acc, curr, idx) => (curr === maxValue ? [...acc, idx] : acc),
-          []
-        );
         return (
           <Line
             animationDuration={500}
@@ -92,7 +87,7 @@ const MultiChart: FC<IProps> = observer(
             dataKey={country}
             name={country}
             stroke={colors[country]}
-            dot={dot && <CustomizedDot lastX={Math.max(...maxIndices)} country={country} />}
+            dot={dot && <CustomizedDot lastX={values.length - 1} country={country} />}
             strokeWidth={1.5}
             opacity={0.8}
           />
