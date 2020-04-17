@@ -79,6 +79,7 @@ const MultiChart: FC<IProps> = observer(
 
       return countries.map((country: string, i: number) => {
         const values = Object.values(data.map((el) => el[country])).filter((v) => v !== undefined);
+        const times = Object.values(data.map((el) => el.time));
         return (
           <Line
             animationDuration={500}
@@ -87,7 +88,7 @@ const MultiChart: FC<IProps> = observer(
             dataKey={country}
             name={country}
             stroke={colors[country]}
-            dot={dot && <CustomizedDot lastX={values.length - 1} country={country} />}
+            dot={dot && <CustomizedDot lastX={times[values.length - 1]} country={country} />}
             strokeWidth={1.5}
             opacity={0.8}
           />
