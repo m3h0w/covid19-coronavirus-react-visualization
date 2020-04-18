@@ -49,12 +49,12 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           if (deaths === undefined || deaths === null) {
             deaths = 0;
           }
-          let fatalityRate;
+          let fatalityRate: number | undefined;
           if (deaths === 0) {
             fatalityRate = 0;
           } else {
             fatalityRate = confirmedCases
-              ? ((deaths / confirmedCases) * 100).toFixed(2)
+              ? Math.round(((deaths / confirmedCases) * 100 + Number.EPSILON) * 100) / 100
               : undefined;
           }
 
@@ -159,7 +159,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           {getYAxis('No. of cases & deaths', undefined, undefined, undefined, undefined, false)}
           {getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
             0,
-            (v) => Math.ceil(v * 1.25),
+            (v: number) => Math.ceil(v * 1.1),
           ])}
           {/* {lines} */}
           {bars}

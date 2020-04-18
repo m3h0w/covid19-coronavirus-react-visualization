@@ -471,7 +471,7 @@ const MapPage = observer(() => {
       } else {
         s = setTimeout(() => {
           setSliderValue((prev) => Math.min(prev + 1, maxSliderValue));
-        }, 350);
+        }, 150);
       }
     }
     return () => clearTimeout(s);
