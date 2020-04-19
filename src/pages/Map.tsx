@@ -531,7 +531,7 @@ const MapPage = observer(() => {
   };
 
   return (
-    <Dashboard title='World' Icon={DashboardSwitch}>
+    <Dashboard title='World' Icon={DashboardSwitch} showPerCapitaSwitch={false}>
       <Grid
         item
         xs={12}

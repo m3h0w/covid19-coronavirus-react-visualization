@@ -9,7 +9,8 @@ import getBrush from './Dashboard/Brush';
 import Title from './Dashboard/Title';
 import getTooltip from './Dashboard/Tooltip';
 import getYAxis from './Dashboard/YAxis';
-import useDataStore from '../data/dataStore';
+import useDataStore, { getCapitaScaleString } from '../data/dataStore';
+import { Typography } from '@material-ui/core';
 
 export type Row = {
   [key in Column]: string;
@@ -118,6 +119,7 @@ const MultiChart: FC<IProps> = observer(
             display: 'flex',
             alignItem: 'end',
             justifyContent: 'space-between',
+            flexDirection: 'column',
             width: '100%',
             marginBottom: '10px',
           }}
@@ -125,6 +127,9 @@ const MultiChart: FC<IProps> = observer(
           <Title>
             {title} {logScale ? (xsDown() ? '(log)' : '(logarithmic scale)') : null}
           </Title>
+          <Typography variant='caption' style={{ marginTop: -15 }}>
+            {dataStore.perCapita ? `per ${getCapitaScaleString()} inhabitants` : ''}
+          </Typography>
         </div>
         <ResponsiveContainer width={'100%'}>
           {Boolean(countries.length) ? (
@@ -133,7 +138,7 @@ const MultiChart: FC<IProps> = observer(
               margin={{
                 top: 16,
                 right: 0,
-                bottom: 0,
+                bottom: 10,
                 left: 0,
               }}
               syncId={syncId}

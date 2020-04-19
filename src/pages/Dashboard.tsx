@@ -133,6 +133,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
 
+  if (dataStore.perCapita && selectedRegion) {
+    setSelectedRegion('');
+  }
+
   const selectCountry = useCallback(
     (country: string) => {
       if (possibleCountries.includes(country)) {
@@ -181,7 +185,9 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       rowData.dead &&
       (Object.values(rowData.dead)[Object.values(rowData.dead).length - 1] as number)) ||
     0;
-  const mortalityRate = cases ? deaths / cases : undefined;
+  const mortalityRate = dataStore.fatalityRateArray
+    ? last(dataStore.fatalityRateArray)[selectedCountry]
+    : undefined;
   const isUs = selectedCountry === US_NAME;
 
   const possibleRegionsForSelectedCountry = dataStore.getPossibleRegionsByCountry(
@@ -211,7 +217,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
               id={'select-country'}
               width={'auto'}
             />
-            {hasRegions ? (
+            {hasRegions && !dataStore.perCapita ? (
               <CustomAutocomplete
                 label={'Select region'}
                 handleChange={selectRegion}
@@ -237,9 +243,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 confirmedCases={cases}
                 deaths={deaths}
                 mortalityRate={mortalityRate}
+                perCapita={dataStore.perCapita}
               />
             )}
-            {hasRegions ? (
+            {hasRegions && !dataStore.perCapita ? (
               <Collapsable>
                 <Table size='small' aria-label='a dense table'>
                   <TableHead>
@@ -307,58 +314,54 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           </Card>
         </Grow>
       </Grid>
-      <Grid item xs={12}>
-        {isUs && (
-          <>
-            <Card style={{ position: 'relative' }}>
-              <UsaMapChart
-                date={last(dataStore.datesConverted)}
-                setTooltipContent={setTooltipContent}
-                dataType={'confirmed'}
-                style={{ maxHeight: '80vh' }}
-                onClick={(stateKey) => {
-                  selectRegion(stateKey);
-                }}
-                selectedRegion={selectedRegion}
-              />
-              <Typography
-                variant='h4'
-                color={'primary'}
-                style={{ position: 'absolute', bottom: 0, right: 5 }}
-              >
-                Confirmed cases
-              </Typography>
-            </Card>
-            <ReactTooltip>{tooltipContent}</ReactTooltip>
-          </>
-        )}
-      </Grid>
-      <Grid item xs={12}>
-        {isUs && (
-          <>
-            <Card style={{ position: 'relative' }}>
-              <UsaMapChart
-                date={last(dataStore.datesConverted)}
-                setTooltipContent={setTooltipContent}
-                dataType={'dead'}
-                style={{ maxHeight: '80vh' }}
-                onClick={(stateKey) => {
-                  selectRegion(stateKey);
-                }}
-                selectedRegion={selectedRegion}
-              />
-              <Typography
-                variant='h4'
-                color='inital'
-                style={{ position: 'absolute', bottom: 0, right: 5 }}
-              >
-                Deaths
-              </Typography>
-            </Card>
-            <ReactTooltip>{tooltipContent}</ReactTooltip>
-          </>
-        )}
-      </Grid>
+      {isUs && !dataStore.perCapita && (
+        <Grid item xs={12}>
+          <Card style={{ position: 'relative' }}>
+            <UsaMapChart
+              date={last(dataStore.datesConverted)}
+              setTooltipContent={setTooltipContent}
+              dataType={'confirmed'}
+              style={{ maxHeight: '80vh' }}
+              onClick={(stateKey) => {
+                selectRegion(stateKey);
+              }}
+              selectedRegion={selectedRegion}
+            />
+            <Typography
+              variant='h4'
+              color={'primary'}
+              style={{ position: 'absolute', bottom: 0, right: 5 }}
+            >
+              Confirmed cases
+            </Typography>
+          </Card>
+          <ReactTooltip>{tooltipContent}</ReactTooltip>{' '}
+        </Grid>
+      )}
+      {isUs && !dataStore.perCapita && (
+        <Grid item xs={12}>
+          <Card style={{ position: 'relative' }}>
+            <UsaMapChart
+              date={last(dataStore.datesConverted)}
+              setTooltipContent={setTooltipContent}
+              dataType={'dead'}
+              style={{ maxHeight: '80vh' }}
+              onClick={(stateKey) => {
+                selectRegion(stateKey);
+              }}
+              selectedRegion={selectedRegion}
+            />
+            <Typography
+              variant='h4'
+              color='inital'
+              style={{ position: 'absolute', bottom: 0, right: 5 }}
+            >
+              Deaths
+            </Typography>
+          </Card>
+          <ReactTooltip>{tooltipContent}</ReactTooltip>
+        </Grid>
+      )}
     </Dashboard>
   );
 });

@@ -234,17 +234,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
         aria-label='add'
         className={classes.logScaleSwitch}
       >
-        {logScale ? (
-          <>
-            {/* <LocalHospitalIcon /> */}
-            Scale: LOG.
-          </>
-        ) : (
-          <>
-            {/* <AirlineSeatFlatIcon /> */}
-            Scale: LIN.
-          </>
-        )}
+        {logScale ? <>Scale: LOG.</> : <>Scale: LIN.</>}
       </Fab>
     );
   };

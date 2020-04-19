@@ -34,7 +34,7 @@ const Routes = () => {
       <Route path='/infection-trajectories/:country' component={ComparisonPage} />
       <Route exact path='/infection-trajectories' component={ComparisonPage} />
       <Route exact path='/todo' component={Todo} />
-      <Redirect from='/' to='/world' />
+      <Redirect from='/' to='/infection-trajectories' />
       {/* <Route exact path='/login' component={Login} />
   <Route exact path='/signup' component={SignUp} /> */}
     </Switch>

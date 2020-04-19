@@ -11,8 +11,19 @@ import { US_NAME } from '../utils/consts';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import sort from '../utils/sort';
 import { namesMap, swapName } from './utils';
+import countryToCode from '../utils/countryToCode';
+import countryByPopulation from '../data/countryByPopulation.json';
 
 const USE_LOCAL_DATA = true;
+export const CAPITA_SCALE = 1000000;
+export const getCapitaScaleString = () => {
+  switch (CAPITA_SCALE) {
+    case 1000000:
+      return '1 milion';
+    default:
+      break;
+  }
+};
 
 interface ICountryData {
   confirmed: Row | undefined;
@@ -23,8 +34,22 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 }
 
+function getPopulation(place: string) {
+  const placeMap = {
+    Czechia: 'Czech Republic',
+    Russia: 'Russian Federation',
+    'Republic of the Congo': 'Congo',
+  };
+  let placeName = place;
+  if (placeName in placeMap) {
+    placeName = placeMap[placeName];
+  }
+
+  return parseFloat(countryByPopulation.find((v) => v.country === placeName)?.population);
+}
+
 // _.groupBy
-function groupBy(arr: any[], key: string) {
+function groupBy(arr: any[], key: string, divide: boolean = false) {
   let reducer = (grouped: object, item: object) => {
     let group_value = item[key];
     if (
@@ -48,6 +73,15 @@ function groupBy(arr: any[], key: string) {
       grouped[group_value] = {};
     }
 
+    let pop = 1;
+    if (divide) {
+      pop = getPopulation(group_value) / CAPITA_SCALE;
+      if (!pop) {
+        console.log('no pop', group_value);
+        return grouped;
+      }
+    }
+
     Object.keys(item).forEach((rowKey) => {
       let v = item[rowKey];
       if (!grouped[group_value][rowKey]) {
@@ -59,7 +93,7 @@ function groupBy(arr: any[], key: string) {
             return grouped;
           }
         }
-        grouped[group_value][rowKey] += parseFloat(v);
+        grouped[group_value][rowKey] += parseFloat(v) / pop;
       } else {
         if (v && (typeof v === 'string' || v instanceof String)) {
           if (Object.keys(namesMap).includes(v)) {
@@ -72,7 +106,23 @@ function groupBy(arr: any[], key: string) {
 
     return grouped;
   };
-  return arr.reduce(reducer, {});
+  const res = arr.reduce(reducer, {});
+  if (!divide) {
+    return res;
+  }
+
+  Object.keys(res).forEach((c) => {
+    const v = res[c];
+    console.log(c, v);
+    Object.keys(v).forEach((z) => {
+      const val = v[z];
+      if (val && isNumber(val)) {
+        res[c][z] = Math.round(val);
+      }
+    });
+  });
+
+  return res;
 }
 
 type GroupedData = { [countryName: string]: Row };
@@ -85,6 +135,9 @@ export class DataStore {
   @observable public deadByRegion: GroupedData | undefined = undefined;
   @observable public confirmedByCountry: GroupedData | undefined = undefined;
   @observable public deadByCountry: GroupedData | undefined = undefined;
+  @observable public confirmedByCountryPerCapita: GroupedData | undefined = undefined;
+  @observable public deadByCountryPerCapita: GroupedData | undefined = undefined;
+  @observable public perCapita: boolean = true;
 
   constructor() {
     if (USE_LOCAL_DATA) {
@@ -92,6 +145,7 @@ export class DataStore {
         if (data) {
           this.confirmedByCountry = groupBy(data, COUNTRY_KEY);
           this.confirmedByRegion = groupBy(data, STATE_KEY);
+          this.confirmedByCountryPerCapita = groupBy(data, COUNTRY_KEY, true);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -101,6 +155,7 @@ export class DataStore {
         if (data) {
           this.deadByCountry = groupBy(data, COUNTRY_KEY);
           this.deadByRegion = groupBy(data, STATE_KEY);
+          this.deadByCountryPerCapita = groupBy(data, COUNTRY_KEY, true);
         } else {
           throw new Error(`Data wasn't loaded correctly`);
         }
@@ -144,7 +199,7 @@ export class DataStore {
       return undefined;
     }
     return this.possibleCountries.reduce((acc, country) => {
-      const countryData = this.getCountryData(country);
+      const countryData = this.getCountryData(country, true);
       const values = this.datesConverted.map((date) => countryData?.confirmed[date]);
       const day = values.findIndex((v) => v > threshold);
       acc[country] = day !== -1 ? day : undefined;
@@ -170,11 +225,14 @@ export class DataStore {
           if (index <= this.dates.length - 1) {
             const date = this.dates[index];
             if (countries.includes(country)) {
-              let value = this.getCountryData(country)[type][momentToFormat(date)];
-              if (value === 0) {
-                value = null;
+              const countryData = this.getCountryData(country);
+              if (countryData) {
+                let value = countryData[type][momentToFormat(date)];
+                if (value === 0) {
+                  value = null;
+                }
+                d[country] = value;
               }
-              d[country] = value;
             }
           }
         });
@@ -209,6 +267,19 @@ export class DataStore {
       };
       this.possibleCountries.forEach((country) => {
         d[country] = this.deadByCountry[country][momentToFormat(date)];
+      });
+      return d;
+    });
+  }
+
+  @computed get fatalityRateArray() {
+    return this.dates?.map((date) => {
+      const d = {
+        time: date.unix(),
+      };
+      this.possibleCountries.forEach((country) => {
+        const conf = this.confirmedByCountry[country][momentToFormat(date)];
+        d[country] = conf ? this.deadByCountry[country][momentToFormat(date)] / conf : undefined;
       });
       return d;
     });
@@ -280,7 +351,17 @@ export class DataStore {
     return possibleRegions;
   };
 
-  public getCountryData = (country: string) => {
+  public getCountryData = (country: string, ignorePerCapita: boolean = false) => {
+    if (this.perCapita && !ignorePerCapita) {
+      if (!this.confirmedByCountryPerCapita || !this.deadByCountryPerCapita) {
+        return;
+      }
+      return {
+        confirmed: this.confirmedByCountryPerCapita[country],
+        dead: this.deadByCountryPerCapita[country],
+      };
+    }
+
     if (!this.confirmedByCountry || !this.deadByCountry) {
       return;
     }

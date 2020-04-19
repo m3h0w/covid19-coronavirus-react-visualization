@@ -14,7 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { MainListItems } from './ListItems';
 import useDataStore from '../../data/dataStore';
-import { Hidden, Fade, CircularProgress } from '@material-ui/core';
+import { Hidden, Fade, CircularProgress, Button, Fab } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
 import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
 import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
@@ -88,6 +88,12 @@ const useStyles = makeStyles((theme) => ({
     '& > *': {
       marginRight: 10,
     },
+
+    [theme.breakpoints.down('sm')]: {
+      '& > h1,h2,h3,h4,h5': {
+        fontSize: '0.8rem !important',
+      },
+    },
   },
   drawerPaper: {
     opacity: `${GLOBAL_PAPER_OPACITY} !important`,
@@ -153,6 +159,11 @@ const useStyles = makeStyles((theme) => ({
       color: `${theme.palette.secondary.main} !important`,
     },
   },
+  switch: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 8,
+    },
+  },
 }));
 
 interface IProps {
@@ -171,6 +182,7 @@ const Dashboard: FC<IProps> = ({
   grid = true,
   startOpen = false,
   paddingTop = true,
+  showPerCapitaSwitch = true,
 }) => {
   const classes = useStyles({ paddingTop });
   const [open, setOpen] = useState(startOpen);
@@ -185,7 +197,39 @@ const Dashboard: FC<IProps> = ({
     setOpen(false);
   };
 
+  if (!showPerCapitaSwitch && dataStore.perCapita) {
+    dataStore.perCapita = false;
+  }
+
   // console.log(`https://covid19.pink${location.pathname}`);
+
+  const PerCapitaSwitch = () => {
+    return (
+      <Fab
+        onClick={() => {
+          dataStore.perCapita = !dataStore.perCapita;
+        }}
+        variant='extended'
+        size='small'
+        color='primary'
+        aria-label='add'
+        style={{ padding: '0 12px' }}
+        className={classes.switch}
+      >
+        {dataStore.perCapita ? (
+          <>
+            {/* <LocalHospitalIcon /> */}
+            per capita
+          </>
+        ) : (
+          <>
+            {/* <AirlineSeatFlatIcon /> */}
+            absolute
+          </>
+        )}
+      </Fab>
+    );
+  };
 
   return (
     <div className={classes.root}>
@@ -235,6 +279,7 @@ const Dashboard: FC<IProps> = ({
               {title}
             </Typography>
             <Icon />
+            {showPerCapitaSwitch && <PerCapitaSwitch />}
           </div>
 
           <Hidden xsDown implementation='css'>

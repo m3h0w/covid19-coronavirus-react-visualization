@@ -21,6 +21,9 @@ import Title from './Title';
 import getTooltip from './Tooltip';
 import getYAxis from './YAxis';
 import numberWithCommas from '../../utils/numberWithCommas';
+import useDataStore from '../../data/dataStore';
+import { CAPITA_SCALE, getCapitaScaleString } from '../../data/dataStore';
+import { Typography } from '@material-ui/core';
 
 export type Row = {
   [key in Column]: string;
@@ -38,6 +41,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
   const theme = useTheme();
   // const [firstCaseDate, setFirstCaseDate] = useState();
   const [data, setData] = useState();
+  const dataStore = useDataStore();
 
   useEffect(() => {
     if (rowData && rowData.confirmed && rowData.dead) {
@@ -50,12 +54,14 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             deaths = 0;
           }
           let fatalityRate: number | undefined;
-          if (deaths === 0) {
-            fatalityRate = 0;
-          } else {
-            fatalityRate = confirmedCases
-              ? Math.round(((deaths / confirmedCases) * 100 + Number.EPSILON) * 100) / 100
-              : undefined;
+          if (!dataStore.perCapita) {
+            if (deaths === 0) {
+              fatalityRate = 0;
+            } else {
+              fatalityRate = confirmedCases
+                ? Math.round(((deaths / confirmedCases) * 100 + Number.EPSILON) * 100) / 100
+                : undefined;
+            }
           }
 
           if (lastZeroDay?.isSame(moment(FIRST_DATE)) && confirmedCases > 0) {
@@ -131,7 +137,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
   return (
     <>
       <Title>
-        Cases & Deaths
+        {`Cases & Deaths`}
         {showingDataFor && `: ${showingDataFor} `}
         <ReactCountryFlag
           countryCode={countryToCode(showingDataFor)}
@@ -139,13 +145,16 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
           style={{ marginTop: -5 }}
         />
       </Title>
+      <Typography variant='caption' style={{ marginTop: -15 }}>
+        {dataStore.perCapita ? ` per ${getCapitaScaleString()} inhabitants` : ''}
+      </Typography>
       <ResponsiveContainer width={'100%'}>
         <ComposedChart
           data={data}
           margin={{
             top: 16,
             right: 0,
-            bottom: 0,
+            bottom: 10,
             left: 0,
           }}
         >
@@ -157,19 +166,21 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             tickFormatter={formatXAxis}
           />
           {getYAxis('No. of cases & deaths', undefined, undefined, undefined, undefined, false)}
-          {getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
-            0,
-            (v: number) => Math.ceil(v * 1.1),
-          ])}
+          {!dataStore.perCapita &&
+            getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
+              0,
+              (v: number) => Math.ceil(v * 1.1),
+            ])}
           {/* {lines} */}
           {bars}
-          {getFormattedLine(
-            'fatalityRate',
-            'Case fatality rate',
-            theme.palette.secondary.main,
-            false,
-            'right'
-          )}
+          {!dataStore.perCapita &&
+            getFormattedLine(
+              'fatalityRate',
+              'Case fatality rate',
+              theme.palette.secondary.main,
+              false,
+              'right'
+            )}
           {brush}
           {getTooltip(formatXAxis, (value: string | number | ReactText[], name: string) => {
             if (value === undefined || value === null) {
