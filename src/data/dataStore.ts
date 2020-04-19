@@ -66,9 +66,7 @@ function groupBy(arr: any[], key: string, divide: boolean = false) {
       }
     }
 
-    if (Object.keys(namesMap).includes(group_value)) {
-      group_value = swapName(group_value.replace('*', ''));
-    }
+    group_value = swapName(group_value);
     if (!grouped[group_value]) {
       grouped[group_value] = {};
     }

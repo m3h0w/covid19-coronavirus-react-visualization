@@ -149,7 +149,7 @@ const MultiChart: FC<IProps> = observer(
                 dataKey='time'
                 stroke={theme.palette.text.secondary}
                 // tickFormatter={formatXAxis}
-                domain={['auto', 'dataMax + 0.5']}
+                domain={['auto', 'dataMax + 2']}
                 label={{
                   fontSize: 10,
                   value: 'Days after a 100th case',

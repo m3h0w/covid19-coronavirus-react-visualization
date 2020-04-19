@@ -5,10 +5,11 @@ export const namesMap = {
   'Bahamas, The': 'Bahamas',
   [`Cote d'Ivoire`]: 'Ivory Coast',
   'Gambia, The': 'Gambia',
+  'Taiwan*': 'Taiwan',
 };
 export const swapName = (name: string): string => {
   if (!Object.keys(namesMap).includes(name)) {
-    throw new Error(`Tried to swap a country that doesn't exist in the namesMap`);
+    return name;
   }
   return namesMap[name];
 };
