@@ -19,7 +19,7 @@ export const CAPITA_SCALE = 1000000;
 export const getCapitaScaleString = () => {
   switch (CAPITA_SCALE) {
     case 1000000:
-      return '1 milion';
+      return '1 million';
     default:
       break;
   }
