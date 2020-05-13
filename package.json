@@ -22,7 +22,6 @@
     "color-scheme": "^1.0.1",
     "d3-request": "^1.0.6",
     "d3-scale": "^3.2.1",
-    "firebase": "^7.1.0",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^1.5.2",
     "moment": "^2.24.0",
@@ -30,7 +29,6 @@
     "persistence-hooks": "^1.1.0",
     "pubsub-js": "^1.8.0",
     "react": "^16.10.2",
-    "react-cloudimage-responsive": "^1.6.5",
     "react-country-flag": "^2.0.1",
     "react-dom": "^16.10.2",
     "react-ga": "^2.7.0",
@@ -43,7 +41,6 @@
     "react-share": "^4.1.0",
     "react-simple-maps": "^1.0.0-beta.0",
     "react-tooltip": "^4.1.2",
-    "react-with-firebase-auth": "^1.1.0",
     "recharts": "^1.8.5",
     "typescript": "^3.6.3"
   },
