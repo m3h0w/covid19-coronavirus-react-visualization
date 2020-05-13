@@ -11,7 +11,6 @@ import { US_NAME } from '../utils/consts';
 import { getDatesFromDataRow, momentToFormat } from '../utils/getDatesFromDataRow';
 import sort from '../utils/sort';
 import { namesMap, swapName } from './utils';
-import countryToCode from '../utils/countryToCode';
 import countryByPopulation from '../data/countryByPopulation.json';
 
 const USE_LOCAL_DATA = true;

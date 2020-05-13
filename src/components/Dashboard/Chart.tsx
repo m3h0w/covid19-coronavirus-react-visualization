@@ -22,7 +22,7 @@ import getTooltip from './Tooltip';
 import getYAxis from './YAxis';
 import numberWithCommas from '../../utils/numberWithCommas';
 import useDataStore from '../../data/dataStore';
-import { CAPITA_SCALE, getCapitaScaleString } from '../../data/dataStore';
+import { getCapitaScaleString } from '../../data/dataStore';
 import { Typography } from '@material-ui/core';
 
 export type Row = {
@@ -81,7 +81,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
       setData(d);
       // setFirstCaseDate(lastZeroDay);
     }
-  }, [rowData, dates]);
+  }, [rowData, dates, dataStore.perCapita]);
 
   const getFormattedLine = (
     dataKey,

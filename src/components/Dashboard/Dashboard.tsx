@@ -14,7 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { MainListItems } from './ListItems';
 import useDataStore from '../../data/dataStore';
-import { Hidden, Fade, CircularProgress, Button, Fab } from '@material-ui/core';
+import { Hidden, Fade, CircularProgress, Fab } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
 import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
 import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
