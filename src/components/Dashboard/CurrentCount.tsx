@@ -1,8 +1,10 @@
-import React from 'react';
-import NumberWithTitle from '../NumberWithTitle';
-import numberWithCommas from '../../utils/numberWithCommas';
 import { getCapitaScaleString } from 'data/dataStore';
+import React from 'react';
+
 import { Typography } from '@material-ui/core';
+
+import numberWithCommas from '../../utils/numberWithCommas';
+import NumberWithTitle from '../NumberWithTitle';
 
 export default function CurrentCount({ style, confirmedCases, deaths, mortalityRate, perCapita }) {
   return (
