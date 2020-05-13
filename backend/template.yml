@@ -20,4 +20,4 @@ Resources:
         SynchronizationSchedule:
           Type: Schedule
           Properties:
-            Schedule: cron(0 5 * * ? *)
+            Schedule: cron(0 8 * * ? *)
