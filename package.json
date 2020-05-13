@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.5.0",
-    "@material-ui/icons": "^4.4.3",
+    "@material-ui/icons": "4.4.3",
     "@material-ui/lab": "^4.0.0-alpha.28",
     "@types/d3-request": "^1.0.5",
     "@types/d3-scale": "^2.2.0",
