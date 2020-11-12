@@ -9,25 +9,18 @@ import { BooleanParam, useQueryParam, withDefault } from 'use-query-params';
 import { perCapitaState } from './components/PerCapitaSwitch';
 import { autorun, reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import useDataStore from './data/dataStore';
 
-const CustomSwitch = () => {
+const CustomSwitch = observer(() => {
   const [perCapita, setPerCapita] = useQueryParam<boolean>(
     'per_capita',
     withDefault(BooleanParam, false)
   );
+  const dataStore = useDataStore();
 
   React.useEffect(() => {
-    const a = reaction(
-      () => [perCapita, perCapitaState.perCapitaBool],
-      () => {
-        console.log({ perCapita }, perCapitaState.perCapitaBool);
-        if (perCapita !== perCapitaState.perCapitaBool) {
-          setPerCapita(perCapitaState.perCapitaBool);
-        }
-      }
-    );
-    return a;
-  }, [perCapita, setPerCapita]);
+    dataStore.perCapita = perCapita;
+  }, [perCapita]);
 
   return (
     <Switch>
@@ -41,6 +34,6 @@ const CustomSwitch = () => {
       <Redirect from='/' to='/infection-trajectories' />
     </Switch>
   );
-};
+});
 
 export default CustomSwitch;

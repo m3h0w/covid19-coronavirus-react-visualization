@@ -145,6 +145,10 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
   const [logScale, setLogScale] = useQueryParam<boolean>('log_scale', withDefault(BooleanParam, 0));
+  const [perCapita, setPerCapita] = useQueryParam<boolean>(
+    'per_capita',
+    withDefault(BooleanParam, false)
+  );
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
@@ -369,6 +373,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               colors={colors}
               syncId={'compariso1n'}
               logScale={logScale}
+              perCapita={perCapita}
             />
           </Paper>
         </Grow>
@@ -384,6 +389,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
               colors={colors}
               syncId={'comparison'}
               logScale={logScale}
+              perCapita={perCapita}
             />
           </Paper>
         </Grow>

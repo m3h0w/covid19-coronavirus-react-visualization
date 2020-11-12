@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, useHistory } from 'react-router';
 import ReactTooltip from 'react-tooltip';
-
 import {
   ButtonBase,
   Card,
@@ -21,7 +20,6 @@ import {
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-
 import Collapsable from '../components/Collapsable';
 import Chart from '../components/Dashboard/Chart';
 import CurrentCount from '../components/Dashboard/CurrentCount';
@@ -32,7 +30,7 @@ import { animationTime, GLOBAL_PAPER_OPACITY, US_NAME } from '../utils/consts';
 import last from '../utils/last';
 import createPersistedState from '../utils/memoryState';
 import numberWithCommas from '../utils/numberWithCommas';
-import { useQueryParam, withDefault, StringParam } from 'use-query-params';
+import { useQueryParam, withDefault, StringParam, BooleanParam } from 'use-query-params';
 
 const drawerWidth = 240;
 
@@ -131,6 +129,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     'region',
     withDefault(StringParam, '')
   );
+  const [perCapita, setPerCapita] = useQueryParam<boolean>(
+    'per_capita',
+    withDefault(BooleanParam, false)
+  );
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -138,7 +140,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const theme = useTheme();
   const [tooltipContent, setTooltipContent] = useState();
 
-  if (dataStore.perCapita && selectedRegion) {
+  if (perCapita && selectedRegion) {
     setSelectedRegion('');
   }
 
@@ -157,15 +159,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
       setSelectedRegion(region);
     }
   };
-
-  // useEffect(() => {
-  //   if (selectedCountry && !selectedRegion) {
-  //     history.push(`/dashboard/${selectedCountry}`);
-  //   }
-  //   if (selectedCountry && selectedRegion) {
-  //     history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
-  //   }
-  // }, [selectedCountry, selectedRegion, history]);
 
   let rowData = dataStore.getCountryData(selectedCountry);
   if (selectedRegion) {
@@ -214,7 +207,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
               id={'select-country'}
               width={'auto'}
             />
-            {hasRegions && !dataStore.perCapita ? (
+            {hasRegions && !perCapita ? (
               <CustomAutocomplete
                 label={'Select region'}
                 handleChange={selectRegion}
@@ -240,10 +233,10 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
                 confirmedCases={cases}
                 deaths={deaths}
                 mortalityRate={mortalityRate}
-                perCapita={dataStore.perCapita}
+                perCapita={perCapita}
               />
             )}
-            {hasRegions && !dataStore.perCapita ? (
+            {hasRegions && !perCapita ? (
               <Collapsable>
                 <Table size='small' aria-label='a dense table'>
                   <TableHead>
@@ -311,7 +304,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           </Card>
         </Grow>
       </Grid>
-      {isUs && !dataStore.perCapita && (
+      {isUs && !perCapita && (
         <Grid item xs={12}>
           <Card style={{ position: 'relative' }}>
             <UsaMapChart
@@ -335,7 +328,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
           <ReactTooltip>{tooltipContent}</ReactTooltip>{' '}
         </Grid>
       )}
-      {isUs && !dataStore.perCapita && (
+      {isUs && !perCapita && (
         <Grid item xs={12}>
           <Card style={{ position: 'relative' }}>
             <UsaMapChart

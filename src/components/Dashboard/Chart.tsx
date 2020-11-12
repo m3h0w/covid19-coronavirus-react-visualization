@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 
 import { useTheme } from '@material-ui/core/styles';
-
+import { BooleanParam, useQueryParam, withDefault } from 'use-query-params';
 import countryToCode from '../../utils/countryToCode';
 import { FIRST_DATE, momentToFormat } from '../../utils/getDatesFromDataRow';
 import getBrush from './Brush';
@@ -42,6 +42,10 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
   // const [firstCaseDate, setFirstCaseDate] = useState();
   const [data, setData] = useState();
   const dataStore = useDataStore();
+  const [perCapita, setPerCapita] = useQueryParam<boolean>(
+    'per_capita',
+    withDefault(BooleanParam, false)
+  );
 
   useEffect(() => {
     if (rowData && rowData.confirmed && rowData.dead) {
@@ -54,7 +58,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             deaths = 0;
           }
           let fatalityRate: number | undefined;
-          if (!dataStore.perCapita) {
+          if (!perCapita) {
             if (deaths === 0) {
               fatalityRate = 0;
             } else {
@@ -81,7 +85,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
       setData(d);
       // setFirstCaseDate(lastZeroDay);
     }
-  }, [rowData, dates, dataStore.perCapita]);
+  }, [rowData, dates, perCapita]);
 
   const getFormattedLine = (
     dataKey,
@@ -144,7 +148,7 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
         {cc && <ReactCountryFlag countryCode={cc} svg style={{ marginTop: -5 }} />}
       </Title>
       <Typography variant='caption' style={{ marginTop: -15 }}>
-        {dataStore.perCapita ? ` per ${getCapitaScaleString()} inhabitants` : ''}
+        {perCapita ? ` per ${getCapitaScaleString()} inhabitants` : ''}
       </Typography>
       <ResponsiveContainer width={'100%'}>
         <ComposedChart
@@ -164,14 +168,14 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
             tickFormatter={formatXAxis}
           />
           {getYAxis('No. of cases & deaths', undefined, undefined, undefined, undefined, false)}
-          {!dataStore.perCapita &&
+          {!perCapita &&
             getYAxis('Case fatality rate [%]', false, undefined, 'right', false, false, [
               0,
               (v: number) => Math.ceil(v * 1.1),
             ])}
           {/* {lines} */}
           {bars}
-          {!dataStore.perCapita &&
+          {!perCapita &&
             getFormattedLine(
               'fatalityRate',
               'Case fatality rate',

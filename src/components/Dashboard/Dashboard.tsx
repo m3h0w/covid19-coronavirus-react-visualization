@@ -21,6 +21,7 @@ import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
 import BottomNavigation from 'components/BottomNavigationBar';
+import { BooleanParam, useQueryParam, withDefault } from 'use-query-params';
 import { FacebookShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import WhatsappIcon from '@material-ui/icons/WhatsApp';
@@ -189,6 +190,10 @@ const Dashboard: FC<IProps> = ({
   const dataStore = useDataStore();
   const location = useLocation();
   const backgroundUrl = useWindowWidth() >= 650 ? backgroundSmoke : backgroundSmokeMobile;
+  const [perCapita, setPerCapita] = useQueryParam<boolean>(
+    'per_capita',
+    withDefault(BooleanParam, false)
+  );
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -197,8 +202,8 @@ const Dashboard: FC<IProps> = ({
     setOpen(false);
   };
 
-  if (!showPerCapitaSwitch && dataStore.perCapita) {
-    dataStore.perCapita = false;
+  if (!showPerCapitaSwitch && perCapita) {
+    setPerCapita(false);
   }
 
   // console.log(`https://covid19.pink${location.pathname}`);
@@ -207,7 +212,7 @@ const Dashboard: FC<IProps> = ({
     return (
       <Fab
         onClick={() => {
-          dataStore.perCapita = !dataStore.perCapita;
+          setPerCapita((prev) => !prev);
         }}
         variant='extended'
         size='small'
@@ -216,7 +221,7 @@ const Dashboard: FC<IProps> = ({
         style={{ padding: '0 12px' }}
         className={classes.switch}
       >
-        {dataStore.perCapita ? (
+        {perCapita ? (
           <>
             {/* <LocalHospitalIcon /> */}
             per capita

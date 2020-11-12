@@ -1,8 +1,4 @@
-import React from 'react';
-import { observable, autorun } from 'mobx';
-import { observer } from 'mobx-react-lite';
-import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
-import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
+import { observable } from 'mobx';
 
 export class PerCapitaState {
   @observable public perCapitaBool: boolean;
@@ -20,23 +16,3 @@ export class PerCapitaState {
   };
 }
 export const perCapitaState = new PerCapitaState();
-
-// const PerCapitaSwitch = observer(() => {
-//   const [a, b, SwitchElement] = useBooleanSwitch(
-//     [
-//       <>
-//         <CheckBoxOutlinedIcon />
-//         Per 1 million
-//       </>,
-//       <>
-//         <CheckBoxOutlineBlankOutlinedIcon /> Per 1 million
-//       </>,
-//     ],
-//     undefined,
-//     true
-//   );
-
-//   return <SwitchElement value={perCapitaState.perCapitaBool} setValue={perCapitaState.set} />;
-// });
-
-// export default PerCapitaSwitch;

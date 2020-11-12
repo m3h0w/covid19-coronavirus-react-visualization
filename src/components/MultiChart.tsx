@@ -1,9 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { FC } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis } from 'recharts';
-
 import { useTheme } from '@material-ui/core/styles';
-
+import { BooleanParam, useQueryParam, withDefault } from 'use-query-params';
 import { xsDown } from '../utils/breakpoints';
 import getBrush from './Dashboard/Brush';
 import Title from './Dashboard/Title';
@@ -26,10 +25,11 @@ interface IProps {
   syncId: string;
   dataType: 'confirmed' | 'dead';
   logScale: boolean;
+  perCapita: boolean;
 }
 
 const MultiChart: FC<IProps> = observer(
-  ({ title, yLabel, countries, dataType, colors, syncId, logScale }) => {
+  ({ title, yLabel, countries, dataType, colors, syncId, logScale, perCapita }) => {
     const theme = useTheme();
     const dataStore = useDataStore();
     const data = dataStore.dataForAfter100Cases(dataType, countries);
@@ -128,7 +128,7 @@ const MultiChart: FC<IProps> = observer(
             {title} {logScale ? (xsDown() ? '(log)' : '(logarithmic scale)') : null}
           </Title>
           <Typography variant='caption' style={{ marginTop: -15 }}>
-            {dataStore.perCapita ? `per ${getCapitaScaleString()} inhabitants` : ''}
+            {perCapita ? `per ${getCapitaScaleString()} inhabitants` : ''}
           </Typography>
         </div>
         <ResponsiveContainer width={'100%'}>

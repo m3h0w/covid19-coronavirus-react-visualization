@@ -74,7 +74,7 @@ function groupBy(arr: any[], key: string, divide: boolean = false) {
     if (divide) {
       pop = getPopulation(group_value) / CAPITA_SCALE;
       if (!pop) {
-        console.log('no pop', group_value);
+        // console.log('no pop', group_value);
         return grouped;
       }
     }
@@ -110,7 +110,7 @@ function groupBy(arr: any[], key: string, divide: boolean = false) {
 
   Object.keys(res).forEach((c) => {
     const v = res[c];
-    console.log(c, v);
+    // console.log(c, v);
     Object.keys(v).forEach((z) => {
       const val = v[z];
       if (val && isNumber(val)) {

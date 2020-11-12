@@ -325,7 +325,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           <NumberWithTitle
             version='large'
             centered={true}
-            color={'default'}
+            color={'initial'}
             title={'Deaths'}
             number={totalDeaths || ''}
             onClick={() => {
