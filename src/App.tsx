@@ -10,6 +10,8 @@ import { SnackbarProvider } from 'notistack';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CustomizedSnackbar from './components/Snackbar';
+import { QueryParamProvider } from 'use-query-params';
+import CustomSwitch from './Switch';
 
 const Routes = () => {
   const history = useHistory();
@@ -26,18 +28,9 @@ const Routes = () => {
   }, [history]);
 
   return (
-    <Switch>
-      <Route path='/dashboard/:country' component={DashboardPage} />
-      <Route exact path='/dashboard' component={DashboardPage} />
-      <Route exact path='/world' component={MapPage} />
-      <Route exact path='/map' component={MapPage} />
-      <Route path='/infection-trajectories/:country' component={ComparisonPage} />
-      <Route exact path='/infection-trajectories' component={ComparisonPage} />
-      <Route exact path='/todo' component={Todo} />
-      <Redirect from='/' to='/infection-trajectories' />
-      {/* <Route exact path='/login' component={Login} />
-  <Route exact path='/signup' component={SignUp} /> */}
-    </Switch>
+    <QueryParamProvider ReactRouterRoute={Route}>
+      <CustomSwitch />
+    </QueryParamProvider>
   );
 };
 

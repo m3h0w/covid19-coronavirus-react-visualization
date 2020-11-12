@@ -6,6 +6,14 @@ import { useStateAndLocalStorage } from 'persistence-hooks';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import ReactCountryFlag from 'react-country-flag';
 import { RouteComponentProps, useHistory } from 'react-router';
+import {
+  useQueryParam,
+  NumberParam,
+  StringParam,
+  withDefault,
+  ArrayParam,
+  BooleanParam,
+} from 'use-query-params';
 
 import { Button, Fab, Grow, Slide } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
@@ -134,10 +142,13 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
-  const [countries, setCountries] = useMemoryStateB<string[]>([]);
+  const [countries, setCountries] = useQueryParam<string[]>('c', withDefault(ArrayParam, []));
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
-  const [logScale, setLogScale] = useState(false);
+  const [logScale, setLogScale] = useQueryParam<boolean>(
+    'log_scale',
+    withDefault(BooleanParam, false)
+  );
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
@@ -240,7 +251,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   };
 
   return (
-    <Dashboard title='Infection trajectories' Icon={LogScaleSwitch}>
+    <Dashboard title={`Infection trajectories`} Icon={LogScaleSwitch}>
       <Grid item xs={12} sm={5} md={3}>
         <Slide
           direction='down'

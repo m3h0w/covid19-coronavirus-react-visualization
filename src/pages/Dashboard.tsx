@@ -32,6 +32,7 @@ import { animationTime, GLOBAL_PAPER_OPACITY, US_NAME } from '../utils/consts';
 import last from '../utils/last';
 import createPersistedState from '../utils/memoryState';
 import numberWithCommas from '../utils/numberWithCommas';
+import { useQueryParam, withDefault, StringParam } from 'use-query-params';
 
 const drawerWidth = 240;
 
@@ -124,8 +125,14 @@ const useMemoryState = createPersistedState();
 
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useState(props.match.params.country || US_NAME);
-  const [selectedRegion, setSelectedRegion] = useMemoryState('');
+  const [selectedCountry, setSelectedCountry] = useQueryParam<string>(
+    'country',
+    withDefault(StringParam, US_NAME)
+  );
+  const [selectedRegion, setSelectedRegion] = useQueryParam<string>(
+    'region',
+    withDefault(StringParam, '')
+  );
   const dataStore = useDataStore();
   const possibleCountries = dataStore.possibleCountries;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -153,14 +160,14 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     }
   };
 
-  useEffect(() => {
-    if (selectedCountry && !selectedRegion) {
-      history.push(`/dashboard/${selectedCountry}`);
-    }
-    if (selectedCountry && selectedRegion) {
-      history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
-    }
-  }, [selectedCountry, selectedRegion, history]);
+  // useEffect(() => {
+  //   if (selectedCountry && !selectedRegion) {
+  //     history.push(`/dashboard/${selectedCountry}`);
+  //   }
+  //   if (selectedCountry && selectedRegion) {
+  //     history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
+  //   }
+  // }, [selectedCountry, selectedRegion, history]);
 
   useEffect(() => {
     let countryFromUrl = props.match.params.country;
