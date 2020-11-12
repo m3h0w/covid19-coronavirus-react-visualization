@@ -7,7 +7,8 @@ import ComparisonPage from './pages/Comparison';
 import Todo from './pages/Todo';
 import { BooleanParam, useQueryParam, withDefault } from 'use-query-params';
 import { perCapitaState } from './components/PerCapitaSwitch';
-import { autorun } from 'mobx';
+import { autorun, reaction } from 'mobx';
+import { observer } from 'mobx-react-lite';
 
 const CustomSwitch = () => {
   const [perCapita, setPerCapita] = useQueryParam<boolean>(
@@ -16,12 +17,17 @@ const CustomSwitch = () => {
   );
 
   React.useEffect(() => {
-    autorun(() => {
-      if (perCapita !== perCapitaState.perCapitaBool) {
-        setPerCapita(perCapitaState.perCapitaBool);
+    const a = reaction(
+      () => [perCapita, perCapitaState.perCapitaBool],
+      () => {
+        console.log({ perCapita }, perCapitaState.perCapitaBool);
+        if (perCapita !== perCapitaState.perCapitaBool) {
+          setPerCapita(perCapitaState.perCapitaBool);
+        }
       }
-    });
-  }, []);
+    );
+    return a;
+  }, [perCapita, setPerCapita]);
 
   return (
     <Switch>
@@ -33,8 +39,6 @@ const CustomSwitch = () => {
       <Route exact path='/infection-trajectories' component={ComparisonPage} />
       <Route exact path='/todo' component={Todo} />
       <Redirect from='/' to='/infection-trajectories' />
-      {/* <Route exact path='/login' component={Login} />
-  <Route exact path='/signup' component={SignUp} /> */}
     </Switch>
   );
 };

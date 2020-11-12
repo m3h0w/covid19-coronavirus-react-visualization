@@ -134,16 +134,14 @@ const Chart: FC<IProps> = ({ rowData, dates, showingDataFor }) => {
     return null;
   }
 
+  const cc = countryToCode(showingDataFor);
+
   return (
     <>
       <Title>
         {`Cases & Deaths`}
         {showingDataFor && `: ${showingDataFor} `}
-        <ReactCountryFlag
-          countryCode={countryToCode(showingDataFor)}
-          svg
-          style={{ marginTop: -5 }}
-        />
+        {cc && <ReactCountryFlag countryCode={cc} svg style={{ marginTop: -5 }} />}
       </Title>
       <Typography variant='caption' style={{ marginTop: -15 }}>
         {dataStore.perCapita ? ` per ${getCapitaScaleString()} inhabitants` : ''}

@@ -16,7 +16,7 @@ import { MainListItems } from './ListItems';
 import useDataStore from '../../data/dataStore';
 import { Hidden, Fade, CircularProgress, Fab } from '@material-ui/core';
 import backgroundSmoke from '../../assets/pinksmoke-min.jpg';
-import backgroundSmokeMobile from '../../assets/pinksmoke-small-min.jpg';
+import backgroundSmokeMobile from '../../assets/pinksmoke-min.jpg';
 import { GLOBAL_PAPER_OPACITY, SIDEBAR_WIDTH } from '../../utils/consts';
 import logo from '../../assets/logo_square_white_transparent.png';
 import { useLocation } from 'react-router-dom';
@@ -259,7 +259,7 @@ const Dashboard: FC<IProps> = ({
               <img src={logo} height={40} style={{ marginRight: 1 }} alt='covid19.pink logo' />
               <Hidden smDown>
                 <Typography
-                  className={open && classes.hidden}
+                  className={open ? classes.hidden : ''}
                   component='h1'
                   variant='h6'
                   color='inherit'
@@ -270,7 +270,7 @@ const Dashboard: FC<IProps> = ({
               </Hidden>
             </a>
             <Divider
-              className={open && classes.hidden}
+              className={open ? classes.hidden : ''}
               orientation='vertical'
               flexItem={true}
               light={true}
@@ -294,33 +294,19 @@ const Dashboard: FC<IProps> = ({
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.facebookShareButton}
               >
-                <FacebookIcon
-                  size={32}
-                  round={true}
-                  iconFillColor={'#fff'}
-                  bgStyle={{
-                    backgroundColor: '#FFF',
-                  }}
-                />
+                <FacebookIcon />
               </FacebookShareButton>
               <LinkedinShareButton
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.facebookShareButton}
               >
-                <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
+                <LinkedinIcon />
               </LinkedinShareButton>
               <WhatsappShareButton
                 url={`https://covid19.pink${location.pathname}`}
                 className={classes.facebookShareButton}
               >
-                <WhatsappIcon
-                  size={32}
-                  round={true}
-                  iconFillColor={'#fff'}
-                  bgStyle={{
-                    backgroundColor: '#FFF',
-                  }}
-                />
+                <WhatsappIcon />
               </WhatsappShareButton>
               <Divider
                 orientation='vertical'

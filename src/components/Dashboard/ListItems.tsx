@@ -7,7 +7,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
-import { withStyles, createStyles, Hidden } from '@material-ui/core';
+import { withStyles, createStyles, Hidden, SvgIconProps } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Link from '@material-ui/core/Link';
 import CallMadeIcon from '@material-ui/icons/CallMade';
@@ -37,14 +37,19 @@ interface ICustomListItemProps {
   to?: string;
   href?: string;
   text: string;
-  Icon: (SvgIconProps) => JSX.Element;
-  AfterIcon?: (SvgIconProps) => JSX.Element;
+  Icon: (p: SvgIconProps) => JSX.Element;
+  AfterIcon?: (p: SvgIconProps) => JSX.Element;
+  style?: CSSProperties;
+}
+
+interface IStyleProps {
+  isSelected: boolean;
   style?: CSSProperties;
 }
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    root: (props) => ({
+    root: (props: IStyleProps) => ({
       textDecoration: props.isSelected ? 'underline' : 'initial',
       textDecorationColor: theme.palette.secondary.main,
       '&:hover': {
@@ -69,10 +74,10 @@ const useStyles = makeStyles((theme) =>
 const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterIcon, style }) => {
   const location = useLocation();
   const theme = useTheme();
-  let LinkElement = RouterLink;
   const isSelected = to ? location.pathname.split('/')[1] === to.split('/')[1] : false;
   const classes = useStyles({ isSelected, style });
 
+  let LinkElement: any = RouterLink;
   if (href) {
     LinkElement = Link;
   }
@@ -100,7 +105,7 @@ const CustomListItem: FC<ICustomListItemProps> = ({ to, href, text, Icon, AfterI
 };
 
 export const MainListItems = () => {
-  const classes = useStyles();
+  const classes = useStyles({ isSelected: false, style: {} });
   const location = useLocation();
   return (
     <List style={{ height: '100%', padding: 0 }}>
@@ -127,32 +132,25 @@ export const MainListItems = () => {
             className={classes.facebookShareButton}
           >
             <FacebookIcon
-              size={32}
-              round={true}
-              iconFillColor={'#fff'}
-              bgStyle={{
-                backgroundColor: '#FFF',
-              }}
+            // size={32}
+            // round={1}
+            // iconfillcolor={'#fff'}
+            // bgstyle={{
+            //   backgroundColor: '#FFF',
+            // }}
             />
           </FacebookShareButton>
           <LinkedinShareButton
             url={`https://covid19.pink${location.pathname}`}
             className={classes.facebookShareButton}
           >
-            <LinkedinIcon size={32} round={true} iconFillColor={'#fff'} />
+            <LinkedinIcon />
           </LinkedinShareButton>
           <WhatsappShareButton
             url={`https://covid19.pink${location.pathname}`}
             className={classes.facebookShareButton}
           >
-            <WhatsappIcon
-              size={32}
-              round={true}
-              iconFillColor={'#fff'}
-              bgStyle={{
-                backgroundColor: '#FFF',
-              }}
-            />
+            <WhatsappIcon />
           </WhatsappShareButton>
         </div>
       </Hidden>

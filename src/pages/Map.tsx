@@ -56,6 +56,7 @@ import generateNewColors from '../utils/generateNewColors';
 import last from '../utils/last';
 import sort from '../utils/sort';
 import numberWithCommas from '../utils/numberWithCommas';
+import { StringParam, withDefault, useQueryParam } from 'use-query-params';
 const useStyles = makeStyles((theme) => ({
   sliderWrapper: {
     position: 'fixed',
@@ -200,6 +201,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   };
 
   const CountryCell = ({ country }: { country: string }) => {
+    const cc = countryToCode(country);
     return (
       <TableCell
         onClick={() => {
@@ -209,11 +211,9 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
         component='th'
         scope='row'
       >
-        <ReactCountryFlag
-          style={{ marginTop: -4, marginRight: '3px' }}
-          countryCode={countryToCode(country)}
-          svg
-        />
+        {cc && (
+          <ReactCountryFlag style={{ marginTop: -4, marginRight: '3px' }} countryCode={cc} svg />
+        )}
         {country}
       </TableCell>
     );
@@ -325,7 +325,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
           <NumberWithTitle
             version='large'
             centered={true}
-            color={'initial'}
+            color={'default'}
             title={'Deaths'}
             number={totalDeaths || ''}
             onClick={() => {
@@ -426,7 +426,11 @@ const MapPage = observer(() => {
     'shownMapSliderSnackbar'
   );
   const [playing, setPlaying] = useState(false);
-  const [dataType, setDataType] = useState<DataType>('confirmed');
+  const [dataType, setDataType] = useQueryParam<string>(
+    'dataType',
+    withDefault(StringParam, 'confirmed')
+  );
+
   const [colors, setColors] = useState();
   const whoDataStore = useWhoDataStore();
 
@@ -635,21 +639,11 @@ const MapPage = observer(() => {
           </Paper>
         </Grow>
       </Grid>
-      <Hidden xsDown>
+      {/* <Hidden xsDown>
         <div className={classes.sliderWrapper}>
           {sliderValue !== undefined && dataStore?.datesConverted?.length && date ? (
             <Paper className={classes.sliderPaper}>
               <div className={classes.slider}>
-                {/* <Typography
-                style={{
-                  marginTop: '-1px',
-                  lineHeight: 0.9,
-                  color: theme.palette.secondary.main,
-                  fontWeight: 600,
-                }}
-              >
-                Time travel
-              </Typography> */}
                 <IconButton
                   onClick={() => {
                     if (sliderValue === maxSliderValue) {
@@ -678,7 +672,7 @@ const MapPage = observer(() => {
             </Paper>
           ) : null}
         </div>
-      </Hidden>
+      </Hidden> */}
     </Dashboard>
   );
 });

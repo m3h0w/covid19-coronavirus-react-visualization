@@ -121,8 +121,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const useMemoryState = createPersistedState();
-
 const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   const classes = useStyles();
   const [selectedCountry, setSelectedCountry] = useQueryParam<string>(
@@ -148,7 +146,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
     (country: string) => {
       if (possibleCountries.includes(country)) {
         setSelectedCountry(country);
-        setSelectedRegion(null);
+        setSelectedRegion('');
       }
     },
     [setSelectedRegion, setSelectedCountry, possibleCountries]
@@ -168,14 +166,6 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
   //     history.push(`/dashboard/${selectedCountry}/${selectedRegion}`);
   //   }
   // }, [selectedCountry, selectedRegion, history]);
-
-  useEffect(() => {
-    let countryFromUrl = props.match.params.country;
-    if (countryFromUrl) {
-      countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
-      selectCountry(countryFromUrl);
-    }
-  }, [props.match.params.country, history, setSelectedCountry, selectCountry]);
 
   let rowData = dataStore.getCountryData(selectedCountry);
   if (selectedRegion) {
@@ -360,7 +350,7 @@ const DashboardPage: FC<RouteComponentProps> = observer((props) => {
             />
             <Typography
               variant='h4'
-              color='inital'
+              color='initial'
               style={{ position: 'absolute', bottom: 0, right: 5 }}
             >
               Deaths

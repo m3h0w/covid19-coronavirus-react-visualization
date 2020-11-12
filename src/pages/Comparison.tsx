@@ -134,21 +134,17 @@ interface IRowData {
   dead: Row | undefined;
 }
 const useMemoryStateA = createPersistedState();
-const useMemoryStateB = createPersistedState();
 
 const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((props) => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useState<string>();
+  const [selectedCountry, setSelectedCountry] = useState<string>(null);
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
   const [countries, setCountries] = useQueryParam<string[]>('c', withDefault(ArrayParam, []));
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
-  const [logScale, setLogScale] = useQueryParam<boolean>(
-    'log_scale',
-    withDefault(BooleanParam, false)
-  );
+  const [logScale, setLogScale] = useQueryParam<boolean>('log_scale', withDefault(BooleanParam, 0));
 
   useEffect(() => {
     if (!shownSnackbar && dataStore.ready) {
@@ -190,44 +186,42 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
     [setCountries]
   );
 
-  const addMostCasesCountries = useCallback(
-    (additionalCountry: string | undefined = undefined) => {
+  const addMostCasesCountries = useCallback(() => {
+    const newCountries = dataStore.possibleCountriesSortedByCases.slice(0, 8);
+    if (
+      newCountries.length !== countries.length ||
+      newCountries.some((value, index) => value !== countries[index])
+    ) {
       resetGraph();
-      if (additionalCountry) {
-        setCountries([
-          ...new Set([additionalCountry, ...dataStore.possibleCountriesSortedByCases.slice(0, 8)]),
-        ]);
-      } else {
-        setCountries(dataStore.possibleCountriesSortedByCases.slice(0, 8));
-      }
-    },
-    [setCountries, dataStore.possibleCountriesSortedByCases]
-  );
+      setCountries(newCountries);
+      setSelectedCountry(null);
+    }
+  }, [countries, setCountries, dataStore.possibleCountriesSortedByCases]);
 
   const addMostDeathsCountries = useCallback(() => {
-    resetGraph();
-    setCountries(dataStore.possibleCountriesSortedByDeaths.slice(0, 8));
-  }, [setCountries, dataStore.possibleCountriesSortedByDeaths]);
+    const newCountries = dataStore.possibleCountriesSortedByDeaths.slice(0, 8);
+    if (
+      newCountries.length !== countries.length ||
+      newCountries.some((value, index) => value !== countries[index])
+    ) {
+      resetGraph();
+      setCountries(newCountries);
+      setSelectedCountry(null);
+    }
+  }, [countries, setCountries, dataStore.possibleCountriesSortedByDeaths]);
 
   useEffect(() => {
     const r = reaction(
       () => dataStore.ready,
       () => {
-        addMostCasesCountries();
+        if (!countries || countries.length === 0) {
+          addMostCasesCountries();
+        }
       }
     );
-    if (props.match.params.country) {
-      let countryFromUrl = props.match.params.country;
-      if (countryFromUrl) {
-        countryFromUrl = countryFromUrl.replace(/^\w/, (c) => c.toUpperCase());
-        history.push(`/infection-trajectories`);
-        addMostCasesCountries(countryFromUrl);
-      }
-    } else {
-      addMostCasesCountries();
-    }
+
     return r;
-  }, [addCountries, addMostCasesCountries, dataStore.ready, history, props.match.params.country]);
+  }, [countries]);
 
   const routeChange = (country: string) => {
     history.push(`/dashboard/${country}`);
@@ -304,7 +298,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
             <Button
               style={{ maxWidth: 300, marginBottom: 10 }}
               variant='outlined'
-              color='initial'
+              color='default'
               size={'small'}
               onClick={() => {
                 addMostDeathsCountries();
@@ -320,28 +314,33 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
           <Paper className={classes.paper}>
             <div className={classes.clipWrapper}>
               {dataStore.ready &&
-                countries.map((country: string, i: number) => (
-                  <CustomChip
-                    avatar={
-                      <ReactCountryFlag
-                        countryCode={countryToCode(country)}
-                        svg
-                        style={{ marginTop: 1, borderRadius: '50%' }}
-                      />
-                    }
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      routeChange(country);
-                    }}
-                    key={i}
-                    handleDelete={() => {
-                      setCountries(countries.filter((c) => c !== country));
-                      resetGraph();
-                    }}
-                    label={country}
-                    backgroundColor={colors[country]}
-                  />
-                ))}
+                countries.map((country: string, i: number) => {
+                  const cc = countryToCode(country);
+                  return (
+                    <CustomChip
+                      avatar={
+                        cc ? (
+                          <ReactCountryFlag
+                            countryCode={cc}
+                            svg
+                            style={{ marginTop: 1, borderRadius: '50%' }}
+                          />
+                        ) : null
+                      }
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        routeChange(country);
+                      }}
+                      key={i}
+                      handleDelete={() => {
+                        setCountries(countries.filter((c) => c !== country));
+                        resetGraph();
+                      }}
+                      label={country}
+                      backgroundColor={colors[country]}
+                    />
+                  );
+                })}
               {Boolean(countries.length) && (
                 <CustomChip
                   backgroundColor={'#000'}
