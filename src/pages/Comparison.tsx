@@ -13,6 +13,7 @@ import {
   withDefault,
   ArrayParam,
   BooleanParam,
+  DelimitedArrayParam,
 } from 'use-query-params';
 
 import { Button, Fab, Grow, Slide } from '@material-ui/core';
@@ -141,7 +142,10 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const dataStore = useDataStore();
   const [colors, setColors] = useMemoryStateA<{ [country: string]: string }>({});
-  const [countries, setCountries] = useQueryParam<string[]>('c', withDefault(ArrayParam, []));
+  const [countries, setCountries] = useQueryParam<string[]>(
+    'countries',
+    withDefault(DelimitedArrayParam, [])
+  );
   const history = useHistory();
   const [shownSnackbar, setShownSnackbar] = useStateAndLocalStorage(false, 'shownLogLinSnackbar');
   const [logScale, setLogScale] = useQueryParam<boolean>('log_scale', withDefault(BooleanParam, 0));
