@@ -55,7 +55,7 @@ const MapChart = observer(
       'shownMapClickSnackbar'
     );
     const routeChange = (country: string) => {
-      history.push(`/dashboard/${country}`);
+      history.push(`/dashboard?country=${country}`);
     };
 
     // const getScale = () => {

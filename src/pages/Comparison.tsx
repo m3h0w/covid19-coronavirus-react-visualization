@@ -232,7 +232,7 @@ const ComparisonPage: FC<RouteComponentProps<{ country: string }>> = observer((p
   }, [countries]);
 
   const routeChange = (country: string) => {
-    history.push(`/dashboard/${country}`);
+    history.push(`/dashboard?country=${country}`);
   };
 
   const LogScaleSwitch = () => {

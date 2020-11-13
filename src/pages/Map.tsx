@@ -197,7 +197,7 @@ const NumberGrid = observer(({ dataType, setDataType, sliderValue }: { dataType:
   }
 
   const routeChange = (country: string) => {
-    history.push(`/dashboard/${country}`);
+    history.push(`/dashboard?country=${country}`);
   };
 
   const CountryCell = ({ country }: { country: string }) => {
