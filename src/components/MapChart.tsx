@@ -58,16 +58,6 @@ const MapChart = observer(
       history.push(`/dashboard?country=${country}`);
     };
 
-    // const getScale = () => {
-    //   if (window.innerWidth < 400) {
-    //     return 90;
-    //   }
-    //   if (window.innerHeight < 400) {
-    //     return 120;
-    //   }
-    //   return 150;
-    // };
-
     return (
       <ComposableMap data-tip=''>
         <ZoomableGroup zoom={1}>

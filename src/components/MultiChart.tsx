@@ -162,7 +162,7 @@ const MultiChart: FC<IProps> = observer(
               {getYAxis(yLabel, logScale)}
               {getFormattedLine(true)}
               {brush}
-              {getTooltip()}
+              {getTooltip((s) => `${s} days after the 100th case`)}
             </LineChart>
           ) : (
             <div></div>
