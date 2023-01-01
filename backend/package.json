@@ -19,9 +19,9 @@
     "@types/aws-lambda": "^8.10.46",
     "@types/node": "^13.9.5",
     "aws-sam-webpack-plugin": "^0.6.0",
-    "ts-loader": "^6.2.2",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.8.3",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }
